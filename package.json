@@ -1,7 +1,7 @@
 {
-  "name": "react_template",
+  "name": "explorar",
   "version": "1.0.0",
-  "description": "test",
+  "description": "Proof-of-concept gather quest AR app made with React Native.",
   "main": "index.html",
   "private": true,
   "scripts": {
