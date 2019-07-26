@@ -1,4 +1,4 @@
-package com.react_template;
+package gr.tuc.explorar;
 
 import com.facebook.react.ReactActivity;
 

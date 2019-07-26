@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "start": "react-native start",
-    "install": "react-native run-android --no-packager",
+    "push": "react-native run-android --no-packager",
     "dev": "react-native run-android",
     "test": "jest",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\""

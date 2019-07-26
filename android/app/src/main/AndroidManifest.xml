@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.react_template">
+  package="gr.tuc.explorar">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
