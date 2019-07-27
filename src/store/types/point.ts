@@ -12,12 +12,13 @@ export enum PointType {
 
 export interface Point {
   type: PointType;
+  id: number;
+
   name: string;
   desc: string;
 
   loc: Location;
   radius: number;
-  completed: boolean;
 }
 
 export interface WaitPoint {
