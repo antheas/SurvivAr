@@ -3,15 +3,7 @@ export interface Location {
   lon: number;
 }
 
-export enum PointType {
-  AREA,
-  WAIT,
-  QR,
-  COLLECT
-}
-
 export interface Point {
-  type: PointType;
   id: number;
 
   name: string;
@@ -21,23 +13,19 @@ export interface Point {
   radius: number;
 }
 
-export interface WaitPoint {
-  type: PointType.WAIT;
+export interface WaitPoint extends Point {
   duration: number; // Seconds
 }
 
-export interface QrPoint {
-  type: PointType.QR;
+export interface QrPoint extends Point {
   qrData: string;
 }
 
-export interface CollectPoint {
-  type: PointType.COLLECT;
+export interface CollectPoint extends Point {
   qrPoints: QrPoint[];
 }
 
-export interface AreaPoint {
-  type: PointType.AREA;
+export interface AreaPoint extends Point {
   children: Point;
 }
 
@@ -46,4 +34,17 @@ export interface PointRoot {
   updatedLocation: Location;
 
   areas: AreaPoint[];
+}
+
+// Guards
+export function isWaitPoint(point: Point): point is WaitPoint {
+  return "duration" in point;
+}
+
+export function isQrPoint(point: Point): point is QrPoint {
+  return "qrData" in point;
+}
+
+export function isCollectPoint(point: Point): point is CollectPoint {
+  return "qrPoints" in point;
 }
