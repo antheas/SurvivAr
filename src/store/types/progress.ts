@@ -5,6 +5,6 @@ export interface PointProgress {
   isCollected?: boolean; // Only applicable for QrPoint
 }
 
-export interface Progress {
+export interface ProgressState {
   points: Map<number, PointProgress>;
 }

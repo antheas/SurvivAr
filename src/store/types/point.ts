@@ -29,7 +29,7 @@ export interface AreaPoint extends Point {
   children: Point;
 }
 
-export interface PointRoot {
+export interface PointState {
   lastUpdated: number;
   updatedLocation: Location;
 
