@@ -6,13 +6,14 @@ import { PersistGate } from "redux-persist/integration/react";
 import store, { persistor } from "./store";
 import RootStack from "./Routes";
 import { useScreens } from "react-native-screens"; // eslint-disable-line
+import StorageLoader from "./screens/StorageLoader";
 
 useScreens();
 
 const App = (): React.FunctionComponent => {
   return (
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
+      <PersistGate loading={<StorageLoader />} persistor={persistor}>
         <View style={{ flex: 1 } /* eslint-disable-line */}>
           <RootStack />
         </View>
