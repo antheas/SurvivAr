@@ -30,6 +30,7 @@ export interface AreaPoint extends Point {
 }
 
 export interface PointState {
+  updated: boolean;
   lastUpdated: number;
   updatedLocation: Location;
 
