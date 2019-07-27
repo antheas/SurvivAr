@@ -14,8 +14,6 @@
     "no-console": 1,
     "react-hooks/rules-of-hooks": 2,
     "react-hooks/exhaustive-deps": 1,
-    "@typescript-eslint/interface-name-prefix": 0,
-    "@typescript-eslint/no-var-requires": 0,
     "react-native/no-unused-styles": 1,
     "react-native/split-platform-components": 2,
     "react-native/no-inline-styles": 1,
@@ -23,6 +21,7 @@
     "react-native/no-raw-text": 1
   },
   "plugins": [
+    "@typescript-eslint",
     "react",
     "react-native",
     "react-hooks",
