@@ -1,49 +1,23 @@
-import React, { Fragment } from "react";
-import {
-  Text,
-  View,
-  Image,
-  StatusBar,
-  StyleSheet,
-  Dimensions
-} from "react-native";
+import React from "react";
+import { Provider } from "react-redux";
+import { View } from "react-native";
+import { PersistGate } from "redux-persist/integration/react";
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    alignItems: "stretch",
-    height: Dimensions.get("window").height,
-    width: Dimensions.get("window").width
-  },
-  title: {
-    paddingVertical: 60,
-    fontWeight: "bold",
-    fontSize: 30,
-    textAlign: "center"
-  },
-  img: {
-    flex: 1,
-    width: null,
-    height: null
-  }
-});
+import store, { persistor } from "./store";
+import RootStack from "./Routes";
+import { useScreens } from "react-native-screens"; // eslint-disable-line
+
+useScreens();
 
 const App = (): React.FunctionComponent => {
   return (
-    <Fragment>
-      <StatusBar barStyle="light-content" />
-
-      <View style={styles.container}>
-        <Text style={styles.title}>Very Nice Meme</Text>
-
-        <Image
-          resizeMode="cover"
-          source={require("./img/meme.jpg")}
-          style={styles.img}
-        />
-      </View>
-    </Fragment>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <View style={{ flex: 1 } /* eslint-disable-line */}>
+          <RootStack />
+        </View>
+      </PersistGate>
+    </Provider>
   );
 };
 
