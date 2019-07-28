@@ -1,8 +1,7 @@
 import React from "react";
-import { View, Text, StyleSheet, Dimensions } from "react-native";
+import { View, StyleSheet, StatusBar } from "react-native";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import { JSXElement } from "@babel/types";
-import { Spacer } from "../../utils/Components";
 import { checkLocationPermission } from "../../utils/Permissions";
 import * as Theme from "../../utils/Theme";
 import Loader from "./Loader";
@@ -31,6 +30,11 @@ class MainScreen extends React.Component {
   public render(): JSXElement {
     return (
       <View style={styles.container}>
+        <StatusBar
+          barStyle="dark-content"
+          translucent={true}
+          backgroundColor={"transparent"}
+        />
         <MapView
           style={styles.map}
           provider={PROVIDER_GOOGLE}
