@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 import MapView from "react-native-maps";
 import { JSXElement } from "@babel/types";
-import { checkLocationPermission } from "../utils/Permissions.android";
+import { checkLocationPermission } from "../utils/Permissions";
 
 const styles = StyleSheet.create({
   container: {
@@ -13,8 +13,7 @@ const styles = StyleSheet.create({
   },
   map: {
     flex: 3,
-    width: Dimensions.get("window").width,
-    height: Math.round(Dimensions.get("window").height / 2)
+    width: "100%"
   },
   status: {
     flex: 1
@@ -23,7 +22,7 @@ const styles = StyleSheet.create({
 
 class MainScreen extends React.Component {
   public componentDidMount(): void {
-    checkLocationPermission().then((res): void => {});
+    //checkLocationPermission().then((res): void => {});
   }
 
   public render(): JSXElement {

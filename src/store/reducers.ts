@@ -13,7 +13,6 @@ import {
   ProgressState,
   PointProgress
 } from "./types";
-import { number } from "prop-types";
 
 const NULL_LOCATION: Location = { lon: 0, lat: 0 };
 
