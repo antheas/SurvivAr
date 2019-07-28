@@ -14,8 +14,8 @@ const styles = StyleSheet.create({
   }
 });
 
-const StorageLoader = (props: BackgroundProps): React.FunctionComponent => {
+const SplashScreen = (props: BackgroundProps): React.FunctionComponent => {
   return <View style={[styles.container, props.style]}>{props.children}</View>;
 };
 
-export default StorageLoader;
+export default SplashScreen;
