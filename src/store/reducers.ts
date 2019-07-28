@@ -7,7 +7,13 @@ import {
   ProgressAction,
   UPDATE_PROGRESS
 } from "./actions";
-import { NavigationState, PointState, ProgressState } from "./types";
+import {
+  NavigationState,
+  PointState,
+  ProgressState,
+  PointProgress
+} from "./types";
+import { number } from "prop-types";
 
 const NULL_LOCATION: Location = { lon: 0, lat: 0 };
 
@@ -45,11 +51,12 @@ function points(
 }
 
 function progress(
-  state: ProgressState = {},
+  state: ProgressState = new Map<number, PointProgress>(),
   action: ProgressAction
 ): ProgressState {
   if (action.type === UPDATE_PROGRESS) {
-    let newState = { ...state, [action.id]: action.point };
+    let newState = new Map(state);
+    newState[action.id] = action.point;
     return newState;
   } else {
     return state;
