@@ -5,10 +5,7 @@ import { PersistGate } from "redux-persist/integration/react";
 
 import store, { persistor } from "./store";
 import RootStack from "./Routes";
-import { useScreens } from "react-native-screens"; // eslint-disable-line
 import StorageLoader from "./screens/StorageLoader";
-
-useScreens();
 
 const App = (): React.FunctionComponent => {
   return (
