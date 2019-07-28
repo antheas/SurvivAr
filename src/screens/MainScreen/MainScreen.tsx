@@ -1,22 +1,25 @@
 import React from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
-import MapView from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import { JSXElement } from "@babel/types";
-import { checkLocationPermission } from "../utils/Permissions";
-
+import { Spacer } from "../../utils/Components";
+import { checkLocationPermission } from "../../utils/Permissions";
+import * as Theme from "../../utils/Theme";
+import Loader from "./Loader";
 const styles = StyleSheet.create({
   container: {
+    ...Theme.component.container.background,
     alignItems: "center",
-    flex: 1,
     justifyContent: "flex-start",
     alignContent: "stretch"
   },
   map: {
-    flex: 3,
+    flex: 5,
     width: "100%"
   },
-  status: {
-    flex: 1
+  ui: {
+    flex: 1,
+    width: "100%"
   }
 });
 
@@ -30,6 +33,8 @@ class MainScreen extends React.Component {
       <View style={styles.container}>
         <MapView
           style={styles.map}
+          provider={PROVIDER_GOOGLE}
+          customMapStyle={Theme.mapStyle}
           initialRegion={{
             latitude: 37.78825,
             longitude: -122.4324,
@@ -37,8 +42,8 @@ class MainScreen extends React.Component {
             longitudeDelta: 0.0421
           }}
         />
-        <View style={styles.status}>
-          <Text>Status</Text>
+        <View style={styles.ui}>
+          <Loader />
         </View>
       </View>
     );

@@ -4,7 +4,7 @@ import { PersistGate } from "redux-persist/integration/react";
 
 import store, { persistor } from "./store";
 import SplashScreen from "./screens/SplashScreen";
-import MainScreen from "./screens/MainScreen";
+import MainScreen from "./screens/MainScreen/MainScreen";
 
 const App = (): React.FunctionComponent => {
   return (
