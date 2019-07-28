@@ -1,10 +1,4 @@
-import {
-  Dimensions,
-  Platform,
-  PixelRatio,
-  StyleSheet,
-  ColorPropType
-} from "react-native";
+import { Dimensions, Platform, PixelRatio, StyleSheet } from "react-native";
 
 // https://stackoverflow.com/questions/33628677/react-native-responsive-font-size
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
@@ -22,13 +16,13 @@ export function normalize(size): number {
 }
 
 export const colors = {
-  primary: "#0b3e8e",
-  primaryLight: "#001960",
-  primaryDark: "#4f68bf",
+  primary: "#b71c1c",
+  primaryLight: "#f05545",
+  primaryDark: "#7f0000",
 
-  accent: "0b3e8e",
-  accentLight: "001960",
-  accentDark: "4f68bf",
+  accent: "#b71c1c",
+  accentLight: "#f05545",
+  accentDark: "#7f0000",
 
   textDark: "#131516",
   text: "#373D3F",
@@ -55,6 +49,12 @@ export const text = {
     },
     xlarge: {
       fontSize: normalize(24)
+    },
+    normal: {
+      fontSize: normalize(17)
+    },
+    header: {
+      fontSize: normalize(20)
     }
   }),
   color: StyleSheet.create({
@@ -80,7 +80,7 @@ export const component = {
   container: StyleSheet.create({
     background: {
       flex: 1,
-      backgroundColor: colors.primaryDark
+      backgroundColor: colors.primary
     },
     foreground: {
       flex: 1,
@@ -92,3 +92,6 @@ export const component = {
     }
   })
 };
+
+import MapStyle from "./MapStyle";
+export const mapStyle = MapStyle.white;
