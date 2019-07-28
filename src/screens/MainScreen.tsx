@@ -21,15 +21,9 @@ const styles = StyleSheet.create({
   }
 });
 
-interface LocationProps {
-  navigation: NavigationScreenProp;
-}
-
-class MainScreen extends React.Component<LocationProps> {
+class MainScreen extends React.Component {
   public componentDidMount(): void {
-    checkLocationPermission().then((res): void => {
-      if (!res) this.props.navigation.navigate("Permissions");
-    });
+    checkLocationPermission().then((res): void => {});
   }
 
   public render(): JSXElement {
