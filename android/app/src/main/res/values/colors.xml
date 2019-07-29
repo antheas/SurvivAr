@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary_color">#b71c1c</color>
+    <color name="navigation_bar">@color/primary_color</color>
+    <color name="status_bar_color">@color/primary_color</color>
+</resources>

@@ -1,10 +1,10 @@
-import React from "react";
+import React, { Component } from "react";
 import { View, StyleSheet, StatusBar } from "react-native";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import { JSXElement } from "@babel/types";
-import { checkLocationPermission } from "../../utils/Permissions";
 import * as Theme from "../../utils/Theme";
 import Loader from "./Loader";
+
 const styles = StyleSheet.create({
   container: {
     ...Theme.component.container.background,
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   }
 });
 
-class MainScreen extends React.Component {
+export default class MainScreen extends Component {
   public componentDidMount(): void {
     //checkLocationPermission().then((res): void => {});
   }
@@ -53,5 +53,3 @@ class MainScreen extends React.Component {
     );
   }
 }
-
-export default MainScreen;

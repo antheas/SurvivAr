@@ -3,17 +3,19 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
 import store, { persistor } from "./store";
-import SplashScreen from "./screens/SplashScreen";
-import MainScreen from "./screens/MainScreen/MainScreen";
+import RouteStack from "./Routes";
+import { JSXElement } from "@babel/types";
 
-const App = (): React.FunctionComponent => {
-  return (
-    <Provider store={store}>
-      <PersistGate loading={<SplashScreen />} persistor={persistor}>
-        <MainScreen />
-      </PersistGate>
-    </Provider>
-  );
-};
+class App extends React.Component<void> {
+  public render(): JSXElement {
+    return (
+      <Provider store={store}>
+        <PersistGate persistor={persistor}>
+          <RouteStack />
+        </PersistGate>
+      </Provider>
+    );
+  }
+}
 
 export default App;

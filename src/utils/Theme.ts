@@ -15,6 +15,7 @@ export function normalize(size): number {
   }
 }
 
+// Don't forget to update colors.xml in android!
 export const colors = {
   primary: "#b71c1c",
   primaryLight: "#f05545",
