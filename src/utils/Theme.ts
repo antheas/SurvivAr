@@ -105,12 +105,12 @@ export const map = {
   marker: {
     user: {
       icon: {
-        name: "map-marker-outline",
+        name: "circle-slice-8",
         color: colors.primary,
-        size: 45
+        size: 30
       },
       marker: {
-        anchor: { x: 0.5, y: 0.9 }
+        anchor: { x: 0.5, y: 0.5 }
       }
     }
   }

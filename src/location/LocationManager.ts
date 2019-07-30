@@ -12,6 +12,7 @@ function startJsCallbacks(callback: LocationCallback): void {
           lat: pos.coords.latitude,
           lon: pos.coords.longitude
         },
+        heading: pos.coords.heading,
         accuracy: pos.coords.accuracy,
         updated: +pos.timestamp,
         valid: true

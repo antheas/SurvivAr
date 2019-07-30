@@ -19,8 +19,9 @@ const NULL_LOCATION: Location = { lon: 0, lat: 0 };
 function position(
   state: PositionState = {
     coords: NULL_LOCATION,
-    updated: 0,
+    heading: 0,
     accuracy: Infinity,
+    updated: 0,
     valid: false
   },
   action: PositionAction
