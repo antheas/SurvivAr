@@ -64,3 +64,5 @@ buck-out/
 
 # Vector Icons
 android/app/src/main/assets/fonts/
+
+.env
