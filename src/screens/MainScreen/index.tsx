@@ -52,27 +52,28 @@ class MainScreen extends Component<MainProps> {
 
   public render(): JSXElement {
     return (
-      <View style={styles.container}>
-        <StatusBar
+      <View style= { styles.container } >
+      <StatusBar
           barStyle="dark-content"
-          translucent={true}
-          backgroundColor={"transparent"}
-        />
-        <MapView
-          style={styles.map}
-          provider={PROVIDER_GOOGLE}
-          customMapStyle={Theme.mapStyle}
-          region={{
-            latitude: this.props.position.coords.lat,
-            longitude: this.props.position.coords.lon,
-            latitudeDelta: 0.0922,
+    translucent = { true}
+    backgroundColor = { "transparent"}
+      />
+      <MapView
+          style={ styles.map }
+    provider = { PROVIDER_GOOGLE }
+    customMapStyle = { Theme.mapStyle }
+    region = {{
+      latitude: this.props.position.coords.lat,
+        longitude: this.props.position.coords.lon,
+          latitudeDelta: 0.0922,
             longitudeDelta: 0.0421
-          }}
+    }
+  }
         />
-        <View style={styles.ui}>
-          <Loader />
-        </View>
-      </View>
+  < View style = { styles.ui } >
+    <Loader />
+    < /View>
+    < /View>
     );
   }
 }
