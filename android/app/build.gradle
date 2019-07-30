@@ -190,9 +190,6 @@ android {
 }
 
 dependencies {
-    implementation project(':react-native-geolocation-service')
-    implementation project(':react-native-splash-screen')
-    implementation project(':react-native-gesture-handler')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
