@@ -17,12 +17,21 @@ const styles = StyleSheet.create({
   }
 });
 
-export const Loader = (): JSXElement => {
+export enum LoadStage {
+  LOCATING,
+  UPDATING
+}
+
+export const Loader = ({ stage }: { stage: LoadStage }): JSXElement => {
   return (
     <View style={styles.status}>
       <ActivityIndicator size="large" color={Theme.colors.primaryText} />
       <Spacer med horz />
-      <Text style={styles.text}>Locating User...</Text>
+      <Text style={styles.text}>
+        {stage === LoadStage.LOCATING
+          ? "Locating User..."
+          : "Loading Places..."}
+      </Text>
     </View>
   );
 };
