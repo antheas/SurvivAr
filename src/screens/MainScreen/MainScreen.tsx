@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import { View, StyleSheet, StatusBar } from "react-native";
+import NavigationScreenProp from "react-navigation";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import { JSXElement } from "@babel/types";
 import * as Theme from "../../utils/Theme";
 import Loader from "./Loader";
+import { checkLocationPermission } from "../../utils/Permissions";
 
 const styles = StyleSheet.create({
   container: {
@@ -22,9 +24,17 @@ const styles = StyleSheet.create({
   }
 });
 
-export default class MainScreen extends Component {
+export const MainProps = {
+  navigation: NavigationScreenProp
+};
+
+export default class MainScreen extends Component<MainProps> {
   public componentDidMount(): void {
-    //checkLocationPermission().then((res): void => {});
+    checkLocationPermission().then((res): void => {
+      if (!res) {
+        this.props.navigation.navigate("Intro");
+      }
+    });
   }
 
   public render(): JSXElement {

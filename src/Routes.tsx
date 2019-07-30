@@ -5,10 +5,12 @@ import SplashScreen from "react-native-splash-screen";
 import { JSXElement } from "@babel/types";
 
 import MainScreen from "./screens/MainScreen";
+import IntroScreen from "./screens/IntroScreen";
 
 const AppContainer = createAppContainer(
   createSwitchNavigator(
     {
+      Intro: IntroScreen,
       Main: MainScreen
     },
     {

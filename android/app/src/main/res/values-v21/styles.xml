@@ -3,7 +3,7 @@
 
     <style name="AppTheme" parent="BaseTheme">
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:navigationBarColor">@color/navigation_bar</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
     <style name="SplashTheme" parent="BaseSplashTheme">
