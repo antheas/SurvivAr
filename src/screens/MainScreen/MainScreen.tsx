@@ -10,7 +10,7 @@ import Loader from "./Loader";
 import { checkLocationPermission } from "../../location/Permissions";
 import LocationManager from "../../location/LocationManager";
 import { State } from "../../store/types";
-import { updateNavigation } from "../../store/actions";
+import { updatePosition } from "../../store/actions";
 
 const styles = StyleSheet.create({
   container: {
@@ -63,8 +63,8 @@ class MainScreen extends Component<MainProps> {
           provider={PROVIDER_GOOGLE}
           customMapStyle={Theme.mapStyle}
           region={{
-            latitude: this.props.position.currentLocation.lat,
-            longitude: this.props.position.currentLocation.lon,
+            latitude: this.props.position.coords.lat,
+            longitude: this.props.position.coords.lon,
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421
           }}
@@ -77,14 +77,13 @@ class MainScreen extends Component<MainProps> {
   }
 }
 
-const mapStateToProps = ({ navigation }: State): { Navigation } => ({
-  position: navigation
+const mapStateToProps = ({ position }: State): { PositionState } => ({
+  position: position
 });
 
 const mapDispatchToProps = (dispatch): (() => void)[] => {
   return {
-    updatePosition: (nav: NavigationState): void =>
-      dispatch(updateNavigation(nav))
+    updatePosition: (pos: PositionState): void => dispatch(updatePosition(pos))
   };
 };
 

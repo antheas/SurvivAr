@@ -1,13 +1,13 @@
+export * from "./position";
 export * from "./point";
-export * from "./navigation";
 export * from "./progress";
 
-import { NavigationState } from "./navigation";
+import { PositionState } from "./position";
 import { PointState } from "./point";
 import { ProgressState } from "./progress";
 
 export interface State {
-  navigation: NavigationState;
+  navigation: PositionState;
   points: PointState;
   progress: ProgressState;
 }

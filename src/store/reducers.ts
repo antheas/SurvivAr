@@ -1,10 +1,10 @@
 import { combineReducers } from "redux";
 import {
-  NavigationAction,
-  UPDATE_NAVIGATION,
-  UPDATE_POINTS,
+  PositionAction,
   PointsAction,
   ProgressAction,
+  UPDATE_POSITION,
+  UPDATE_POINTS,
   UPDATE_PROGRESS
 } from "./actions";
 import {
@@ -16,17 +16,17 @@ import {
 
 const NULL_LOCATION: Location = { lon: 0, lat: 0 };
 
-function navigation(
-  state: NavigationState = {
-    currentLocation: NULL_LOCATION,
-    lastUpdate: 0,
+function position(
+  state: PositionState = {
+    coords: NULL_LOCATION,
+    updated: 0,
     accuracy: Infinity,
     valid: false
   },
-  action: NavigationAction
+  action: PositionAction
 ): NavigationState {
-  if (action.type === UPDATE_NAVIGATION) {
-    return action.navigation;
+  if (action.type === UPDATE_POSITION) {
+    return action.position;
   } else {
     return state;
   }
@@ -63,7 +63,7 @@ function progress(
 }
 
 export default combineReducers({
-  navigation,
+  position,
   points,
   progress
 });

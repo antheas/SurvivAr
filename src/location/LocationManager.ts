@@ -1,19 +1,19 @@
 import React from "react";
 import Geolocation from "react-native-geolocation-service";
 import LocationManagerInterface from "./LocationInterface";
-import { NavigationState } from "../store/types";
+import { PositionState } from "../store/types";
 
 //
 function startJsCallbacks(callback: LocationCallback): void {
   Geolocation.watchPosition(
-    (pos): NavigationState => {
+    (pos): PositionState => {
       callback({
-        currentLocation: {
+        coords: {
           lat: pos.coords.latitude,
           lon: pos.coords.longitude
         },
         accuracy: pos.coords.accuracy,
-        lastUpdate: +pos.timestamp,
+        updated: +pos.timestamp,
         valid: true
       });
     },
