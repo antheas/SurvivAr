@@ -5,7 +5,7 @@ import NavigationScreenProp from "react-navigation";
 import { JSXElement } from "@babel/types";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
-import { Spacer, Glue } from "../utils/Components";
+import { Spacer } from "../utils/Components";
 import { requestLocationPermission } from "../location/Permissions";
 
 export const IntroProps = {

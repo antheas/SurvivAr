@@ -7,7 +7,7 @@ export async function requestLocationPermission(): Promise<boolean> {
     );
     return granted === PermissionsAndroid.RESULTS.GRANTED;
   } catch (err) {
-    console.warn(err);
+    // TODO: Handle error
   }
   return false;
 }
@@ -19,7 +19,7 @@ export async function checkLocationPermission(): Promise<boolean> {
     );
     return granted;
   } catch (err) {
-    console.warn(err);
+    // TODO: Handle error
   }
   return false;
 }

@@ -1,6 +1,7 @@
 import { Dimensions, Platform, PixelRatio, StyleSheet } from "react-native";
 
 // https://stackoverflow.com/questions/33628677/react-native-responsive-font-size
+// eslint-disable-next-line
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 // based on iphone 5s's scale

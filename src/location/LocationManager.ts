@@ -1,4 +1,3 @@
-import React from "react";
 import Geolocation from "react-native-geolocation-service";
 import LocationManagerInterface from "./LocationInterface";
 import { PositionState } from "../store/types";
