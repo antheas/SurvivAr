@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { View, StyleSheet, StatusBar } from "react-native";
 import NavigationScreenProp from "react-navigation";
-import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import { connect } from "react-redux";
 import { JSXElement } from "@babel/types";
 
@@ -11,6 +10,7 @@ import { checkLocationPermission } from "../../location/Permissions";
 import LocationManager from "../../location/LocationManager";
 import { State } from "../../store/types";
 import { updatePosition } from "../../store/actions";
+import Map from "./Map";
 
 const styles = StyleSheet.create({
   container: {
@@ -58,17 +58,9 @@ class MainScreen extends Component<MainProps> {
           translucent={true}
           backgroundColor={"transparent"}
         />
-        <MapView
-          style={styles.map}
-          provider={PROVIDER_GOOGLE}
-          customMapStyle={Theme.mapStyle}
-          region={{
-            latitude: this.props.position.coords.lat,
-            longitude: this.props.position.coords.lon,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421
-          }}
-        />
+        <View style={styles.map}>
+          <Map position={this.props.position} />
+        </View>
         <View style={styles.ui}>
           <Loader stage={LoadStage.LOCATING} />
         </View>

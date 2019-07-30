@@ -94,5 +94,27 @@ export const component = {
   })
 };
 
+export const map = {
+  circle: {
+    user: {
+      strokeWidth: 2,
+      strokeColor: colors.primaryDark + "66",
+      fillColor: colors.primary + "66"
+    }
+  },
+  marker: {
+    user: {
+      icon: {
+        name: "map-marker-outline",
+        color: colors.primary,
+        size: 45
+      },
+      marker: {
+        anchor: { x: 0.5, y: 0.9 }
+      }
+    }
+  }
+};
+
 import MapStyle from "./MapStyle";
 export const mapStyle = MapStyle.white;
