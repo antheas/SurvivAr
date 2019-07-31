@@ -5,9 +5,9 @@ import { JSXElement } from "@babel/types";
 
 import store, { persistor, sagaMiddleware } from "./store";
 import RouteStack from "./Routes";
-import { helloSaga } from "./sagas";
+import rootSaga from "./sagas";
 
-sagaMiddleware.run(helloSaga);
+sagaMiddleware.run(rootSaga);
 
 class App extends React.Component<void> {
   public render(): JSXElement {
