@@ -1,5 +1,5 @@
 import { createStore, applyMiddleware } from "redux";
-import thunk from "redux-thunk";
+import createSagaMiddleware from "redux-saga";
 import logger from "redux-logger";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
@@ -16,7 +16,8 @@ const persistConfig = {
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 // Apply logger and thunk
-let middleware = [thunk];
+const sagaMiddleware = createSagaMiddleware();
+let middleware = [sagaMiddleware];
 if (process.env.NODE_ENV !== "production") {
   middleware = [...middleware, logger];
 }
@@ -25,4 +26,4 @@ const store = createStore(persistedReducer, applyMiddleware(...middleware));
 const persistor = persistStore(store);
 
 export default store;
-export { persistor };
+export { persistor, sagaMiddleware };
