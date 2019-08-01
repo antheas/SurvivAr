@@ -43,10 +43,6 @@ function* waitForFineLocation() {
 const DAYS_TO_MS = 24 * 60 * 60 * 1000;
 const POINT_DATA_STALE_AFTER_MS = POINT_DATA_STALE_AFTER_DAYS * DAYS_TO_MS;
 
-function* fetchRootNode() {
-  yield put({ type: "Fetching root node..." });
-}
-
 // Check if root node needs to be refreshed and refresh it.
 function* refreshRootNode() {
   yield put(updateState(StateType.RETRIEVING_DATA));
