@@ -7,13 +7,14 @@ import store, { persistor, sagaMiddleware } from "./store";
 import RouteStack from "./Routes";
 import rootSaga from "./sagas";
 
-sagaMiddleware.run(rootSaga);
-
 class App extends React.Component<void> {
   public render(): JSXElement {
     return (
       <Provider store={store}>
-        <PersistGate persistor={persistor}>
+        <PersistGate
+          persistor={persistor}
+          onBeforeLift={(): void => sagaMiddleware.run(rootSaga)}
+        >
           <RouteStack />
         </PersistGate>
       </Provider>

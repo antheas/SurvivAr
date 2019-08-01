@@ -17,7 +17,7 @@ export interface PointsAction {
 export interface PositionAction {
   type: typeof UPDATE_POSITION;
 
-  navigation: PositionState;
+  position: PositionState;
 }
 
 export interface ProgressAction {

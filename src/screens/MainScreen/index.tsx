@@ -31,9 +31,9 @@ const styles = StyleSheet.create({
 
 export interface MainProps {
   navigation: NavigationScreenProp;
-  position: NavigationState;
+  position: PositionState;
   loadStage: LoadStage;
-  updatePosition: (pos: NavigationState) => void;
+  updatePosition: (pos: PositionState) => void;
 }
 
 class MainScreen extends Component<MainProps> {
@@ -73,7 +73,7 @@ class MainScreen extends Component<MainProps> {
 const mapStateToProps = ({
   position,
   session: { state }
-}: State): { PositionState } => {
+}: State): { position: PositionState; stage: LoadStage } => {
   let stage: LoadStage;
 
   switch (state) {
@@ -89,8 +89,8 @@ const mapStateToProps = ({
   }
 
   return {
-    position: position,
-    loadStage: stage
+    position,
+    stage
   };
 };
 

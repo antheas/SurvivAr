@@ -34,7 +34,7 @@ export const Loader = ({ stage }: { stage: LoadStage }): JSXElement => {
       break;
     default:
       //UPDATING
-      loadString = "Loading Places...";
+      loadString = "Retrieving Markers...";
       break;
   }
 
