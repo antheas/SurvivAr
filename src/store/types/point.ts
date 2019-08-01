@@ -29,10 +29,13 @@ export interface AreaPoint extends Point {
   children: Point;
 }
 
+export const POINT_DATA_STALE_AFTER_DAYS = 10;
+
 export interface PointState {
-  updated: boolean;
-  lastUpdated: number;
-  updatedLocation: Location;
+  valid: boolean;
+  updated: number;
+  location: Location;
+  bounds: number;
 
   areas: AreaPoint[];
 }

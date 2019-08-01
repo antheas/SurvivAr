@@ -38,9 +38,10 @@ function position(
 
 function points(
   state: PointState = {
-    updated: false,
-    lastUpdated: 0,
+    valid: false,
+    updated: 0,
     updatedLocation: NULL_LOCATION,
+    bounds: 0,
     areas: []
   },
   action: PointsAction
