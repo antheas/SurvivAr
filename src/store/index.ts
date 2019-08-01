@@ -11,7 +11,8 @@ import rootReducer from "./reducers";
 const persistConfig = {
   key: "root",
   storage,
-  stateReconciler: autoMergeLevel2
+  stateReconciler: autoMergeLevel2,
+  blacklist: ["session"]
 };
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

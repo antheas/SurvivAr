@@ -8,7 +8,7 @@ import * as Theme from "../../utils/Theme";
 import Loader, { LoadStage } from "./Loader";
 import { checkLocationPermission } from "../../location/Permissions";
 import LocationManager from "../../location/LocationManager";
-import { State } from "../../store/types";
+import { State, StateType } from "../../store/types";
 import { updatePosition } from "../../store/actions";
 import Map from "./Map";
 
@@ -32,6 +32,7 @@ const styles = StyleSheet.create({
 export interface MainProps {
   navigation: NavigationScreenProp;
   position: NavigationState;
+  loadStage: LoadStage;
   updatePosition: (pos: NavigationState) => void;
 }
 
@@ -62,16 +63,36 @@ class MainScreen extends Component<MainProps> {
           <Map position={this.props.position} />
         </View>
         <View style={styles.ui}>
-          <Loader stage={LoadStage.LOCATING} />
+          <Loader stage={this.props.stage} />
         </View>
       </View>
     );
   }
 }
 
-const mapStateToProps = ({ position }: State): { PositionState } => ({
-  position: position
-});
+const mapStateToProps = ({
+  position,
+  session: { state }
+}: State): { PositionState } => {
+  let stage: LoadStage;
+
+  switch (state) {
+    case StateType.STARTUP:
+      stage = LoadStage.STARTUP;
+      break;
+    case StateType.WAITING_FOR_FINE_LOCATION:
+      stage = LoadStage.LOCATING;
+      break;
+    default:
+      stage = LoadStage.UPDATING;
+      break;
+  }
+
+  return {
+    position: position,
+    loadStage: stage
+  };
+};
 
 const mapDispatchToProps = (dispatch): (() => void)[] => {
   return {

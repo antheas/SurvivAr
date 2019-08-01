@@ -1,8 +1,10 @@
-import { PointState, PositionState, PointProgress } from "./types";
+import { PointState, PositionState, PointProgress, StateType } from "./types";
 
 export const UPDATE_POINTS = "UPDATE_POINTS";
 export const UPDATE_POSITION = "UPDATE_POSITION";
 export const UPDATE_PROGRESS = "UPDATE_PROGRESS";
+
+export const UPDATE_STATE = "UPDATE_STATE";
 
 export interface PointsAction {
   type: typeof UPDATE_POINTS;
@@ -23,6 +25,12 @@ export interface ProgressAction {
 
   id: number;
   point: PointProgress;
+}
+
+export interface StateAction {
+  type: typeof UPDATE_STATE;
+
+  state: StateType;
 }
 
 export function updatePoints(newState: PointState): PointsAction {
@@ -47,5 +55,12 @@ export function updateProgress(
     type: UPDATE_PROGRESS,
     id,
     point
+  };
+}
+
+export function updateState(state: StateType): StateAction {
+  return {
+    type: UPDATE_STATE,
+    state
   };
 }

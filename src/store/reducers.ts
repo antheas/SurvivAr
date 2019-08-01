@@ -5,13 +5,16 @@ import {
   ProgressAction,
   UPDATE_POSITION,
   UPDATE_POINTS,
-  UPDATE_PROGRESS
+  UPDATE_PROGRESS,
+  UPDATE_STATE
 } from "./actions";
 import {
   NavigationState,
   PointState,
   ProgressState,
-  PointProgress
+  PointProgress,
+  SessionState,
+  StateType
 } from "./types";
 
 const NULL_LOCATION: Location = { lon: 0, lat: 0 };
@@ -63,8 +66,20 @@ function progress(
   }
 }
 
+function session(
+  state: SessionState = { state: StateType.STARTUP },
+  action: StateAction
+): SessionState {
+  if (action.type === UPDATE_STATE) {
+    return { state };
+  } else {
+    return state;
+  }
+}
+
 export default combineReducers({
   position,
   points,
-  progress
+  progress,
+  session
 });

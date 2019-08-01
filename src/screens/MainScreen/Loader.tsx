@@ -18,20 +18,31 @@ const styles = StyleSheet.create({
 });
 
 export enum LoadStage {
+  STARTUP,
   LOCATING,
   UPDATING
 }
 
 export const Loader = ({ stage }: { stage: LoadStage }): JSXElement => {
+  let loadString: string;
+  switch (stage) {
+    case LoadStage.STARTUP:
+      loadString = "Starting...";
+      break;
+    case LoadStage.LOCATING:
+      loadString = "Locating User...";
+      break;
+    default:
+      //UPDATING
+      loadString = "Loading Places...";
+      break;
+  }
+
   return (
     <View style={styles.status}>
       <ActivityIndicator size="large" color={Theme.colors.primaryText} />
       <Spacer med horz />
-      <Text style={styles.text}>
-        {stage === LoadStage.LOCATING
-          ? "Locating User..."
-          : "Loading Places..."}
-      </Text>
+      <Text style={styles.text}>{loadString}</Text>
     </View>
   );
 };
