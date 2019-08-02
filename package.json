@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "start": "react-native start",
-    "push": "react-native run-android --no-packager",
+    "push": "cross-env ENVFILE=.env.local react-native run-android --no-packager",
     "dev": "react-native run-android",
     "test": "jest",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\""
@@ -44,6 +44,7 @@
     "haversine": "^1.1.1",
     "react": "^16.8.6",
     "react-native": "^0.60.4",
+    "react-native-config": "^0.11.7",
     "react-native-geolocation-service": "^3.0.0",
     "react-native-gesture-handler": "^1.3.0",
     "react-native-maps": "^0.25.0",

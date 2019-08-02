@@ -1,14 +1,16 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { fork, take, put, select } from "redux-saga/effects";
+import { fork, take, put, select, call } from "redux-saga/effects";
 import { UPDATE_POSITION, updateState, PositionAction } from "../store/actions";
 import {
   FINE_LOCATION_THRESHOLD,
   StateType,
   PointState,
   POINT_DATA_STALE_AFTER_DAYS,
-  Location
+  Location,
+  PositionState
 } from "../store/types";
 import { selectPoints, selectPosition } from "../store/selectors";
+import fetchPoints from "./pointApi.js";
 
 import haversine from "haversine";
 
@@ -47,8 +49,9 @@ const POINT_DATA_STALE_AFTER_MS = POINT_DATA_STALE_AFTER_DAYS * DAYS_TO_MS;
 function* refreshRootNode() {
   yield put(updateState(StateType.RETRIEVING_DATA));
 
-  const coords: Location = yield select(selectPosition);
+  const position: PositionState = yield select(selectPosition);
   const points: PointState = yield select(selectPoints);
+  const coords = position.coords;
 
   // Check if valid / not stale
   if (
@@ -56,7 +59,7 @@ function* refreshRootNode() {
     points.updated > POINT_DATA_STALE_AFTER_MS ||
     !withinThreshold(coords, points.location, points.bounds)
   ) {
-    yield* fetchRootNode();
+    yield call(fetchPoints, coords);
     return;
   }
 
@@ -65,7 +68,7 @@ function* refreshRootNode() {
     if (withinThreshold(coords, area.coords, area.radius)) return;
   }
 
-  yield* fetchRootNode();
+  yield call(fetchPoints, coords, points);
 }
 
 function* watchLocationUpdates() {}
