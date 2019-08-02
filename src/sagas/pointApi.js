@@ -1,5 +1,5 @@
 import Config from "react-native-config";
-import { Location, PointState, WaitPoint } from "../store/types";
+import { Location, PointState, WaitPoint, QrPoint } from "../store/types";
 
 const BASE_URL =
   "https://maps.googleapis.com/maps/api/place/nearbysearch/json?";
@@ -36,13 +36,33 @@ async function fetchType(location: Location, type: string): Object[] {
   return results;
 }
 
-async function processWaitPoints(points: any[]): WaitPoint {}
+function processPoint(point: any, radius: number): Point {
+  return {
+    id: point.id,
+
+    name: point.name,
+    desc: point.vicinity,
+
+    loc: {
+      lat: point.geometry.location.lat,
+      lon: point.geometry.location.lng
+    },
+    radius
+  };
+}
+
+function processWaitPoint(point: any): WaitPoint {
+  return {
+    ...processPoint(point, 50),
+    duration: 30
+  };
+}
 
 // If current data is provided then the new request will be merged with the old one
 export default async function fetchPoints(
   location: Location,
   currentData?: PointState
-) {
+): (WaitPoint | QrPoint)[] {
   let newState: PointState = {};
   newState.valid = true;
   newState.updated = new Date().getMilliseconds;
@@ -57,12 +77,16 @@ export default async function fetchPoints(
     newState.areas = [];
   }
 
+  let pointJson;
   for (let i = 0; i < 5; i++) {
     try {
-      await fetchType(location, "pharmacy");
+      pointJson = await fetchType(location, "pharmacy");
       break;
     } catch (e) {
       console.log(e);
+      throw e;
     }
   }
+
+  return pointJson.map(processWaitPoint);
 }

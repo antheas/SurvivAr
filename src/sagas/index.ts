@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { fork, take, put, select, call } from "redux-saga/effects";
-import { UPDATE_POSITION, updateState, PositionAction } from "../store/actions";
+import {
+  UPDATE_POSITION,
+  updateState,
+  PositionAction,
+  updatePoints
+} from "../store/actions";
 import {
   FINE_LOCATION_THRESHOLD,
   StateType,
@@ -59,7 +64,8 @@ function* refreshRootNode() {
     points.updated > POINT_DATA_STALE_AFTER_MS ||
     !withinThreshold(coords, points.location, points.bounds)
   ) {
-    yield call(fetchPoints, coords);
+    let newPoints = yield call(fetchPoints, coords);
+    yield put(updatePoints(newPoints));
     return;
   }
 
@@ -68,7 +74,8 @@ function* refreshRootNode() {
     if (withinThreshold(coords, area.coords, area.radius)) return;
   }
 
-  yield call(fetchPoints, coords, points);
+  let newPoints = yield call(fetchPoints, coords, points);
+  yield put(updatePoints(newPoints));
 }
 
 function* watchLocationUpdates() {}
