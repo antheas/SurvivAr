@@ -72,7 +72,7 @@ function* refreshRootNode() {
   // Special Feature, check if within area points
   let notInAreaPoints = true;
   for (let area of points.areas) {
-    if (withinThreshold(coords, area.coords, area.radius)) {
+    if (withinThreshold(coords, area.loc, area.radius)) {
       notInAreaPoints = false;
     }
   }
@@ -90,6 +90,7 @@ function* refreshRootNode() {
       }
       break;
     } catch (e) {
+      console.error(e.toString());
       yield put(updateState(StateType.LOADING_ERROR));
       yield take(RETRY_FETCH);
       yield put(updateState(StateType.RETRIEVING_DATA));
@@ -97,7 +98,9 @@ function* refreshRootNode() {
   }
 }
 
-function* watchLocationUpdates() {}
+function* watchLocationUpdates() {
+  yield put(updateState(StateType.TRACKING));
+}
 
 function* disableLocationTracking() {}
 

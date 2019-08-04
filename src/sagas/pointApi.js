@@ -1,5 +1,11 @@
 import Config from "react-native-config";
-import { Location, PointState, WaitPoint, QrPoint } from "../store/types";
+import {
+  Location,
+  PointState,
+  WaitPoint,
+  QrPoint,
+  AreaPoint
+} from "../store/types";
 
 const BASE_URL =
   "https://maps.googleapis.com/maps/api/place/nearbysearch/json?";
@@ -101,5 +107,20 @@ export default async function fetchPoints(
   }
   if (!pointJson) throw Error("Connection Error");
 
-  return pointJson.map(p => processWaitPoint(p, "pharmacy"));
+  let newAreaPoints = pointJson.map(p => processWaitPoint(p, "pharmacy"));
+  let newArea: AreaPoint = {
+    id: new Date().toDateString(),
+
+    name: null,
+    desc: null,
+
+    loc: location,
+    radius: AREA_BOUNDS,
+
+    children: newAreaPoints
+  };
+
+  newState.areas.push(newArea);
+
+  return newState;
 }

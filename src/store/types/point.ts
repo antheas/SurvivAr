@@ -4,7 +4,7 @@ export interface Location {
 }
 
 export interface Point {
-  id: number;
+  id: string;
 
   name: string;
   desc: string;

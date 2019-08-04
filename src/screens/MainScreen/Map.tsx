@@ -13,6 +13,11 @@ const s = StyleSheet.create({
   }
 });
 
+export interface MapInterface {
+  position: PositionState;
+  points: PointsState;
+}
+
 export default class Map extends React.Component<{ position: PositionState }> {
   public render(): JSXElement {
     const pos = this.props.position;
