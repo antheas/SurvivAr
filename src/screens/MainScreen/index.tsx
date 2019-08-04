@@ -5,11 +5,11 @@ import { connect } from "react-redux";
 import { JSXElement } from "@babel/types";
 
 import * as Theme from "../../utils/Theme";
-import Loader, { LoadStage } from "./Loader";
+import Loader from "./Loader";
 import { checkLocationPermission } from "../../location/Permissions";
 import LocationManager from "../../location/LocationManager";
 import { State, StateType } from "../../store/types";
-import { updatePosition } from "../../store/actions";
+import { updatePosition, retryFetch } from "../../store/actions";
 import Map from "./Map";
 
 const styles = StyleSheet.create({
@@ -32,8 +32,9 @@ const styles = StyleSheet.create({
 export interface MainProps {
   navigation: NavigationScreenProp;
   position: PositionState;
-  loadStage: LoadStage;
+  state: StateType;
   updatePosition: (pos: PositionState) => void;
+  retry: () => void;
 }
 
 class MainScreen extends Component<MainProps> {
@@ -63,7 +64,7 @@ class MainScreen extends Component<MainProps> {
           <Map position={this.props.position} />
         </View>
         <View style={styles.ui}>
-          <Loader stage={this.props.stage} />
+          <Loader state={this.props.state} retry={this.props.retry} />
         </View>
       </View>
     );
@@ -73,30 +74,19 @@ class MainScreen extends Component<MainProps> {
 const mapStateToProps = ({
   position,
   session: { state }
-}: State): { position: PositionState; stage: LoadStage } => {
-  let stage: LoadStage;
-
-  switch (state) {
-    case StateType.STARTUP:
-      stage = LoadStage.STARTUP;
-      break;
-    case StateType.WAITING_FOR_FINE_LOCATION:
-      stage = LoadStage.LOCATING;
-      break;
-    default:
-      stage = LoadStage.UPDATING;
-      break;
-  }
-
-  return {
-    position,
-    stage
-  };
+}: State): { position: PositionState; state: StateType } => {
+  return { position, state };
 };
 
-const mapDispatchToProps = (dispatch): (() => void)[] => {
+const mapDispatchToProps = (
+  dispatch
+): {
+  updatePosition: (pos: PositionState) => void;
+  retry: () => void;
+} => {
   return {
-    updatePosition: (pos: PositionState): void => dispatch(updatePosition(pos))
+    updatePosition: (pos: PositionState): void => dispatch(updatePosition(pos)),
+    retry: (): void => dispatch(retryFetch())
   };
 };
 

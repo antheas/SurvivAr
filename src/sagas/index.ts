@@ -4,7 +4,8 @@ import {
   UPDATE_POSITION,
   updateState,
   PositionAction,
-  updatePoints
+  updatePoints,
+  RETRY_FETCH
 } from "../store/actions";
 import {
   FINE_LOCATION_THRESHOLD,
@@ -59,23 +60,41 @@ function* refreshRootNode() {
   const coords = position.coords;
 
   // Check if valid / not stale
+  let needsUpdate = false;
   if (
     !points.valid ||
     points.updated > POINT_DATA_STALE_AFTER_MS ||
     !withinThreshold(coords, points.location, points.bounds)
   ) {
-    let newPoints = yield call(fetchPoints, coords);
-    yield put(updatePoints(newPoints));
-    return;
+    needsUpdate = true;
   }
 
   // Special Feature, check if within area points
+  let notInAreaPoints = true;
   for (let area of points.areas) {
-    if (withinThreshold(coords, area.coords, area.radius)) return;
+    if (withinThreshold(coords, area.coords, area.radius)) {
+      notInAreaPoints = false;
+    }
   }
 
-  let newPoints = yield call(fetchPoints, coords, points);
-  yield put(updatePoints(newPoints));
+  while (1) {
+    try {
+      let newPoints;
+      if (needsUpdate) {
+        newPoints = yield call(fetchPoints, coords, points);
+      } else if (notInAreaPoints) {
+        newPoints = yield call(fetchPoints, coords);
+      }
+      if (newPoints) {
+        yield put(updatePoints(newPoints));
+      }
+      break;
+    } catch (e) {
+      yield put(updateState(StateType.LOADING_ERROR));
+      yield take(RETRY_FETCH);
+      yield put(updateState(StateType.RETRIEVING_DATA));
+    }
+  }
 }
 
 function* watchLocationUpdates() {}

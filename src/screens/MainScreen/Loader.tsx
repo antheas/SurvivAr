@@ -1,7 +1,14 @@
 import React from "react";
-import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+  Button
+} from "react-native";
 import * as Theme from "../../utils/Theme";
 import { Spacer } from "../../utils/Components";
+import { StateType } from "../../store/types";
 
 const styles = StyleSheet.create({
   status: {
@@ -17,34 +24,45 @@ const styles = StyleSheet.create({
   }
 });
 
-export enum LoadStage {
-  STARTUP,
-  LOCATING,
-  UPDATING
-}
-
-export const Loader = ({ stage }: { stage: LoadStage }): JSXElement => {
+export const Loader = ({
+  state,
+  retry
+}: {
+  state: StateType;
+  retry: () => void;
+}): JSXElement => {
   let loadString: string;
-  switch (stage) {
-    case LoadStage.STARTUP:
+  switch (state) {
+    case StateType.STARTUP:
       loadString = "Starting...";
       break;
-    case LoadStage.LOCATING:
+    case StateType.WAITING_FOR_FINE_LOCATION:
       loadString = "Locating User...";
       break;
-    default:
-      //UPDATING
+    case StateType.RETRIEVING_DATA:
       loadString = "Retrieving Markers...";
       break;
+    default:
+      loadString = "state: " + state;
   }
 
-  return (
-    <View style={styles.status}>
-      <ActivityIndicator size="large" color={Theme.colors.primaryText} />
-      <Spacer med horz />
-      <Text style={styles.text}>{loadString}</Text>
-    </View>
-  );
+  if (state !== StateType.LOADING_ERROR) {
+    return (
+      <View style={styles.status}>
+        <ActivityIndicator size="large" color={Theme.colors.primaryText} />
+        <Spacer medium horz />
+        <Text style={styles.text}>{loadString}</Text>
+      </View>
+    );
+  } else {
+    return (
+      <View style={styles.status}>
+        <Text style={styles.text}>Updating failed...</Text>
+        <Spacer large horz />
+        <Button title="Retry" color={Theme.colors.accentDark} onPress={retry} />
+      </View>
+    );
+  }
 };
 
 export default Loader;

@@ -40,14 +40,14 @@ function points(
   state: PointState = {
     valid: false,
     updated: 0,
-    updatedLocation: NULL_LOCATION,
+    location: NULL_LOCATION,
     bounds: 0,
     areas: []
   },
   action: PointsAction
 ): PointState {
   // TODO: handle errors
-  if (action.type === UPDATE_POINTS && action.status === "success") {
+  if (action.type === UPDATE_POINTS) {
     return action.newState;
   } else {
     return state;
@@ -72,7 +72,7 @@ function session(
   action: StateAction
 ): SessionState {
   if (action.type === UPDATE_STATE) {
-    return { state };
+    return { state: action.state };
   } else {
     return state;
   }

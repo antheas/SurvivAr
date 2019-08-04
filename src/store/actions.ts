@@ -5,13 +5,16 @@ export const UPDATE_POSITION = "UPDATE_POSITION";
 export const UPDATE_PROGRESS = "UPDATE_PROGRESS";
 
 export const UPDATE_STATE = "UPDATE_STATE";
+export const RETRY_FETCH = "RETRY_FETCH";
+
+export interface IntentAction {
+  type: string;
+  reason?: string;
+}
 
 export interface PointsAction {
   type: typeof UPDATE_POINTS;
   status: string;
-
-  newState?: PointState;
-  error?: string;
 }
 
 export interface PositionAction {
@@ -62,5 +65,11 @@ export function updateState(state: StateType): StateAction {
   return {
     type: UPDATE_STATE,
     state
+  };
+}
+
+export function retryFetch(): IntentAction {
+  return {
+    type: RETRY_FETCH
   };
 }
