@@ -8,4 +8,6 @@ export enum StateType {
 
 export interface SessionState {
   state: StateType;
+  currentAreaId?: string;
+  currentPointId?: string;
 }

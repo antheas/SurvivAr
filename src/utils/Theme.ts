@@ -96,23 +96,48 @@ export const component = {
 };
 
 export const map = {
-  circle: {
-    user: {
+  user: {
+    icon: {
+      name: "circle-slice-8",
+      color: colors.primary,
+      size: 30
+    },
+    marker: {
+      anchor: { x: 0.5, y: 0.5 }
+    },
+    circle: {
       strokeWidth: 2,
       strokeColor: colors.primaryDark + "66",
       fillColor: colors.primary + "66"
     }
   },
-  marker: {
-    user: {
-      icon: {
-        name: "circle-slice-8",
-        color: colors.primary,
-        size: 30
-      },
-      marker: {
-        anchor: { x: 0.5, y: 0.5 }
-      }
+  area: {
+    icon: {
+      name: "plus",
+      color: colors.primary + "66",
+      size: 25
+    },
+    marker: {
+      anchor: { x: 0.5, y: 0.5 }
+    },
+    circle: {
+      strokeWidth: 1,
+      strokeColor: colors.primaryDark + "66",
+      fillColor: "transparent"
+    }
+  },
+  point: {
+    icon: {
+      color: colors.primary + "66",
+      size: 25
+    },
+    marker: {
+      anchor: { x: 0.5, y: 0.5 }
+    },
+    circle: {
+      strokeWidth: 1,
+      strokeColor: colors.primaryDark + "66",
+      fillColor: colors.primary + "66"
     }
   }
 };

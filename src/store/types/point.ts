@@ -5,6 +5,7 @@ export interface Location {
 
 export interface Point {
   id: string;
+  icon: string;
 
   name: string;
   desc: string;
@@ -26,7 +27,7 @@ export interface CollectPoint extends Point {
 }
 
 export interface AreaPoint extends Point {
-  children: Point;
+  children: Point[];
 }
 
 export const POINT_DATA_STALE_AFTER_DAYS = 10;

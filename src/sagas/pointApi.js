@@ -97,19 +97,20 @@ export default async function fetchPoints(
   }
 
   let pointJson;
+  let error: Error;
   for (let i = 0; i < MAX_RETRIES; i++) {
     try {
       pointJson = await fetchType(location, "pharmacy");
       break;
     } catch (e) {
-      // noop
+      error = e;
     }
   }
-  if (!pointJson) throw Error("Connection Error");
+  if (!pointJson) throw Error("Connection Error: " + error);
 
   let newAreaPoints = pointJson.map(p => processWaitPoint(p, "pharmacy"));
   let newArea: AreaPoint = {
-    id: new Date().toDateString(),
+    id: new Date().getTime(),
 
     name: null,
     desc: null,

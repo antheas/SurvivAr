@@ -90,7 +90,7 @@ function* refreshRootNode() {
       }
       break;
     } catch (e) {
-      console.error(e.toString());
+      console.log(e.toString());
       yield put(updateState(StateType.LOADING_ERROR));
       yield take(RETRY_FETCH);
       yield put(updateState(StateType.RETRIEVING_DATA));
