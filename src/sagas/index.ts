@@ -85,9 +85,9 @@ function* refreshRootNode() {
     try {
       let newPoints;
       if (needsUpdate) {
-        newPoints = yield call(fetchPoints, coords, points);
-      } else if (notInAreaPoints) {
         newPoints = yield call(fetchPoints, coords);
+      } else if (notInAreaPoints) {
+        newPoints = yield call(fetchPoints, coords, points);
       }
       if (newPoints) {
         yield put(updatePoints(newPoints));

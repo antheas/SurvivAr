@@ -10,7 +10,7 @@ import {
 const BASE_URL =
   "https://maps.googleapis.com/maps/api/place/nearbysearch/json?";
 const AREA_BOUNDS = 2000;
-const API_KEY = Config.MAPS_KEY;
+const API_KEY = Config.REACT_APP_PLACES_KEY;
 const MAX_RETRIES = 5;
 
 async function fetchType(
@@ -27,6 +27,9 @@ async function fetchType(
   let query = BASE_URL + queryUrl.toString();
   let queryResponse = await fetch(query);
   let queryResults = await queryResponse.json();
+
+  if (queryResults.status !== "OK")
+    throw new Error("Invalid status: " + queryResults.status);
 
   let nextPage = queryResults.next_page_token;
   let results: Record<string, string | number>[] = [...queryResults.results];
