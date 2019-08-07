@@ -6,7 +6,9 @@ import {
   UPDATE_POSITION,
   UPDATE_POINTS,
   UPDATE_PROGRESS,
-  UPDATE_STATE
+  UPDATE_STATE,
+  CurrentAreaAction,
+  UPDATE_CURRENT_AREAS
 } from "./actions";
 import {
   NavigationState,
@@ -67,12 +69,34 @@ function progress(
   }
 }
 
-function session(
-  state: SessionState = { state: StateType.STARTUP },
+function state(
+  state: StateType = StateType.STARTUP,
   action: StateAction
 ): SessionState {
   if (action.type === UPDATE_STATE) {
-    return { state: action.state };
+    return action.state;
+  } else {
+    return state;
+  }
+}
+
+function currentAreaId(
+  state: string = null,
+  action: CurrentAreaAction
+): string {
+  if (action.type === UPDATE_CURRENT_AREAS) {
+    return action.currentAreaId;
+  } else {
+    return state;
+  }
+}
+
+function currentPointId(
+  state: string = null,
+  action: CurrentAreaAction
+): string {
+  if (action.type === UPDATE_CURRENT_AREAS) {
+    return action.currentPointId;
   } else {
     return state;
   }
@@ -82,5 +106,5 @@ export default combineReducers({
   position,
   points,
   progress,
-  session
+  session: combineReducers({ state, currentAreaId, currentPointId })
 });

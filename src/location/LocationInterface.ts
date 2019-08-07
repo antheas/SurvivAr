@@ -1,5 +1,9 @@
 import { PositionState, PointEvent } from "../store/types";
 
+export interface LocationCallback {
+  (): PositionState;
+}
+
 export interface LocationManagerInterface {
   startJsCallbacks(callback: () => PositionState): void;
 

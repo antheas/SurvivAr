@@ -13,9 +13,14 @@ import {
   StateType,
   QrPoint,
   WaitPoint,
-  AreaPoint
+  AreaPoint,
+  PositionState
 } from "../../store/types";
-import { updatePosition, retryFetch } from "../../store/actions";
+import {
+  updatePosition,
+  retryFetch,
+  setForegroundFetch
+} from "../../store/actions";
 import Map from "./Map";
 
 const styles = StyleSheet.create({
@@ -45,6 +50,7 @@ interface MainStateProps {
 
 interface MainDispatchProps {
   updatePosition: (pos: PositionState) => void;
+  setForegroundFetch: (state: boolean) => void;
   retry: () => void;
 }
 
@@ -58,6 +64,7 @@ class MainScreen extends Component<MainProps> {
       if (!res) {
         this.props.navigation.navigate("Intro");
       } else {
+        this.props.setForegroundFetch(true);
         LocationManager.startJsCallbacks(this.props.updatePosition);
       }
     });
@@ -65,6 +72,7 @@ class MainScreen extends Component<MainProps> {
 
   public componentWillUnmount(): void {
     LocationManager.stopJsCallbacks();
+    this.props.setForegroundFetch(false);
   }
 
   public render(): JSXElement {
@@ -108,14 +116,10 @@ const mapStateToProps = ({
   return { position, state, areas, currentArea, currentPoint };
 };
 
-const mapDispatchToProps = (
-  dispatch
-): {
-  updatePosition: (pos: PositionState) => void;
-  retry: () => void;
-} => {
+const mapDispatchToProps = (dispatch): MainDispatchProps => {
   return {
-    updatePosition: (pos: PositionState): void => dispatch(updatePosition(pos)),
+    updatePosition: (pos: PositionState) => dispatch(updatePosition(pos)),
+    setForegroundFetch: (state): void => dispatch(setForegroundFetch(state)),
     retry: (): void => dispatch(retryFetch())
   };
 };

@@ -1,11 +1,11 @@
 import Geolocation from "react-native-geolocation-service";
-import LocationManagerInterface from "./LocationInterface";
-import { PositionState } from "../store/types";
+import LocationManagerInterface, {
+  LocationCallback
+} from "./LocationInterface";
 
-//
 function startJsCallbacks(callback: LocationCallback): void {
   Geolocation.watchPosition(
-    (pos): PositionState => {
+    (pos): void => {
       callback({
         coords: {
           lat: pos.coords.latitude,

@@ -110,7 +110,7 @@ export default async function fetchPoints(
 
   let newAreaPoints = pointJson.map(p => processWaitPoint(p, "pharmacy"));
   let newArea: AreaPoint = {
-    id: new Date().getTime(),
+    id: new Date().getTime().toString(),
 
     name: null,
     desc: null,

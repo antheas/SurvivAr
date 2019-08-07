@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { fork, take, put, select, call } from "redux-saga/effects";
+import { fork, take, put, select, call, cancel } from "redux-saga/effects";
 import {
   UPDATE_POSITION,
   updateState,
   PositionAction,
   updatePoints,
-  RETRY_FETCH
+  RETRY_FETCH,
+  BEGIN_FOREGROUND_FETCH,
+  STOP_FOREGROUND_FETCH,
+  updateCurrentAreas
 } from "../store/actions";
 import {
   FINE_LOCATION_THRESHOLD,
@@ -13,15 +16,20 @@ import {
   PointState,
   POINT_DATA_STALE_AFTER_DAYS,
   Location,
-  PositionState
+  PositionState,
+  AreaPoint
 } from "../store/types";
 import { selectPoints, selectPosition } from "../store/selectors";
 import fetchPoints from "./pointApi.js";
 
-import haversine from "haversine";
+import LatLon from "geodesy/latlon-spherical.js";
+
+function toLatLon(l: Location): LatLon {
+  return new LatLon(l.lat, l.lon);
+}
 
 function distance(start: Location, end: Location): number {
-  return haversine(start, end, { unit: "meter", format: "{lat,lon}" });
+  return toLatLon(start).distanceTo(toLatLon(end));
 }
 
 function withinThreshold(
@@ -29,11 +37,7 @@ function withinThreshold(
   end: Location,
   threshold: number
 ): boolean {
-  return haversine(start, end, {
-    unit: "meter",
-    format: "{lat,lon}",
-    threshold
-  });
+  return distance(start, end) <= threshold;
 }
 
 function* handleBackgroundEvents() {}
@@ -100,18 +104,45 @@ function* refreshRootNode() {
 
 function* watchLocationUpdates() {
   yield put(updateState(StateType.TRACKING));
-}
 
-function* disableLocationTracking() {}
+  const points: PointState = yield select(selectPoints);
+  while (1) {
+    let { position: pos }: PositionAction = yield take(UPDATE_POSITION);
+
+    let currentArea = points.areas
+      .sort((a, b) => distance(pos.coords, a.loc) - distance(pos.coords, b.loc))
+      .find(a => withinThreshold(pos.coords, a.loc, a.radius));
+
+    let currentPoint = currentArea
+      ? currentArea.children
+          .sort(
+            (a, b) => distance(pos.coords, a.loc) - distance(pos.coords, b.loc)
+          )
+          .find(p => withinThreshold(pos.coords, p.loc, p.radius))
+      : undefined;
+
+    yield put(
+      updateCurrentAreas(
+        currentArea ? currentArea.id : null,
+        currentPoint ? currentPoint.id : null
+      )
+    );
+  }
+}
 
 function* mainEventLoop() {
   yield* handleBackgroundEvents();
   yield* waitForFineLocation();
   yield* refreshRootNode();
   yield* watchLocationUpdates();
-  yield* disableLocationTracking();
 }
 
 export default function* rootSaga() {
-  yield fork(mainEventLoop);
+  while (yield take(BEGIN_FOREGROUND_FETCH)) {
+    const loopTask = yield fork(mainEventLoop);
+
+    // TODO: Handle exiting gracefully
+    yield take(STOP_FOREGROUND_FETCH);
+    yield cancel(loopTask);
+  }
 }

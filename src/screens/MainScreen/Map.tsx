@@ -86,7 +86,7 @@ export default class Map extends React.Component<MapInterface> {
                       {...Theme.map.point.circle}
                     />
                     <Marker coordinate={coords} {...Theme.map.point.marker}>
-                      <Icon {...Theme.map.point.icon} icon={p.icon} />
+                      <Icon {...Theme.map.point.icon} name={p.icon} />
                     </Marker>
                   </Fragment>
                 );
