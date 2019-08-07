@@ -2,7 +2,7 @@ import { createStore, applyMiddleware } from "redux";
 import createSagaMiddleware from "redux-saga";
 import logger from "redux-logger";
 import { persistStore, persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage";
+import AsyncStorage from "@react-native-community/async-storage";
 import autoMergeLevel2 from "redux-persist/es/stateReconciler/autoMergeLevel2";
 
 import rootReducer from "./reducers";
@@ -10,7 +10,7 @@ import rootReducer from "./reducers";
 // Redux persist
 const persistConfig = {
   key: "root",
-  storage,
+  storage: AsyncStorage,
   stateReconciler: autoMergeLevel2,
   blacklist: ["session"]
 };

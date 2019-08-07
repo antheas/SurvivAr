@@ -40,6 +40,7 @@
     "typescript": "^3.5.3"
   },
   "dependencies": {
+    "@react-native-community/async-storage": "^1.6.1",
     "color": "^3.1.2",
     "geodesy": "^2.2.0",
     "react": "^16.8.6",
