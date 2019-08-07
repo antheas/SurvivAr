@@ -6,8 +6,16 @@ export enum StateType {
   TRACKING
 }
 
-export interface SessionState {
-  state: StateType;
+export interface PointMetadata {
   currentAreaId?: string;
   currentPointId?: string;
+  sortedPoints: {
+    pointId: string;
+    distance: number;
+  }[];
+}
+
+export interface SessionState {
+  state: StateType;
+  pointMetadata: PointMetadata;
 }
