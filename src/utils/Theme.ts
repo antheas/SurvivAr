@@ -108,7 +108,7 @@ export const map = {
     circle: {
       strokeWidth: 2,
       strokeColor: colors.primaryDark + "66",
-      fillColor: colors.primary + "66"
+      fillColor: colors.primary + "33"
     }
   },
   area: {
@@ -129,7 +129,7 @@ export const map = {
   point: {
     icon: {
       color: colors.primary,
-      size: 30
+      size: 20
     },
     marker: {
       anchor: { x: 0.5, y: 0.5 }
@@ -137,7 +137,7 @@ export const map = {
     circle: {
       strokeWidth: 1,
       strokeColor: colors.primaryDark + "66",
-      fillColor: colors.primary + "66"
+      fillColor: colors.primary + "33"
     }
   }
 };

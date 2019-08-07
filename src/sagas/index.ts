@@ -8,7 +8,7 @@ import {
   RETRY_FETCH,
   BEGIN_FOREGROUND_FETCH,
   STOP_FOREGROUND_FETCH,
-  updateCurrentAreas
+  updatePointMetadata
 } from "../store/actions";
 import {
   FINE_LOCATION_THRESHOLD,
@@ -75,7 +75,7 @@ function* refreshRootNode() {
 
   // Special Feature, check if within area points
   let notInAreaPoints = true;
-  for (let area of points.areas) {
+  for (const area of points.areas) {
     if (withinThreshold(coords, area.loc, area.radius)) {
       notInAreaPoints = false;
     }
@@ -102,40 +102,55 @@ function* refreshRootNode() {
   }
 }
 
+function* updateMetadata(pos: PositionState, points: PointState) {
+  // Find current area and point
+  const currentArea = points.areas
+    .sort((a, b) => distance(pos.coords, a.loc) - distance(pos.coords, b.loc))
+    .find(a => withinThreshold(pos.coords, a.loc, a.radius));
+
+  const sortedPoints = currentArea
+    ? currentArea.children.sort(
+        (a, b) => distance(pos.coords, a.loc) - distance(pos.coords, b.loc)
+      )
+    : [];
+
+  const currentPoint = sortedPoints.find(p =>
+    withinThreshold(pos.coords, p.loc, p.radius)
+  );
+
+  const sortedPointState = sortedPoints.map(p => ({
+    pointId: p.id,
+    distance: distance(pos.coords, p.loc)
+  }));
+
+  yield put(
+    updatePointMetadata({
+      currentAreaId: currentArea ? currentArea.id : null,
+      currentPointId: currentPoint ? currentPoint.id : null,
+      sortedPoints: sortedPointState
+    })
+  );
+}
+
 function* watchLocationUpdates() {
   yield put(updateState(StateType.TRACKING));
 
   let pos: PositionState = yield select(selectPosition);
   const points: PointState = yield select(selectPoints);
   while (1) {
-    let currentArea = points.areas
-      .sort((a, b) => distance(pos.coords, a.loc) - distance(pos.coords, b.loc))
-      .find(a => withinThreshold(pos.coords, a.loc, a.radius));
-
-    let currentPoint = currentArea
-      ? currentArea.children
-          .sort(
-            (a, b) => distance(pos.coords, a.loc) - distance(pos.coords, b.loc)
-          )
-          .find(p => withinThreshold(pos.coords, p.loc, p.radius))
-      : undefined;
-
-    yield put(
-      updateCurrentAreas(
-        currentArea ? currentArea.id : null,
-        currentPoint ? currentPoint.id : null
-      )
-    );
+    yield* updateMetadata(pos, points);
 
     ({ position: pos } = yield take(UPDATE_POSITION));
   }
 }
 
 function* mainEventLoop() {
-  yield* handleBackgroundEvents();
-  yield* waitForFineLocation();
-  yield* refreshRootNode();
-  yield* watchLocationUpdates();
+  while (1) {
+    yield* handleBackgroundEvents();
+    yield* waitForFineLocation();
+    yield* refreshRootNode();
+    yield* watchLocationUpdates();
+  }
 }
 
 export default function* rootSaga() {

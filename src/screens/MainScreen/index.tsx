@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, StyleSheet, StatusBar } from "react-native";
+import { View, StyleSheet, StatusBar, PointPropType } from "react-native";
 import NavigationScreenProp from "react-navigation";
 import { connect } from "react-redux";
 import { JSXElement } from "@babel/types";
@@ -11,8 +11,7 @@ import LocationManager from "../../location/LocationManager";
 import {
   State,
   StateType,
-  QrPoint,
-  WaitPoint,
+  Point,
   AreaPoint,
   PositionState
 } from "../../store/types";
@@ -45,7 +44,11 @@ interface MainStateProps {
   state: StateType;
   areas: AreaPoint[];
   currentArea?: AreaPoint;
-  currentPoint?: QrPoint | WaitPoint;
+  currentPoint?: Point;
+  sortedPoints: {
+    point: Point;
+    distance: number;
+  };
 }
 
 interface MainDispatchProps {
@@ -89,6 +92,7 @@ class MainScreen extends Component<MainProps> {
             areas={this.props.areas}
             currentArea={this.props.currentArea}
             currentPoint={this.props.currentPoint}
+            sortedPoints={this.props.sortedPoints}
           />
         </View>
         <View style={styles.ui}>
@@ -102,23 +106,43 @@ class MainScreen extends Component<MainProps> {
 const mapStateToProps = ({
   position,
   points,
-  session: { state, currentAreaId, currentPointId }
+  session: {
+    state,
+    pointMetadata: {
+      currentAreaId,
+      currentPointId,
+      sortedPoints: sortedPointState
+    }
+  }
 }: State): MainStateProps => {
-  let areas = points.areas;
-  let currentArea = currentAreaId
+  const areas = points.areas;
+  const currentArea = currentAreaId
     ? areas.find((a): boolean => a.id === currentAreaId)
     : undefined;
-  let currentPoint =
+  const currentPoint =
     currentPointId && currentArea
       ? currentArea.children.find((p): boolean => p.id === currentPointId)
       : undefined;
 
-  return { position, state, areas, currentArea, currentPoint };
+  let sortedPoints = [];
+  if (currentArea) {
+    const points = currentArea.children;
+
+    sortedPoints = sortedPointState.map((ps): {
+      point: Point;
+      distance: number;
+    } => ({
+      point: points.find((p): boolean => p.id === ps.pointId),
+      distance: ps.distance
+    }));
+  }
+
+  return { position, state, areas, currentArea, currentPoint, sortedPoints };
 };
 
 const mapDispatchToProps = (dispatch): MainDispatchProps => {
   return {
-    updatePosition: (pos: PositionState) => dispatch(updatePosition(pos)),
+    updatePosition: (pos: PositionState): void => dispatch(updatePosition(pos)),
     setForegroundFetch: (state): void => dispatch(setForegroundFetch(state)),
     retry: (): void => dispatch(retryFetch())
   };

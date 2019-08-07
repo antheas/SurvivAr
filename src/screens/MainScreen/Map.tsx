@@ -1,21 +1,9 @@
 import React, { Fragment } from "react";
 import { StyleSheet } from "react-native";
-import MapView, {
-  PROVIDER_GOOGLE,
-  Circle,
-  Marker,
-  LatLng
-} from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, Circle, Marker } from "react-native-maps";
 import { JSXElement } from "@babel/types";
 
-import {
-  PositionState,
-  AreaPoint,
-  QrPoint,
-  WaitPoint,
-  Point,
-  Location
-} from "../../store/types";
+import { PositionState, AreaPoint, Point, Location } from "../../store/types";
 import * as Theme from "../../utils/Theme";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -29,7 +17,11 @@ export interface MapInterface {
   position: PositionState;
   areas: AreaPoint[];
   currentArea?: AreaPoint;
-  currentPoint?: QrPoint | WaitPoint;
+  currentPoint?: Point;
+  sortedPoints: {
+    point: Point;
+    distance: number;
+  };
 }
 
 export default class Map extends React.Component<MapInterface> {
@@ -58,7 +50,7 @@ export default class Map extends React.Component<MapInterface> {
         {/* Area Points */}
         {this.props.areas.map(
           (a: AreaPoint): JSXElement => {
-            let coords = this.convertCoords(a.loc);
+            const coords = this.convertCoords(a.loc);
             return (
               <Fragment key={a.id}>
                 <Circle
@@ -78,10 +70,11 @@ export default class Map extends React.Component<MapInterface> {
             );
           }
         )}
+        {/* Points */}
         {this.props.currentArea
           ? this.props.currentArea.children.map(
               (p: Point): JSXElement => {
-                let coords = this.convertCoords(p.loc);
+                const coords = this.convertCoords(p.loc);
 
                 return (
                   <Marker
@@ -96,6 +89,22 @@ export default class Map extends React.Component<MapInterface> {
               }
             )
           : null}
+        {/* Add circle to closest Points */}
+        {this.props.sortedPoints.slice(0, 3).map(
+          (ps): JSXElement => {
+            const p = ps.point;
+            const coords = this.convertCoords(p.loc);
+
+            return (
+              <Circle
+                key={"circle-" + p.id}
+                center={coords}
+                radius={p.radius}
+                {...Theme.map.point.circle}
+              />
+            );
+          }
+        )}
         {/* User Marker */}
         {pos.accuracy > 20 ? (
           <Circle
