@@ -64,9 +64,14 @@ export default class Map extends React.Component<MapInterface> {
                 <Circle
                   center={coords}
                   radius={a.radius}
+                  tracksViewChanges={false}
                   {...Theme.map.area.circle}
                 />
-                <Marker coordinate={coords} {...Theme.map.area.marker}>
+                <Marker
+                  coordinate={coords}
+                  tracksViewChanges={false}
+                  {...Theme.map.area.marker}
+                >
                   <Icon {...Theme.map.area.icon} />
                 </Marker>
               </Fragment>
@@ -79,16 +84,14 @@ export default class Map extends React.Component<MapInterface> {
                 let coords = this.convertCoords(p.loc);
 
                 return (
-                  <Fragment key={p.id}>
-                    <Circle
-                      center={coords}
-                      radius={p.radius}
-                      {...Theme.map.point.circle}
-                    />
-                    <Marker coordinate={coords} {...Theme.map.point.marker}>
-                      <Icon {...Theme.map.point.icon} name={p.icon} />
-                    </Marker>
-                  </Fragment>
+                  <Marker
+                    key={p.id}
+                    coordinate={coords}
+                    tracksViewChanges={false}
+                    {...Theme.map.point.marker}
+                  >
+                    <Icon {...Theme.map.point.icon} name={p.icon} />
+                  </Marker>
                 );
               }
             )

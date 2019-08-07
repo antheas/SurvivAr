@@ -128,8 +128,8 @@ export const map = {
   },
   point: {
     icon: {
-      color: colors.primaryDark,
-      size: 25
+      color: colors.primary,
+      size: 30
     },
     marker: {
       anchor: { x: 0.5, y: 0.5 }

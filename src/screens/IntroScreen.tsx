@@ -93,7 +93,7 @@ const IntroScreen = ({ navigation: { navigate } }: IntroProps): JSXElement => {
         <Spacer small />
         <View style={s.imgContainer}>
           <Icon
-            name="hospital"
+            name="pharmacy"
             color={Theme.colors.primary}
             style={s.img}
             size={iconSize}

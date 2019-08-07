@@ -105,10 +105,9 @@ function* refreshRootNode() {
 function* watchLocationUpdates() {
   yield put(updateState(StateType.TRACKING));
 
+  let pos: PositionState = yield select(selectPosition);
   const points: PointState = yield select(selectPoints);
   while (1) {
-    let { position: pos }: PositionAction = yield take(UPDATE_POSITION);
-
     let currentArea = points.areas
       .sort((a, b) => distance(pos.coords, a.loc) - distance(pos.coords, b.loc))
       .find(a => withinThreshold(pos.coords, a.loc, a.radius));
@@ -127,6 +126,8 @@ function* watchLocationUpdates() {
         currentPoint ? currentPoint.id : null
       )
     );
+
+    ({ position: pos } = yield take(UPDATE_POSITION));
   }
 }
 
