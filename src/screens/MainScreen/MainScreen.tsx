@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, StyleSheet, StatusBar, PointPropType } from "react-native";
+import { View, StyleSheet, StatusBar } from "react-native";
 import NavigationScreenProp from "react-navigation";
 import { connect } from "react-redux";
 import { JSXElement } from "@babel/types";
