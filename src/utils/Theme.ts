@@ -32,6 +32,13 @@ export const colors = {
   primaryText: "#ffffff",
   accentText: "#ffffff",
 
+  success: "#56b000",
+  successDark: "",
+  warning: "#ffa500",
+  warningDark: "#b37400",
+  disabled: "#c2c2c2",
+  disabledDark: "#c2c2c2",
+
   white: "#ffffff"
 };
 
@@ -127,17 +134,51 @@ export const map = {
     }
   },
   point: {
-    icon: {
-      color: colors.primary,
-      size: 20
+    completed: {
+      icon: {
+        color: colors.disabled,
+        size: 20
+      },
+      marker: {
+        anchor: { x: 0.5, y: 0.5 }
+      }
     },
-    marker: {
-      anchor: { x: 0.5, y: 0.5 }
+    active: {
+      icon: {
+        color: colors.warning,
+        size: 30
+      },
+      marker: {
+        anchor: { x: 0.5, y: 0.5 }
+      },
+      circle: {
+        strokeWidth: 1,
+        strokeColor: colors.warningDark + "66",
+        fillColor: colors.warning + "55"
+      }
     },
-    circle: {
-      strokeWidth: 1,
-      strokeColor: colors.primaryDark + "66",
-      fillColor: colors.primary + "33"
+    nearby: {
+      icon: {
+        color: colors.primary,
+        size: 25
+      },
+      marker: {
+        anchor: { x: 0.5, y: 0.5 }
+      },
+      circle: {
+        strokeWidth: 1,
+        strokeColor: colors.primaryDark + "66",
+        fillColor: colors.primary + "33"
+      }
+    },
+    default: {
+      icon: {
+        color: colors.primary,
+        size: 20
+      },
+      marker: {
+        anchor: { x: 0.5, y: 0.5 }
+      }
     }
   }
 };

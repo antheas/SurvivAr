@@ -19,7 +19,7 @@ function startJsCallbacks(callback: LocationCallback): void {
     },
     null,
     {
-      timeout: 5000,
+      timeout: 2000,
       maximumAge: 20000,
       enableHighAccuracy: true,
       distanceFilter: 0

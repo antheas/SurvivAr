@@ -1,10 +1,16 @@
-export interface PointProgress {
-  completed: boolean;
+import { Point } from "./point";
 
+export interface PointEvent {
+  duration: number;
+  start: Date;
+  end: Date;
+}
+
+export interface PointProgress {
+  completed?: boolean; // Only applicable for QrPoint
   elapsedTime?: number; // Only applicable for WaitPoint
-  isCollected?: boolean; // Only applicable for QrPoint
 }
 
 export interface ProgressState {
-  points: Map<number, PointProgress>;
+  points: Map<string, PointProgress>;
 }

@@ -58,12 +58,15 @@ function points(
 }
 
 function progress(
-  state: ProgressState = new Map<number, PointProgress>(),
+  state: ProgressState = {
+    points: new Map<number, PointProgress>()
+  },
   action: ProgressAction
 ): ProgressState {
   if (action.type === UPDATE_PROGRESS) {
-    let newState = new Map(state);
-    newState[action.id] = action.point;
+    const newState = { ...state };
+    newState.points = new Map(state.points);
+    newState.points[action.id] = action.point;
     return newState;
   } else {
     return state;

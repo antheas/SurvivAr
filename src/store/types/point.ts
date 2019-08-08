@@ -53,9 +53,3 @@ export function isQrPoint(point: Point): point is QrPoint {
 export function isCollectPoint(point: Point): point is CollectPoint {
   return "qrPoints" in point;
 }
-
-export interface PointEvent {
-  duration: number;
-  start: Date;
-  end: Date;
-}

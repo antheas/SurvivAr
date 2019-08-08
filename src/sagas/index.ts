@@ -16,8 +16,7 @@ import {
   PointState,
   POINT_DATA_STALE_AFTER_DAYS,
   Location,
-  PositionState,
-  AreaPoint
+  PositionState
 } from "../store/types";
 import { selectPoints, selectPosition } from "../store/selectors";
 import fetchPoints from "./pointApi.js";
@@ -114,10 +113,6 @@ function* updateMetadata(pos: PositionState, points: PointState) {
       )
     : [];
 
-  const currentPoint = sortedPoints.find(p =>
-    withinThreshold(pos.coords, p.loc, p.radius)
-  );
-
   const sortedPointState = sortedPoints.map(p => ({
     pointId: p.id,
     distance: distance(pos.coords, p.loc)
@@ -126,7 +121,6 @@ function* updateMetadata(pos: PositionState, points: PointState) {
   yield put(
     updatePointMetadata({
       currentAreaId: currentArea ? currentArea.id : null,
-      currentPointId: currentPoint ? currentPoint.id : null,
       sortedPoints: sortedPointState
     })
   );

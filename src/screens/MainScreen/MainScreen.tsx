@@ -11,9 +11,10 @@ import LocationManager from "../../location/LocationManager";
 import {
   State,
   StateType,
-  Point,
   AreaPoint,
-  PositionState
+  PositionState,
+  isWaitPoint,
+  isCollectPoint
 } from "../../store/types";
 import {
   updatePosition,
@@ -21,6 +22,11 @@ import {
   setForegroundFetch
 } from "../../store/actions";
 import Map from "./Map";
+import {
+  ExtendedWaitPoint,
+  ExtendedPoint,
+  ExtendedCollectPoint
+} from "./ExtendedPoint";
 
 const styles = StyleSheet.create({
   container: {
@@ -44,11 +50,7 @@ interface MainStateProps {
   state: StateType;
   areas: AreaPoint[];
   currentArea?: AreaPoint;
-  currentPoint?: Point;
-  sortedPoints: {
-    point: Point;
-    distance: number;
-  };
+  points: ExtendedPoint[];
 }
 
 interface MainDispatchProps {
@@ -91,53 +93,57 @@ class MainScreen extends Component<MainProps> {
             position={this.props.position}
             areas={this.props.areas}
             currentArea={this.props.currentArea}
-            currentPoint={this.props.currentPoint}
-            sortedPoints={this.props.sortedPoints}
+            points={this.props.points}
           />
         </View>
         <View style={styles.ui}>
-          <Loader state={this.props.state} retry={this.props.retry} />
+          {this.props.state !== StateType.TRACKING ? (
+            <Loader state={this.props.state} retry={this.props.retry} />
+          ) : null}
         </View>
       </View>
     );
   }
 }
 
+/**
+ * Maps normalized state of redux model to objects.
+ */
 const mapStateToProps = ({
   position,
   points,
+  progress: { points: progressPoints },
   session: {
     state,
-    pointMetadata: {
-      currentAreaId,
-      currentPointId,
-      sortedPoints: sortedPointState
-    }
+    pointMetadata: { currentAreaId, sortedPoints }
   }
 }: State): MainStateProps => {
   const areas = points.areas;
   const currentArea = currentAreaId
     ? areas.find((a): boolean => a.id === currentAreaId)
     : undefined;
-  const currentPoint =
-    currentPointId && currentArea
-      ? currentArea.children.find((p): boolean => p.id === currentPointId)
-      : undefined;
 
-  let sortedPoints = [];
+  let extendedPoints: ExtendedPoint[] = [];
   if (currentArea) {
     const points = currentArea.children;
 
-    sortedPoints = sortedPointState.map((ps): {
-      point: Point;
-      distance: number;
-    } => ({
-      point: points.find((p): boolean => p.id === ps.pointId),
-      distance: ps.distance
-    }));
+    extendedPoints = sortedPoints.map(
+      (ps): ExtendedPoint => {
+        const p = points.find((p): boolean => p.id === ps.pointId);
+        const progress = progressPoints[ps.pointId];
+
+        if (isWaitPoint(p)) {
+          return new ExtendedWaitPoint(p, ps.distance, progress);
+        } else if (isCollectPoint(p)) {
+          return new ExtendedCollectPoint(p, ps.distance, progressPoints);
+        } else {
+          return new ExtendedPoint(p, ps.distance);
+        }
+      }
+    );
   }
 
-  return { position, state, areas, currentArea, currentPoint, sortedPoints };
+  return { position, state, areas, currentArea, points: extendedPoints };
 };
 
 const mapDispatchToProps = (dispatch): MainDispatchProps => {
