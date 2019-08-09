@@ -10,5 +10,5 @@ export interface PointProgress {
 }
 
 export interface ProgressState {
-  points: Map<string, PointProgress>;
+  points: Record<string, PointProgress>;
 }

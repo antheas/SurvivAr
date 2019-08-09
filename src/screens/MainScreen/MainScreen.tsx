@@ -136,7 +136,7 @@ const mapStateToProps = ({
     extendedPoints = sortedPoints.map(
       (ps): ExtendedPoint => {
         const p = areaPoints.find((c): boolean => c.id === ps.pointId);
-        const progress = progressPoints.get(ps.pointId);
+        const progress = progressPoints[ps.pointId];
 
         if (!p) throw new Error(`Point with id: ${ps.pointId} not found!`);
 

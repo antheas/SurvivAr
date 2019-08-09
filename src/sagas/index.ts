@@ -20,7 +20,7 @@ import {
   PositionState,
   StateType
 } from "../store/types";
-import fetchPoints from "./pointApi.js";
+import fetchPoints from "./pointApi";
 
 function toLatLon(l: Location): LatLon {
   return new LatLon(l.lat, l.lon);

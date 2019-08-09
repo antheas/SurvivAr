@@ -10,12 +10,12 @@ export class ExtendedCollectPoint extends ExtendedPoint
   public constructor(
     p: CollectPoint,
     distance: number,
-    progress: Map<string, PointProgress>
+    progress: Record<string, PointProgress>
   ) {
     super(p, distance);
     // setup qr points
     this.qrPoints = p.qrPoints.map(
-      (qr): ExtendedQrPoint => new ExtendedQrPoint(qr, progress.get(qr.id))
+      (qr): ExtendedQrPoint => new ExtendedQrPoint(qr, progress[qr.id])
     );
     // mark completed qr points
     this.completedPoints = 0;

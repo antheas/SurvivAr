@@ -1,23 +1,23 @@
 import { combineReducers } from "redux";
 import {
-  PositionAction,
-  PointsAction,
-  ProgressAction,
   PointMetadataAction,
+  PointsAction,
+  PositionAction,
+  ProgressAction,
   StateAction,
-  UPDATE_POSITION,
   UPDATE_POINTS,
+  UPDATE_POINT_METADATA,
+  UPDATE_POSITION,
   UPDATE_PROGRESS,
-  UPDATE_STATE,
-  UPDATE_POINT_METADATA
+  UPDATE_STATE
 } from "./actions";
 import {
-  NavigationState,
   PointState,
   ProgressState,
-  PointProgress,
   SessionState,
-  StateType
+  StateType,
+  Location,
+  PositionState
 } from "./types";
 
 const NULL_LOCATION: Location = { lon: 0, lat: 0 };
@@ -25,13 +25,12 @@ const NULL_LOCATION: Location = { lon: 0, lat: 0 };
 function position(
   state: PositionState = {
     coords: NULL_LOCATION,
-    heading: 0,
     accuracy: Infinity,
     updated: 0,
     valid: false
   },
   action: PositionAction
-): NavigationState {
+): PositionState {
   if (action.type === UPDATE_POSITION) {
     return action.position;
   } else {
@@ -59,14 +58,13 @@ function points(
 
 function progress(
   state: ProgressState = {
-    points: new Map<string, PointProgress>()
+    points: {}
   },
   action: ProgressAction
 ): ProgressState {
   if (action.type === UPDATE_PROGRESS) {
     const newState = { ...state };
-    newState.points = new Map(state.points);
-    newState.points.set(action.id, action.point);
+    newState.points = { ...state.points, [action.id]: action.point };
     return newState;
   } else {
     return state;
