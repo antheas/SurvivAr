@@ -47,7 +47,7 @@ export class ExtendedWaitPoint extends ExtendedPoint implements WaitPoint {
     super(p, distance);
 
     this.duration = p.duration;
-    this.elapsedTime = progress ? progress.elapsedTime : 0;
+    this.completedDuration = progress ? progress.elapsedTime : 0;
   }
 
   public duration: number;
@@ -92,6 +92,10 @@ export class ExtendedCollectPoint extends ExtendedPoint
   public qrPoints: ExtendedQrPoint[];
 
   public completedPoints: number;
+
+  public get totalPoints(): number {
+    return this.qrPoints.length;
+  }
 
   public get completed(): boolean {
     return this.completedPoints >= this.qrPoints.length;

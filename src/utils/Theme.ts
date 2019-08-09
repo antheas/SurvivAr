@@ -35,7 +35,7 @@ export const colors = {
   success: "#56b000",
   successDark: "",
   warning: "#ffa500",
-  warningDark: "#b37400",
+  warningDark: "#e69500",
   disabled: "#c2c2c2",
   disabledDark: "#c2c2c2",
 
@@ -97,6 +97,23 @@ export const component = {
     },
     accented: {
       flex: 1,
+      backgroundColor: colors.accent
+    },
+    card: {
+      shadowColor: colors.primaryDark,
+      shadowOffset: {
+        width: 0,
+        height: 2
+      },
+      shadowOpacity: 0.23,
+      shadowRadius: 2.62,
+
+      elevation: 4,
+
+      borderRadius: 5,
+      padding: 10,
+      marginVertical: 8,
+      marginStart: 10,
       backgroundColor: colors.accent
     }
   })

@@ -27,6 +27,7 @@ import {
   ExtendedPoint,
   ExtendedCollectPoint
 } from "./ExtendedPoint";
+import PointCardList from "./PointCardList";
 
 const styles = StyleSheet.create({
   container: {
@@ -36,11 +37,15 @@ const styles = StyleSheet.create({
     alignContent: "stretch"
   },
   map: {
-    flex: 5,
+    flex: 10,
     width: "100%"
   },
-  ui: {
-    flex: 1,
+  loader: {
+    flex: 2,
+    width: "100%"
+  },
+  cards: {
+    flex: 3,
     width: "100%"
   }
 });
@@ -81,6 +86,8 @@ class MainScreen extends Component<MainProps> {
   }
 
   public render(): JSXElement {
+    const loaderActive: boolean = this.props.state !== StateType.TRACKING;
+
     return (
       <View style={styles.container}>
         <StatusBar
@@ -96,10 +103,12 @@ class MainScreen extends Component<MainProps> {
             points={this.props.points}
           />
         </View>
-        <View style={styles.ui}>
-          {this.props.state !== StateType.TRACKING ? (
+        <View style={loaderActive ? styles.loader : styles.cards}>
+          {loaderActive ? (
             <Loader state={this.props.state} retry={this.props.retry} />
-          ) : null}
+          ) : (
+            <PointCardList points={this.props.points} />
+          )}
         </View>
       </View>
     );

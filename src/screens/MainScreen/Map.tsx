@@ -1,11 +1,5 @@
 import React, { Fragment } from "react";
-import { StyleSheet } from "react-native";
-import MapView, {
-  PROVIDER_GOOGLE,
-  Circle,
-  Marker,
-  LatLng
-} from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, Circle, Marker } from "react-native-maps";
 import { JSXElement } from "@babel/types";
 
 import { PositionState, AreaPoint, Location } from "../../store/types";
