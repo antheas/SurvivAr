@@ -1,5 +1,3 @@
-import { Point } from "./point";
-
 export interface PointEvent {
   duration: number;
   start: Date;

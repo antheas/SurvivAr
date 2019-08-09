@@ -2,6 +2,7 @@ import Geolocation from "react-native-geolocation-service";
 import LocationManagerInterface, {
   LocationCallback
 } from "./LocationInterface";
+import { PointEvent } from "../store/types";
 
 function startJsCallbacks(callback: LocationCallback): void {
   Geolocation.watchPosition(
@@ -11,13 +12,12 @@ function startJsCallbacks(callback: LocationCallback): void {
           lat: pos.coords.latitude,
           lon: pos.coords.longitude
         },
-        heading: pos.coords.heading,
         accuracy: pos.coords.accuracy,
         updated: +pos.timestamp,
         valid: true
       });
     },
-    null,
+    undefined,
     {
       timeout: 2000,
       maximumAge: 20000,
@@ -37,7 +37,7 @@ const LocationManager: LocationManagerInterface = {
   enableBackgroundTracking: (): void => undefined,
   disableBackgroundTracking: (): void => undefined,
   loadBackgroundEvents: (): Promise<PointEvent[]> =>
-    new Promise((): void => []),
+    new Promise((): PointEvent[] => []),
   supportsBackgroundTracking: false
 };
 

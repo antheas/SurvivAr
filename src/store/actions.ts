@@ -36,7 +36,7 @@ export function setForegroundFetch(state: boolean): IntentAction {
 
 export interface PointsAction {
   type: typeof UPDATE_POINTS;
-  status: string;
+  newState: PointState;
 }
 
 export function updatePoints(newState: PointState): PointsAction {
@@ -62,7 +62,7 @@ export function updatePosition(position: PositionState): PositionAction {
 export interface ProgressAction {
   type: typeof UPDATE_PROGRESS;
 
-  id: number;
+  id: string;
   point: PointProgress;
 }
 

@@ -1,18 +1,16 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import { View, Text, StyleSheet, Image, StatusBar, Button } from "react-native";
 import * as Theme from "../utils/Theme";
-import NavigationScreenProp from "react-navigation";
-import { JSXElement } from "@babel/types";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { Spacer } from "../utils/Components";
 import { requestLocationPermission } from "../location/Permissions";
 
-export const IntroProps = {
-  navigation: NavigationScreenProp
-};
+interface IntroProps {
+  navigation: NavigationScreenProp;
+}
 
-const handlePermissions = (navigate: () => void): void => {
+const handlePermissions = (navigate: (screen: string) => void): void => {
   requestLocationPermission().then((state): void => {
     if (state) {
       navigate("Main");
@@ -69,7 +67,9 @@ const s = StyleSheet.create({
 
 const iconSize = Theme.normalize(70);
 
-const IntroScreen = ({ navigation: { navigate } }: IntroProps): JSXElement => {
+const IntroScreen = ({
+  navigation: { navigate }
+}: IntroProps): ReactElement => {
   return (
     <View style={s.container}>
       <StatusBar

@@ -1,23 +1,22 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import { View } from "react-native";
 import * as Theme from "./Theme";
-import { JSXElement } from "@babel/types";
 
 export interface SpacerProps {
-  tiny;
-  small;
-  medium;
-  large;
-  horz;
+  tiny?: boolean;
+  small?: boolean;
+  medium?: boolean;
+  large?: boolean;
+  horz?: boolean;
 }
 
-export const Spacer = (props: SpacerProps): JSXElement => {
+export const Spacer = (props: SpacerProps): ReactElement => {
   let size = 0;
   if (props.tiny) {
     size = Theme.normalize(5);
   } else if (props.small) {
     size = Theme.normalize(10);
-  } else if (props.med) {
+  } else if (props.medium) {
     size = Theme.normalize(15);
   } else {
     size = Theme.normalize(25);
@@ -30,7 +29,7 @@ export const Spacer = (props: SpacerProps): JSXElement => {
   );
 };
 
-export const Glue = ({ grow }: { grow?: number }): JSXElement => (
+export const Glue = ({ grow }: { grow?: number }): ReactElement => (
   // eslint-disable-next-line
   <View style={{ flex: grow ? grow : 10 }} />
 );

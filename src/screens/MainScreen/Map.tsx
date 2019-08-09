@@ -1,6 +1,5 @@
-import React, { Fragment } from "react";
+import React, { Fragment, ReactElement } from "react";
 import MapView, { PROVIDER_GOOGLE, Circle, Marker } from "react-native-maps";
-import { JSXElement } from "@babel/types";
 
 import { PositionState, AreaPoint, Location } from "../../store/types";
 import * as Theme from "../../utils/Theme";
@@ -9,14 +8,14 @@ import { ExtendedPoint } from "./ExtendedPoint";
 
 const NEARBY_RATIO = 3;
 
-function convertCoords(coords: Location): LatLng {
+function convertCoords(coords: Location) {
   return {
     latitude: coords.lat,
     longitude: coords.lon
   };
 }
 
-const AreaMarker = (a: AreaPoint): JSXElement => {
+const AreaMarker = (a: AreaPoint): ReactElement => {
   const coords = convertCoords(a.loc);
   return (
     <Fragment key={a.id}>
@@ -37,7 +36,7 @@ const AreaMarker = (a: AreaPoint): JSXElement => {
   );
 };
 
-const UserMarker = ({ accuracy, userCoords }): JSXElement => {
+const UserMarker = ({ accuracy, userCoords }): ReactElement => {
   const coords = convertCoords(userCoords);
 
   return (
@@ -52,7 +51,7 @@ const UserMarker = ({ accuracy, userCoords }): JSXElement => {
   );
 };
 
-const PointMarker = (point: ExtendedPoint): JSXElement => {
+const PointMarker = (point: ExtendedPoint) => {
   let theme;
   if (point.completed) {
     theme = Theme.map.point.completed;
@@ -92,7 +91,7 @@ export interface MapInterface {
 }
 
 export default class Map extends React.Component<MapInterface> {
-  public render(): JSXElement {
+  public render() {
     const pos = this.props.position;
     const userCoords = convertCoords(pos.coords);
 

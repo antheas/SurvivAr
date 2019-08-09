@@ -3,8 +3,8 @@ import {
   Location,
   PointState,
   WaitPoint,
-  QrPoint,
-  AreaPoint
+  AreaPoint,
+  Point
 } from "../store/types";
 
 const BASE_URL =
@@ -16,7 +16,7 @@ const MAX_RETRIES = 5;
 async function fetchType(
   location: Location,
   type: string
-): Record<string, string | number>[] {
+): Promise<Record<string, string | number>[]> {
   let queryUrl = new URLSearchParams();
   queryUrl.append("key", API_KEY);
 
@@ -50,33 +50,29 @@ async function fetchType(
 }
 
 function processPoint(
-  point: Record<string, number | string>,
+  point: Record<string, any>,
   radius: number,
   icon: string
 ): Point {
   return {
-    id: point.id,
+    id: point.id as string,
 
-    name: point.name,
-    desc: point.vicinity,
+    name: point.name as string,
+    desc: point.vicinity as string,
 
     loc: {
-      lat: point.geometry.location.lat,
-      lon: point.geometry.location.lng
+      lat: point.geometry.location.lat as number,
+      lon: point.geometry.location.lng as number
     },
     radius,
     icon
   };
 }
 
-function processWaitPoint(
-  point: Record<string, string | number>,
-  icon: string
-): WaitPoint {
+function processWaitPoint(point: Record<string, any>, icon: string): WaitPoint {
   return {
-    ...processPoint(point, 50),
-    duration: 30,
-    icon
+    ...processPoint(point, 50, icon),
+    duration: 30
   };
 }
 
@@ -84,23 +80,29 @@ function processWaitPoint(
 export default async function fetchPoints(
   location: Location,
   currentData?: PointState
-): (WaitPoint | QrPoint)[] {
-  let newState: PointState = {};
-  newState.valid = true;
-  newState.updated = new Date().getMilliseconds;
+): Promise<PointState> {
+  let loc, bounds, areas;
 
   if (currentData && currentData.valid) {
-    newState.location = currentData.location;
-    newState.bounds = currentData.bounds;
-    newState.areas = [...currentData.areas];
+    loc = currentData.location;
+    bounds = currentData.bounds;
+    areas = [...currentData.areas];
   } else {
-    newState.location = location;
-    newState.bounds = Infinity;
-    newState.areas = [];
+    loc = location;
+    bounds = Infinity;
+    areas = [] as AreaPoint[];
   }
 
+  const newState = {
+    valid: true,
+    updated: new Date().getMilliseconds(),
+    location: loc,
+    bounds,
+    areas
+  };
+
   let pointJson;
-  let error: Error;
+  let error: Error | null = null;
   for (let i = 0; i < MAX_RETRIES; i++) {
     try {
       pointJson = await fetchType(location, "pharmacy");
@@ -111,19 +113,19 @@ export default async function fetchPoints(
   }
   if (!pointJson) throw Error("Connection Error: " + error);
 
-  let newAreaPoints = pointJson.map(p => processWaitPoint(p, "pharmacy"));
-  let newArea: AreaPoint = {
+  const newAreaPoints = pointJson.map(p => processWaitPoint(p, "pharmacy"));
+  const newArea: AreaPoint = {
     id: new Date().getTime().toString(),
 
-    name: null,
-    desc: null,
+    name: "",
+    desc: "",
 
     loc: location,
     radius: AREA_BOUNDS,
 
+    icon: "",
     children: newAreaPoints
   };
-
   newState.areas.push(newArea);
 
   return newState;

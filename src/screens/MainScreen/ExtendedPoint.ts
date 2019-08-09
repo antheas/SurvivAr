@@ -8,7 +8,8 @@ import {
   WaitPoint,
   PointProgress,
   CollectPoint,
-  QrPoint
+  QrPoint,
+  Location
 } from "../../store/types";
 
 export class ExtendedPoint implements Point {
@@ -47,7 +48,7 @@ export class ExtendedWaitPoint extends ExtendedPoint implements WaitPoint {
     super(p, distance);
 
     this.duration = p.duration;
-    this.completedDuration = progress ? progress.elapsedTime : 0;
+    this.completedDuration = progress ? (progress.elapsedTime as number) : 0;
   }
 
   public duration: number;
@@ -62,9 +63,11 @@ export class ExtendedQrPoint extends ExtendedPoint implements QrPoint {
   public constructor(p: QrPoint, progress?: PointProgress) {
     super(p, -1);
 
-    this.completed = progress.completed;
+    this.qrData = p.qrData;
+    this.completed = progress ? (progress.completed as boolean) : false;
   }
 
+  public qrData: string;
   public completed: boolean;
 }
 
@@ -79,7 +82,7 @@ export class ExtendedCollectPoint extends ExtendedPoint
 
     // setup qr points
     this.qrPoints = p.qrPoints.map(
-      (qr): ExtendedQrPoint => new ExtendedQrPoint(qr, progress[qr.id])
+      (qr): ExtendedQrPoint => new ExtendedQrPoint(qr, progress.get(qr.id))
     );
 
     // mark completed qr points

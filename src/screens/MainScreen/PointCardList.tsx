@@ -1,8 +1,7 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import { View, Text, SectionList, StyleSheet } from "react-native";
 import * as Theme from "../../utils/Theme";
 import { Spacer, Glue } from "../../utils/Components";
-import { JSXElement } from "@babel/types";
 import {
   ExtendedPoint,
   ExtendedWaitPoint,
@@ -68,7 +67,7 @@ function chooseDistanceColor(p: ExtendedPoint): StyleSheet {
   return p.userWithin ? styles.distanceInRange : styles.distanceNotInRange;
 }
 
-const PointCard = ({ item: p }: { item: ExtendedPoint }): JSXElement => {
+const PointCard = ({ item: p }: { item: ExtendedPoint }): ReactElement => {
   return (
     <View style={styles.card}>
       <Text style={styles.cardName}>{p.name}</Text>
@@ -97,7 +96,11 @@ const PointCard = ({ item: p }: { item: ExtendedPoint }): JSXElement => {
   );
 };
 
-const ListHeader = ({ section: { title } }): JSXElement => (
+const ListHeader = ({
+  section: { title }
+}: {
+  section: { title: string };
+}): ReactElement => (
   <View style={styles.header}>
     <Text style={styles.headerText}>{title}</Text>
   </View>
@@ -107,8 +110,8 @@ export const PointCardList = ({
   points
 }: {
   points: ExtendedPoint[];
-}): JSXElement => {
-  const sorted = points.sort((a, b): boolean => a.distance - b.distance);
+}): ReactElement => {
+  const sorted = points.sort((a, b) => a.distance - b.distance);
 
   const active = sorted.filter((p): boolean => !p.completed && p.userWithin);
   const pending = sorted.filter((p): boolean => !p.completed && !p.userWithin);

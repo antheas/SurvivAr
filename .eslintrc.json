@@ -13,6 +13,7 @@
   "rules": {
     "react/prop-types": 0,
     "no-console": 1,
+    "@typescript-eslint/explicit-function-return-type": 0,
     "react-hooks/rules-of-hooks": 2,
     "react-hooks/exhaustive-deps": 1,
     "react-native/no-unused-styles": 1,

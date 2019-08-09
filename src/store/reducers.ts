@@ -59,14 +59,14 @@ function points(
 
 function progress(
   state: ProgressState = {
-    points: new Map<number, PointProgress>()
+    points: new Map<string, PointProgress>()
   },
   action: ProgressAction
 ): ProgressState {
   if (action.type === UPDATE_PROGRESS) {
     const newState = { ...state };
     newState.points = new Map(state.points);
-    newState.points[action.id] = action.point;
+    newState.points.set(action.id, action.point);
     return newState;
   } else {
     return state;
@@ -77,8 +77,6 @@ function session(
   state: SessionState = {
     state: StateType.STARTUP,
     pointMetadata: {
-      currentAreaId: null,
-      currentPointId: null,
       sortedPoints: []
     }
   },

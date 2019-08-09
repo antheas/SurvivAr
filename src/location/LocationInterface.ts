@@ -1,10 +1,10 @@
-import { PositionState, PointEvent } from "../store/types";
+import { PositionState, PointEvent, AreaPoint } from "../store/types";
 
 export interface LocationCallback {
-  (): PositionState;
+  (position: PositionState): void;
 }
 
-export interface LocationManagerInterface {
+export default interface LocationManagerInterface {
   startJsCallbacks(callback: () => PositionState): void;
 
   stopJsCallbacks(): void;

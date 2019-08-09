@@ -4,7 +4,6 @@ export const FINE_LOCATION_THRESHOLD = 100;
 
 export interface PositionState {
   coords: Location;
-  heading: number;
   accuracy: number;
   updated: number;
   valid: boolean;

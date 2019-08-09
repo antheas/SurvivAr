@@ -1,9 +1,7 @@
-import React, { Component } from "react";
+import React, { Component, ReactElement } from "react";
 import { View, StyleSheet, StatusBar } from "react-native";
-import NavigationScreenProp from "react-navigation";
+import { NavigationScreenProps, NavigationParams } from "react-navigation";
 import { connect } from "react-redux";
-import { JSXElement } from "@babel/types";
-
 import * as Theme from "../../utils/Theme";
 import Loader from "./Loader";
 import { checkLocationPermission } from "../../location/Permissions";
@@ -65,7 +63,7 @@ interface MainDispatchProps {
 }
 
 export interface MainProps extends MainStateProps, MainDispatchProps {
-  navigation: NavigationScreenProp;
+  navigation: NavigationParams;
 }
 
 class MainScreen extends Component<MainProps> {
@@ -85,7 +83,7 @@ class MainScreen extends Component<MainProps> {
     this.props.setForegroundFetch(false);
   }
 
-  public render(): JSXElement {
+  public render(): ReactElement {
     const loaderActive: boolean = this.props.state !== StateType.TRACKING;
 
     return (
@@ -139,7 +137,7 @@ const mapStateToProps = ({
     extendedPoints = sortedPoints.map(
       (ps): ExtendedPoint => {
         const p = points.find((p): boolean => p.id === ps.pointId);
-        const progress = progressPoints[ps.pointId];
+        const progress = progressPoints.get(ps.pointId);
 
         if (isWaitPoint(p)) {
           return new ExtendedWaitPoint(p, ps.distance, progress);

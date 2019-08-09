@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import {
   View,
   Text,
@@ -30,7 +30,7 @@ export const Loader = ({
 }: {
   state: StateType;
   retry: () => void;
-}): JSXElement => {
+}): ReactElement => {
   let loadString: string;
   switch (state) {
     case StateType.STARTUP:

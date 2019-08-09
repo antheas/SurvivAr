@@ -9,7 +9,7 @@ import { ProgressState } from "./progress";
 import { SessionState } from "./session";
 
 export interface State {
-  navigation: PositionState;
+  position: PositionState;
   points: PointState;
   progress: ProgressState;
   session: SessionState;
