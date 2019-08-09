@@ -1,12 +1,10 @@
 import React, { ReactElement } from "react";
-import { View, Text, SectionList, StyleSheet } from "react-native";
+import { SectionList, StyleSheet, Text, View } from "react-native";
+import { Glue, Spacer } from "../../utils/Components";
 import * as Theme from "../../utils/Theme";
-import { Spacer, Glue } from "../../utils/Components";
-import {
-  ExtendedPoint,
-  ExtendedWaitPoint,
-  ExtendedCollectPoint
-} from "./ExtendedPoint";
+import { ExtendedCollectPoint } from "../model/ExtendedCollectPoint";
+import { ExtendedPoint } from "../model/ExtendedPoint";
+import { ExtendedWaitPoint } from "../model/ExtendedWaitPoint";
 
 const styles = StyleSheet.create({
   card: {

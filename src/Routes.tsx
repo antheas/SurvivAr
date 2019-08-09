@@ -1,11 +1,9 @@
 import React from "react";
-import { createAppContainer, createSwitchNavigator } from "react-navigation";
 import { Platform } from "react-native";
 import SplashScreen from "react-native-splash-screen";
-import { JSXElement } from "@babel/types";
-
-import MainScreen from "./screens/MainScreen";
+import { createAppContainer, createSwitchNavigator } from "react-navigation";
 import IntroScreen from "./screens/IntroScreen";
+import MainScreen from "./screens/MainScreen";
 
 const AppContainer = createAppContainer(
   createSwitchNavigator(
@@ -19,14 +17,14 @@ const AppContainer = createAppContainer(
   )
 );
 
-export default class SplashController extends React.Component<void> {
+export default class SplashController extends React.Component {
   public componentDidMount(): void {
     // TODO: Implement Splash Screen for android.
     if (Platform.OS !== "android") return;
     SplashScreen.hide();
   }
 
-  public render(): JSXElement {
+  public render() {
     return <AppContainer />;
   }
 }

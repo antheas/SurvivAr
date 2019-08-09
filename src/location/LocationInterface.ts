@@ -1,11 +1,11 @@
-import { PositionState, PointEvent, AreaPoint } from "../store/types";
+import { AreaPoint, PointEvent, PositionState } from "../store/types";
 
-export interface LocationCallback {
-  (position: PositionState): void;
-}
+export type LocationCallback = (position: PositionState) => void;
 
 export default interface LocationManagerInterface {
-  startJsCallbacks(callback: () => PositionState): void;
+  supportsBackgroundTracking: boolean;
+
+  startJsCallbacks(callback: LocationCallback): void;
 
   stopJsCallbacks(): void;
 
@@ -14,6 +14,4 @@ export default interface LocationManagerInterface {
   disableBackgroundTracking(): void;
 
   loadBackgroundEvents(): Promise<PointEvent[]>;
-
-  supportsBackgroundTracking: boolean;
 }

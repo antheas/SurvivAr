@@ -1,13 +1,17 @@
 import React, { ReactElement } from "react";
-import { View, Text, StyleSheet, Image, StatusBar, Button } from "react-native";
-import * as Theme from "../utils/Theme";
+import { Button, Image, StatusBar, StyleSheet, Text, View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-
-import { Spacer } from "../utils/Components";
+import {
+  NavigationParams,
+  NavigationScreenProp,
+  NavigationState
+} from "react-navigation";
 import { requestLocationPermission } from "../location/Permissions";
+import { Spacer } from "../utils/Components";
+import * as Theme from "../utils/Theme";
 
 interface IntroProps {
-  navigation: NavigationScreenProp;
+  navigation: NavigationScreenProp<NavigationState, NavigationParams>;
 }
 
 const handlePermissions = (navigate: (screen: string) => void): void => {

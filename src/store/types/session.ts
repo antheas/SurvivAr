@@ -8,10 +8,10 @@ export enum StateType {
 
 export interface PointMetadata {
   currentAreaId?: string;
-  sortedPoints: {
+  sortedPoints: Array<{
     pointId: string;
     distance: number;
-  }[];
+  }>;
 }
 
 export interface SessionState {

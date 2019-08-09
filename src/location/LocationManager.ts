@@ -1,8 +1,8 @@
 import Geolocation from "react-native-geolocation-service";
+import { PointEvent } from "../store/types";
 import LocationManagerInterface, {
   LocationCallback
 } from "./LocationInterface";
-import { PointEvent } from "../store/types";
 
 function startJsCallbacks(callback: LocationCallback): void {
   Geolocation.watchPosition(
@@ -32,8 +32,8 @@ function stopJsCallbacks(): void {
 }
 
 const LocationManager: LocationManagerInterface = {
-  startJsCallbacks: startJsCallbacks,
-  stopJsCallbacks: stopJsCallbacks,
+  startJsCallbacks,
+  stopJsCallbacks,
   enableBackgroundTracking: (): void => undefined,
   disableBackgroundTracking: (): void => undefined,
   loadBackgroundEvents: (): Promise<PointEvent[]> =>

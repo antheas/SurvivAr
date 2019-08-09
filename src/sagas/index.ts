@@ -1,27 +1,26 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { fork, take, put, select, call, cancel } from "redux-saga/effects";
+// @ts-ignore
+import LatLon from "geodesy/latlon-spherical";
+import { call, cancel, fork, put, select, take } from "redux-saga/effects";
 import {
-  UPDATE_POSITION,
-  updateState,
-  PositionAction,
-  updatePoints,
-  RETRY_FETCH,
   BEGIN_FOREGROUND_FETCH,
+  PositionAction,
+  RETRY_FETCH,
   STOP_FOREGROUND_FETCH,
-  updatePointMetadata
+  updatePointMetadata,
+  updatePoints,
+  updateState,
+  UPDATE_POSITION
 } from "../store/actions";
+import { selectPoints, selectPosition } from "../store/selectors";
 import {
   FINE_LOCATION_THRESHOLD,
-  StateType,
+  Location,
   PointState,
   POINT_DATA_STALE_AFTER_DAYS,
-  Location,
-  PositionState
+  PositionState,
+  StateType
 } from "../store/types";
-import { selectPoints, selectPosition } from "../store/selectors";
 import fetchPoints from "./pointApi.js";
-
-import LatLon from "geodesy/latlon-spherical.js";
 
 function toLatLon(l: Location): LatLon {
   return new LatLon(l.lat, l.lon);
@@ -39,7 +38,10 @@ function withinThreshold(
   return distance(start, end) <= threshold;
 }
 
-function* handleBackgroundEvents() {}
+function* handleBackgroundEvents() {
+  // noop
+  yield null;
+}
 
 // Wait until we have the required meters of accuracy.
 function* waitForFineLocation() {
@@ -93,7 +95,6 @@ function* refreshRootNode() {
       }
       break;
     } catch (e) {
-      console.log(e.toString());
       yield put(updateState(StateType.LOADING_ERROR));
       yield take(RETRY_FETCH);
       yield put(updateState(StateType.RETRIEVING_DATA));
@@ -120,7 +121,7 @@ function* updateMetadata(pos: PositionState, points: PointState) {
 
   yield put(
     updatePointMetadata({
-      currentAreaId: currentArea ? currentArea.id : null,
+      currentAreaId: currentArea && currentArea.id,
       sortedPoints: sortedPointState
     })
   );

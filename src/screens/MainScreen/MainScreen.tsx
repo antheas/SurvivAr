@@ -1,31 +1,30 @@
 import React, { Component, ReactElement } from "react";
-import { View, StyleSheet, StatusBar } from "react-native";
-import { NavigationScreenProps, NavigationParams } from "react-navigation";
+import { StatusBar, StyleSheet, View } from "react-native";
+import { NavigationParams } from "react-navigation";
 import { connect } from "react-redux";
-import * as Theme from "../../utils/Theme";
-import Loader from "./Loader";
-import { checkLocationPermission } from "../../location/Permissions";
 import LocationManager from "../../location/LocationManager";
+import { checkLocationPermission } from "../../location/Permissions";
 import {
-  State,
-  StateType,
-  AreaPoint,
-  PositionState,
-  isWaitPoint,
-  isCollectPoint
-} from "../../store/types";
-import {
-  updatePosition,
   retryFetch,
-  setForegroundFetch
+  setForegroundFetch,
+  updatePosition
 } from "../../store/actions";
-import Map from "./Map";
 import {
-  ExtendedWaitPoint,
-  ExtendedPoint,
-  ExtendedCollectPoint
-} from "./ExtendedPoint";
+  AreaPoint,
+  isCollectPoint,
+  isWaitPoint,
+  PositionState,
+  State,
+  StateType
+} from "../../store/types";
+import * as Theme from "../../utils/Theme";
+import { ExtendedCollectPoint } from "../model/ExtendedCollectPoint";
+import { ExtendedPoint } from "../model/ExtendedPoint";
+import { ExtendedWaitPoint } from "../model/ExtendedWaitPoint";
+import Loader from "./Loader";
+import Map from "./Map";
 import PointCardList from "./PointCardList";
+import { Dispatch } from "redux";
 
 const styles = StyleSheet.create({
   container: {
@@ -132,12 +131,14 @@ const mapStateToProps = ({
 
   let extendedPoints: ExtendedPoint[] = [];
   if (currentArea) {
-    const points = currentArea.children;
+    const areaPoints = currentArea.children;
 
     extendedPoints = sortedPoints.map(
       (ps): ExtendedPoint => {
-        const p = points.find((p): boolean => p.id === ps.pointId);
+        const p = areaPoints.find((c): boolean => c.id === ps.pointId);
         const progress = progressPoints.get(ps.pointId);
+
+        if (!p) throw new Error(`Point with id: ${ps.pointId} not found!`);
 
         if (isWaitPoint(p)) {
           return new ExtendedWaitPoint(p, ps.distance, progress);
@@ -153,11 +154,11 @@ const mapStateToProps = ({
   return { position, state, areas, currentArea, points: extendedPoints };
 };
 
-const mapDispatchToProps = (dispatch): MainDispatchProps => {
+const mapDispatchToProps = (dispatch: Dispatch): MainDispatchProps => {
   return {
-    updatePosition: (pos: PositionState): void => dispatch(updatePosition(pos)),
-    setForegroundFetch: (state): void => dispatch(setForegroundFetch(state)),
-    retry: (): void => dispatch(retryFetch())
+    updatePosition: (pos: PositionState) => dispatch(updatePosition(pos)),
+    setForegroundFetch: state => dispatch(setForegroundFetch(state)),
+    retry: () => dispatch(retryFetch())
   };
 };
 

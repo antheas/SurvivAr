@@ -1,4 +1,5 @@
-import { Dimensions, Platform, PixelRatio, StyleSheet } from "react-native";
+import { Dimensions, PixelRatio, Platform, StyleSheet } from "react-native";
+import MapStyle from "./MapStyle";
 
 // https://stackoverflow.com/questions/33628677/react-native-responsive-font-size
 // eslint-disable-next-line
@@ -200,5 +201,4 @@ export const map = {
   }
 };
 
-import MapStyle from "./MapStyle";
 export const mapStyle = MapStyle.white;

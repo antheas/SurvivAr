@@ -1,14 +1,14 @@
 import React, { ReactElement } from "react";
 import {
-  View,
-  Text,
   ActivityIndicator,
+  Button,
   StyleSheet,
-  Button
+  Text,
+  View
 } from "react-native";
-import * as Theme from "../../utils/Theme";
-import { Spacer } from "../../utils/Components";
 import { StateType } from "../../store/types";
+import { Spacer } from "../../utils/Components";
+import * as Theme from "../../utils/Theme";
 
 const styles = StyleSheet.create({
   status: {

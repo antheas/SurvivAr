@@ -67,7 +67,7 @@ export interface ProgressAction {
 }
 
 export function updateProgress(
-  id: number,
+  id: string,
   point: PointProgress
 ): ProgressAction {
   return {

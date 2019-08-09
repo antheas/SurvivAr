@@ -23,9 +23,7 @@ export const Spacer = (props: SpacerProps): ReactElement => {
   }
 
   return (
-    <View
-      style={props.horz ? { marginStart: size } : { marginTop: size }}
-    ></View>
+    <View style={props.horz ? { marginStart: size } : { marginTop: size }} />
   );
 };
 

@@ -1,10 +1,9 @@
 import React, { Fragment, ReactElement } from "react";
-import MapView, { PROVIDER_GOOGLE, Circle, Marker } from "react-native-maps";
-
-import { PositionState, AreaPoint, Location } from "../../store/types";
-import * as Theme from "../../utils/Theme";
+import MapView, { Circle, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { ExtendedPoint } from "./ExtendedPoint";
+import { AreaPoint, Location, PositionState } from "../../store/types";
+import * as Theme from "../../utils/Theme";
+import { ExtendedPoint } from "../model/ExtendedPoint";
 
 const NEARBY_RATIO = 3;
 

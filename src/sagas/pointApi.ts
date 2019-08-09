@@ -6,6 +6,7 @@ import {
   AreaPoint,
   Point
 } from "../store/types";
+import URLSearchParams from "@ungap/url-search-params";
 
 const BASE_URL =
   "https://maps.googleapis.com/maps/api/place/nearbysearch/json?";
@@ -16,12 +17,12 @@ const MAX_RETRIES = 5;
 async function fetchType(
   location: Location,
   type: string
-): Promise<Record<string, string | number>[]> {
+): Promise<Array<Record<string, any>>> {
   let queryUrl = new URLSearchParams();
   queryUrl.append("key", API_KEY);
 
   queryUrl.append("location", `${location.lat},${location.lon}`);
-  queryUrl.append("radius", AREA_BOUNDS);
+  queryUrl.append("radius", AREA_BOUNDS.toString());
   queryUrl.append("type", type);
 
   let query = BASE_URL + queryUrl.toString();
@@ -32,7 +33,7 @@ async function fetchType(
     throw new Error("Invalid status: " + queryResults.status);
 
   let nextPage = queryResults.next_page_token;
-  let results: Record<string, string | number>[] = [...queryResults.results];
+  let results: Array<Record<string, any>> = [...queryResults.results];
 
   while (nextPage) {
     queryUrl = new URLSearchParams();
@@ -81,7 +82,9 @@ export default async function fetchPoints(
   location: Location,
   currentData?: PointState
 ): Promise<PointState> {
-  let loc, bounds, areas;
+  let loc;
+  let bounds;
+  let areas;
 
   if (currentData && currentData.valid) {
     loc = currentData.location;
