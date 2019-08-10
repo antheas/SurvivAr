@@ -119,7 +119,7 @@ class MainScreen extends Component<MainProps> {
  * Maps normalized state of redux model to objects.
  */
 const mapStateToProps = ({
-  position,
+  navigation: { position },
   points,
   progress: { points: progressPoints },
   session: {

@@ -9,7 +9,9 @@ import {
   UPDATE_POINT_METADATA,
   UPDATE_POSITION,
   UPDATE_PROGRESS,
-  UPDATE_STATE
+  UPDATE_STATE,
+  HeadingAction,
+  UPDATE_HEADING
 } from "./actions";
 import {
   PointState,
@@ -17,7 +19,8 @@ import {
   SessionState,
   StateType,
   Location,
-  PositionState
+  PositionState,
+  HeadingState
 } from "./types";
 
 const NULL_LOCATION: Location = { lon: 0, lat: 0 };
@@ -37,6 +40,26 @@ function position(
     return state;
   }
 }
+
+function heading(
+  state: HeadingState = {
+    degrees: 0,
+    updated: 0,
+    valid: false
+  },
+  action: HeadingAction
+): HeadingState {
+  if (action.type === UPDATE_HEADING) {
+    return action.heading;
+  } else {
+    return state;
+  }
+}
+
+const navigation = combineReducers({
+  position,
+  heading
+});
 
 function points(
   state: PointState = {
@@ -94,7 +117,7 @@ function session(
 }
 
 export default combineReducers({
-  position,
+  navigation,
   points,
   progress,
   session

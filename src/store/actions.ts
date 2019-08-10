@@ -1,13 +1,15 @@
 import {
+  HeadingState,
+  PointMetadata,
+  PointProgress,
   PointState,
   PositionState,
-  PointProgress,
-  StateType,
-  PointMetadata
+  StateType
 } from "./types";
 
 export const UPDATE_POINTS = "UPDATE_POINTS";
 export const UPDATE_POSITION = "UPDATE_POSITION";
+export const UPDATE_HEADING = "UPDATE_HEADING";
 export const UPDATE_PROGRESS = "UPDATE_PROGRESS";
 
 export const UPDATE_STATE = "UPDATE_STATE";
@@ -56,6 +58,19 @@ export function updatePosition(position: PositionState): PositionAction {
   return {
     type: UPDATE_POSITION,
     position
+  };
+}
+
+export interface HeadingAction {
+  type: typeof UPDATE_HEADING;
+
+  heading: HeadingState;
+}
+
+export function updateHeading(heading: HeadingState): HeadingAction {
+  return {
+    type: UPDATE_HEADING,
+    heading
   };
 }
 

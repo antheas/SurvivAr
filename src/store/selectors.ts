@@ -4,6 +4,8 @@ export function selectPoints({ points }: State): PointState {
   return points;
 }
 
-export function selectPosition({ position }: State): PositionState {
+export function selectPosition({
+  navigation: { position }
+}: State): PositionState {
   return position;
 }
