@@ -28,6 +28,7 @@ const maxCoordinateDistance = (point1: Point, point2: Point) => {
   };
 };
 
+// https://pusher.com/tutorials/carpooling-react-native-part-2
 export function deltasFromAccuracy(p: Point, accuracy: number) {
   const oneDegreeOfLongitudeInMeters = 111.32 * 1000;
   const circumference = (40075 / 360) * 1000;
@@ -41,7 +42,6 @@ export function deltasFromAccuracy(p: Point, accuracy: number) {
   };
 }
 
-// https://pusher.com/tutorials/carpooling-react-native-part-2
 const deltasFromCenter = (center: Point, coordinates: Point[]) => {
   let maxLatDelta = 0;
   let maxLonDelta = 0;
@@ -66,7 +66,7 @@ const coordinateDeltas = (
   minRadius: number = 0,
   margin: number = 0.2
 ) => {
-  const centerDeltas = deltasFromCenter(center, coordinates, margin, margin);
+  const centerDeltas = deltasFromCenter(center, coordinates);
   const radiusDeltas = deltasFromAccuracy(center, minRadius);
 
   return {
