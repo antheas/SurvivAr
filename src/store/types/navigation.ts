@@ -11,8 +11,8 @@ export interface PositionState {
 
 export interface HeadingState {
   degrees: number;
+  updated: number;
   valid: boolean;
-  supported: boolean;
 }
 
 export interface NavigationState {
