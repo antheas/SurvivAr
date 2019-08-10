@@ -8,7 +8,7 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 // based on iphone 5s's scale
 const scale = SCREEN_WIDTH / 320;
 
-export function normalize(size): number {
+export function normalize(size: number): number {
   const newSize = size * scale;
   if (Platform.OS === "ios") {
     return Math.round(PixelRatio.roundToNearestPixel(newSize));
@@ -37,7 +37,7 @@ export const colors = {
   successDark: "",
   warning: "#ffa500",
   warningDark: "#e69500",
-  disabled: "#c2c2c2",
+  disabled: "#f5f5f5",
   disabledDark: "#c2c2c2",
 
   white: "#ffffff"
@@ -197,6 +197,58 @@ export const map = {
       marker: {
         anchor: { x: 0.5, y: 0.5 }
       }
+    }
+  },
+  button: {
+    icon: {
+      size: 25
+    },
+    styles: {
+      base: StyleSheet.create({
+        container: {
+          position: "absolute",
+          end: 5,
+          bottom: 10
+        },
+        view: {
+          marginTop: 8,
+          padding: 5,
+          borderRadius: 50,
+          borderWidth: 2
+        }
+      }),
+      view: StyleSheet.create({
+        enabled: {
+          backgroundColor: colors.primary,
+          borderColor: colors.primary
+        },
+        disabled: {
+          backgroundColor: colors.disabledDark,
+          borderColor: colors.disabledDark
+        },
+        active: {
+          backgroundColor: colors.white,
+          borderColor: colors.primary
+        },
+        disabledActive: {
+          backgroundColor: colors.disabled,
+          borderColor: colors.disabledDark
+        }
+      }),
+      icon: StyleSheet.create({
+        enabled: {
+          color: colors.white
+        },
+        disabled: {
+          color: colors.disabled
+        },
+        active: {
+          color: colors.primary
+        },
+        disabledActive: {
+          color: colors.disabledDark
+        }
+      })
     }
   }
 };

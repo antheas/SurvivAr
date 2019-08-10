@@ -1,17 +1,18 @@
 import React, { Fragment, ReactElement } from "react";
+import { Platform, View } from "react-native";
 import MapView, {
+  AnimatedRegion,
   Circle,
   Marker,
+  MarkerAnimated,
   PROVIDER_GOOGLE,
-  Region,
-  AnimatedRegion,
-  MarkerAnimated
+  Region
 } from "react-native-maps";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { AreaPoint, Location, PositionState } from "../../store/types";
 import * as Theme from "../../utils/Theme";
 import { ExtendedPoint } from "../model/ExtendedPoint";
-import { Platform } from "react-native";
+import MapButtons from "./MapButtons";
 
 const NEARBY_RATIO = 3;
 const ANIMATION_DELAY = 1000;
@@ -135,33 +136,38 @@ export default class Map extends React.Component<MapInterface> {
     const userCoords = convertCoords(pos.coords);
 
     return (
-      <MapView
-        style={{ flex: 1 }}
-        ref={(el: MapView) => (this.map = el)}
-        provider={PROVIDER_GOOGLE}
-        customMapStyle={Theme.mapStyle}
-        initialRegion={GREECE_COORDS}
-      >
-        {/* Area Points */}
-        {this.props.areas.map(AreaMarker)}
-        {/* Points */}
-        {this.props.points.map(PointMarker)}
-        {/* User Marker */}
-        {pos.accuracy > 20 ? (
-          <Circle
-            center={userCoords}
-            radius={pos.accuracy}
-            {...Theme.map.user.circle}
-          />
-        ) : null}
-        <MarkerAnimated
-          ref={(marker: MarkerAnimated) => (this.userMarker = marker)}
-          coordinate={this.state.coordinate}
-          {...Theme.map.user.marker}
+      <View style={{ flex: 1 }}>
+        <MapView
+          style={{ flex: 1 }}
+          ref={(el: MapView) => (this.map = el)}
+          provider={PROVIDER_GOOGLE}
+          customMapStyle={Theme.mapStyle}
+          initialRegion={GREECE_COORDS}
         >
-          <Icon {...Theme.map.user.icon} />
-        </MarkerAnimated>
-      </MapView>
+          {/* Area Points */}
+          {this.props.areas.map(AreaMarker)}
+          {/* Points */}
+          {this.props.points.map(PointMarker)}
+          {/* User Marker */}
+          {pos.accuracy > 20 ? (
+            <Circle
+              center={userCoords}
+              radius={pos.accuracy}
+              {...Theme.map.user.circle}
+            />
+          ) : null}
+          <MarkerAnimated
+            ref={(marker: MarkerAnimated) => (this.userMarker = marker)}
+            coordinate={this.state.coordinate}
+            {...Theme.map.user.marker}
+          >
+            <Icon {...Theme.map.user.icon} />
+          </MarkerAnimated>
+        </MapView>
+        <View style={Theme.map.button.styles.base.container}>
+          <MapButtons />
+        </View>
+      </View>
     );
   }
 }
