@@ -4,7 +4,8 @@ import MapView, {
   Marker,
   PROVIDER_GOOGLE,
   Region,
-  AnimatedRegion
+  AnimatedRegion,
+  MarkerAnimated
 } from "react-native-maps";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { AreaPoint, Location, PositionState } from "../../store/types";
@@ -88,10 +89,8 @@ export default class Map extends React.Component<MapInterface> {
   public state = {
     coordinate: new AnimatedRegion(GREECE_COORDS)
   };
-  // @ts-ignore
-  private userMarker: Marker.Animated;
-  // @ts-ignore
-  private map: MapView;
+  private userMarker?: MarkerAnimated;
+  private map?: MapView;
 
   public componentDidMount() {
     // Set marker to previous position, if it is valid
@@ -110,6 +109,7 @@ export default class Map extends React.Component<MapInterface> {
 
     if (Platform.OS === "android") {
       if (this.userMarker) {
+        // @ts-ignore
         this.userMarker._component.animateMarkerToCoordinate(
           newCoords,
           ANIMATION_DELAY
@@ -119,13 +119,15 @@ export default class Map extends React.Component<MapInterface> {
       coordinate.timing(newCoords).start();
     }
 
-    this.map.animateToRegion(
-      {
-        ...newCoords,
-        ...DEFAULT_ZOOM
-      },
-      ANIMATION_DELAY
-    );
+    if (this.map) {
+      this.map.animateToRegion(
+        {
+          ...newCoords,
+          ...DEFAULT_ZOOM
+        },
+        ANIMATION_DELAY
+      );
+    }
   }
 
   public render() {
@@ -134,9 +136,8 @@ export default class Map extends React.Component<MapInterface> {
 
     return (
       <MapView
-        // eslint-disable-next-line
         style={{ flex: 1 }}
-        ref={el => (this.map = el)}
+        ref={(el: MapView) => (this.map = el)}
         provider={PROVIDER_GOOGLE}
         customMapStyle={Theme.mapStyle}
         initialRegion={GREECE_COORDS}
@@ -153,13 +154,13 @@ export default class Map extends React.Component<MapInterface> {
             {...Theme.map.user.circle}
           />
         ) : null}
-        <Marker.Animated
-          ref={(marker: Marker.Animated) => (this.userMarker = marker)}
+        <MarkerAnimated
+          ref={(marker: MarkerAnimated) => (this.userMarker = marker)}
           coordinate={this.state.coordinate}
           {...Theme.map.user.marker}
         >
           <Icon {...Theme.map.user.icon} />
-        </Marker.Animated>
+        </MarkerAnimated>
       </MapView>
     );
   }
