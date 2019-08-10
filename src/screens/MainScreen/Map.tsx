@@ -10,9 +10,10 @@ import MapView, {
 } from "react-native-maps";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { AreaPoint, Location, PositionState } from "../../store/types";
+import coordinateDeltas from "../../utils/coordinateDeltas";
 import * as Theme from "../../utils/Theme";
 import { ExtendedPoint } from "../model/ExtendedPoint";
-import MapButtons from "./MapButtons";
+import MapButtons, { ZoomState } from "./MapButtons";
 
 const NEARBY_RATIO = 3;
 const ANIMATION_DELAY = 1000;
@@ -32,6 +33,10 @@ function convertCoords(coords: Location) {
     latitude: coords.lat,
     longitude: coords.lon
   };
+}
+
+function isPointClose(point: ExtendedPoint) {
+  return point.distance <= NEARBY_RATIO * point.radius;
 }
 
 const AreaMarker = (a: AreaPoint): ReactElement => {
@@ -58,7 +63,7 @@ const PointMarker = (point: ExtendedPoint) => {
   } else if (point.userWithin) {
     theme = Theme.map.point.active;
     circle = theme.circle;
-  } else if (point.distance <= NEARBY_RATIO * point.radius) {
+  } else if (isPointClose(point)) {
     theme = Theme.map.point.nearby;
     circle = theme.circle;
   } else {
@@ -79,16 +84,37 @@ const PointMarker = (point: ExtendedPoint) => {
   );
 };
 
-export interface MapInterface {
-  position: PositionState;
-  areas: AreaPoint[];
-  currentArea?: AreaPoint;
-  points: ExtendedPoint[]; // Sorted by distance
+enum ZoomLevel {
+  CLOSEST_POINT,
+  CLOSEST_POINTS,
+  AREA_POINTS
 }
 
-export default class Map extends React.Component<MapInterface> {
+export interface IMapProps {
+  position: PositionState;
+  areas: AreaPoint[];
+  points: ExtendedPoint[]; // Sorted by distance
+
+  headingSupport: boolean;
+  syncEnabled: boolean;
+  loading: boolean;
+
+  onSyncToggled: () => void;
+}
+
+interface IMapState {
+  coordinate: AnimatedRegion;
+  zoomLevel: ZoomLevel;
+  userTracked: boolean;
+  headingTracked: boolean;
+}
+
+export default class Map extends React.Component<IMapProps, IMapState> {
   public state = {
-    coordinate: new AnimatedRegion(GREECE_COORDS)
+    coordinate: new AnimatedRegion(GREECE_COORDS),
+    zoomLevel: ZoomLevel.AREA_POINTS,
+    userTracked: true,
+    headingTracked: true
   };
   private userMarker?: MarkerAnimated;
   private map?: MapView;
@@ -105,6 +131,7 @@ export default class Map extends React.Component<MapInterface> {
   public componentDidUpdate() {
     if (!this.props.position.valid) return;
 
+    // Handle Marker
     const { coordinate } = this.state;
     const newCoords = convertCoords(this.props.position.coords);
 
@@ -120,15 +147,8 @@ export default class Map extends React.Component<MapInterface> {
       coordinate.timing(newCoords).start();
     }
 
-    if (this.map) {
-      this.map.animateToRegion(
-        {
-          ...newCoords,
-          ...DEFAULT_ZOOM
-        },
-        ANIMATION_DELAY
-      );
-    }
+    // Handle Map
+    this.animateMap();
   }
 
   public render() {
@@ -143,6 +163,7 @@ export default class Map extends React.Component<MapInterface> {
           provider={PROVIDER_GOOGLE}
           customMapStyle={Theme.mapStyle}
           initialRegion={GREECE_COORDS}
+          onPanDrag={this.mapMoved}
         >
           {/* Area Points */}
           {this.props.areas.map(AreaMarker)}
@@ -165,9 +186,124 @@ export default class Map extends React.Component<MapInterface> {
           </MarkerAnimated>
         </MapView>
         <View style={Theme.map.button.styles.base.container}>
-          <MapButtons />
+          <MapButtons
+            zoomState={this.getZoomState()}
+            headingTracked={this.state.headingTracked}
+            headingSupport={this.props.headingSupport}
+            syncEnabled={this.props.syncEnabled}
+            hidden={this.props.loading}
+            onZoomedIn={this.onZoomedIn}
+            onZoomedOut={this.onZoomedOut}
+            onCentered={this.onCentered}
+            onSyncToggled={this.onSyncToggled}
+            onHeadingToggled={this.onHeadingToggled}
+          />
         </View>
       </View>
     );
   }
+
+  private animateMap() {
+    if (!this.map) return;
+    if (!this.state.userTracked) return;
+
+    // Default values
+    const newCoords = convertCoords(this.props.position.coords);
+    let region = {
+      ...newCoords,
+      ...DEFAULT_ZOOM
+    };
+
+    // Only use active points
+    const points = this.props.points.filter(p => !p.completed);
+
+    // Run only if there are points
+    if (points.length) {
+      // Find points that need to be included based on zoom
+      let includedPoints: ExtendedPoint[];
+      const closestPoint = points.sort((a, b) => a.distance - b.distance)[0];
+      switch (this.state.zoomLevel) {
+        case ZoomLevel.CLOSEST_POINTS:
+          // Find closest points
+          includedPoints = points.filter(p => isPointClose(p));
+
+          // If there are none fallthrough to closest point
+          if (includedPoints.length) break;
+        case ZoomLevel.CLOSEST_POINT:
+          includedPoints = [closestPoint];
+          break;
+        default:
+          // ZoomLevel.AREA_POINTS
+          includedPoints = points;
+      }
+
+      // Calculate new zoom only if there are points
+      if (includedPoints.length) {
+        region = coordinateDeltas(
+          newCoords,
+          includedPoints.map(({ loc }) => convertCoords(loc)),
+          closestPoint.radius
+        );
+      }
+    }
+
+    // Animate
+    this.map.animateToRegion(region, ANIMATION_DELAY);
+  }
+
+  private mapMoved = () => {
+    if (this.state.userTracked) this.setState({ userTracked: false });
+  };
+  private getZoomState = () => {
+    if (!this.state.userTracked) return ZoomState.NOT_CENTERED;
+
+    switch (this.state.zoomLevel) {
+      case ZoomLevel.CLOSEST_POINT:
+        return ZoomState.ZOOMED_MAX;
+      case ZoomLevel.AREA_POINTS:
+        return ZoomState.ZOOMED_MIN;
+      default:
+        return ZoomState.CENTERED;
+    }
+  };
+  private onZoomedIn = () => {
+    if (!this.state.userTracked) return;
+
+    switch (this.state.zoomLevel) {
+      case ZoomLevel.CLOSEST_POINT:
+        break;
+      case ZoomLevel.CLOSEST_POINTS:
+        this.setState({ zoomLevel: ZoomLevel.CLOSEST_POINT });
+        break;
+      case ZoomLevel.AREA_POINTS:
+        this.setState({ zoomLevel: ZoomLevel.CLOSEST_POINTS });
+        break;
+      default:
+        break;
+    }
+  };
+  private onZoomedOut = () => {
+    if (!this.state.userTracked) return;
+
+    switch (this.state.zoomLevel) {
+      case ZoomLevel.CLOSEST_POINT:
+        this.setState({ zoomLevel: ZoomLevel.CLOSEST_POINTS });
+        break;
+      case ZoomLevel.CLOSEST_POINTS:
+        this.setState({ zoomLevel: ZoomLevel.AREA_POINTS });
+        break;
+      case ZoomLevel.AREA_POINTS:
+        break;
+      default:
+        break;
+    }
+  };
+  private onCentered = () => {
+    this.setState({ userTracked: true });
+  };
+  private onSyncToggled = () => {};
+  private onHeadingToggled = () => {
+    if (!this.state.userTracked) return;
+    this.setState({ headingTracked: !this.state.headingTracked });
+  };
 }

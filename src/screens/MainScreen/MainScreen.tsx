@@ -96,8 +96,11 @@ class MainScreen extends Component<MainProps> {
           <Map
             position={this.props.position}
             areas={this.props.areas}
-            currentArea={this.props.currentArea}
             points={this.props.points}
+            headingSupport={false}
+            syncEnabled={false}
+            loading={loaderActive}
+            onSyncToggled={() => {}}
           />
         </View>
         <View style={loaderActive ? styles.loader : styles.cards}>

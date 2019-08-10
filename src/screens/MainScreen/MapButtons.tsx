@@ -55,11 +55,14 @@ const MapButton: FunctionComponent<IMapButton> = ({
 export enum ZoomState {
   ZOOMED_MIN,
   ZOOMED_MAX,
+  CENTERED,
   NOT_CENTERED
 }
 
 export interface IMapButtons {
   zoomState: ZoomState;
+  headingTracked: boolean;
+  headingSupport: boolean;
   syncEnabled: boolean;
   hidden: boolean;
 
@@ -67,6 +70,7 @@ export interface IMapButtons {
   onZoomedOut: () => void;
   onCentered: () => void;
   onSyncToggled: () => void;
+  onHeadingToggled: () => void;
 }
 
 const MapButtons: FunctionComponent<IMapButtons> = props => {
@@ -85,6 +89,13 @@ const MapButtons: FunctionComponent<IMapButtons> = props => {
         disabled={props.zoomState === ZoomState.ZOOMED_MIN}
         hidden={props.zoomState === ZoomState.NOT_CENTERED}
         onPress={props.onZoomedOut}
+      />
+      <MapButton
+        icon={props.headingTracked ? "compass-outline" : "compass-off-outline"}
+        hidden={
+          props.zoomState === ZoomState.NOT_CENTERED || !props.headingSupport
+        }
+        onPress={props.onHeadingToggled}
       />
       <MapButton
         icon="crosshairs-gps"
