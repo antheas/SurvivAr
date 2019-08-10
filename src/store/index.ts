@@ -1,4 +1,4 @@
-import { createStore, applyMiddleware } from "redux";
+import { createStore, applyMiddleware, Middleware } from "redux";
 import createSagaMiddleware from "redux-saga";
 import logger from "redux-logger";
 import { persistStore, persistReducer } from "redux-persist";
@@ -6,6 +6,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 import autoMergeLevel2 from "redux-persist/es/stateReconciler/autoMergeLevel2";
 
 import rootReducer from "./reducers";
+import rootSaga from "../sagas";
 
 // Redux persist
 const persistConfig = {
@@ -18,7 +19,7 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 // Apply logger and thunk
 const sagaMiddleware = createSagaMiddleware();
-let middleware = [sagaMiddleware];
+let middleware: Middleware[] = [sagaMiddleware];
 if (process.env.NODE_ENV !== "production") {
   middleware = [...middleware, logger];
 }
@@ -26,5 +27,8 @@ if (process.env.NODE_ENV !== "production") {
 const store = createStore(persistedReducer, applyMiddleware(...middleware));
 const persistor = persistStore(store);
 
+// Start root saga
+sagaMiddleware.run(rootSaga, store.dispatch);
+
 export default store;
-export { persistor, sagaMiddleware };
+export { persistor };

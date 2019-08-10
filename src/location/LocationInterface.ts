@@ -1,11 +1,18 @@
-import { AreaPoint, PointEvent, PositionState } from "../store/types";
+import {
+  AreaPoint,
+  PointEvent,
+  PositionState,
+  HeadingState
+} from "../store/types";
 
-export type LocationCallback = (position: PositionState) => void;
+export type PositionCallback = (position: PositionState) => void;
+export type HeadingCallback = (heading: HeadingState) => void;
 
 export default interface LocationManagerInterface {
   supportsBackgroundTracking: boolean;
+  supportsHeading: boolean;
 
-  startJsCallbacks(callback: LocationCallback): void;
+  startJsCallbacks(position: PositionCallback, heading?: HeadingCallback): void;
 
   stopJsCallbacks(): void;
 

@@ -170,7 +170,7 @@ export default class Map extends React.Component<IMapProps, IMapState> {
           {/* Points */}
           {this.props.points.map(PointMarker)}
           {/* User Marker */}
-          {pos.accuracy > 20 ? (
+          {pos.accuracy > 20 && pos.accuracy !== Infinity ? (
             <Circle
               center={userCoords}
               radius={pos.accuracy}

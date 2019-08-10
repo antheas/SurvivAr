@@ -1,5 +1,11 @@
 import React, { Component, ReactElement } from "react";
-import { StatusBar, StyleSheet, View } from "react-native";
+import {
+  StatusBar,
+  StyleSheet,
+  View,
+  AppState,
+  AppStateStatus
+} from "react-native";
 import { NavigationParams } from "react-navigation";
 import { connect } from "react-redux";
 import LocationManager from "../../location/LocationManager";
@@ -7,7 +13,8 @@ import { checkLocationPermission } from "../../location/Permissions";
 import {
   retryFetch,
   setForegroundFetch,
-  updatePosition
+  updatePosition,
+  appLaunchCompleted
 } from "../../store/actions";
 import {
   AreaPoint,
@@ -57,6 +64,7 @@ interface MainStateProps {
 
 interface MainDispatchProps {
   updatePosition: (pos: PositionState) => void;
+  appLaunchCompleted: () => void;
   setForegroundFetch: (state: boolean) => void;
   retry: () => void;
 }
@@ -71,15 +79,14 @@ class MainScreen extends Component<MainProps> {
       if (!res) {
         this.props.navigation.navigate("Intro");
       } else {
-        this.props.setForegroundFetch(true);
-        LocationManager.startJsCallbacks(this.props.updatePosition);
+        this.props.appLaunchCompleted();
+        AppState.addEventListener("change", this.stateListenerCallback);
       }
     });
   }
 
-  public componentWillUnmount(): void {
-    LocationManager.stopJsCallbacks();
-    this.props.setForegroundFetch(false);
+  public componentWillUnmount() {
+    AppState.removeEventListener("change", this.stateListenerCallback);
   }
 
   public render(): ReactElement {
@@ -113,6 +120,10 @@ class MainScreen extends Component<MainProps> {
       </View>
     );
   }
+
+  private stateListenerCallback = (state: AppStateStatus) => {
+    this.props.setForegroundFetch(state === "active");
+  };
 }
 
 /**
@@ -160,7 +171,8 @@ const mapStateToProps = ({
 const mapDispatchToProps = (dispatch: Dispatch): MainDispatchProps => {
   return {
     updatePosition: (pos: PositionState) => dispatch(updatePosition(pos)),
-    setForegroundFetch: state => dispatch(setForegroundFetch(state)),
+    appLaunchCompleted: () => dispatch(appLaunchCompleted()),
+    setForegroundFetch: (state: boolean) => dispatch(setForegroundFetch(state)),
     retry: () => dispatch(retryFetch())
   };
 };

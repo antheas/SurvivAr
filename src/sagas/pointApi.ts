@@ -13,6 +13,7 @@ const BASE_URL =
 const AREA_BOUNDS = 2000;
 const API_KEY = Config.REACT_APP_PLACES_KEY;
 const MAX_RETRIES = 5;
+const BOUNDS = 100000;
 
 async function fetchType(
   location: Location,
@@ -92,13 +93,13 @@ export default async function fetchPoints(
     areas = [...currentData.areas];
   } else {
     loc = location;
-    bounds = Infinity;
+    bounds = BOUNDS;
     areas = [] as AreaPoint[];
   }
 
   const newState = {
     valid: true,
-    updated: new Date().getMilliseconds(),
+    updated: Date.now(),
     location: loc,
     bounds,
     areas
@@ -118,7 +119,7 @@ export default async function fetchPoints(
 
   const newAreaPoints = pointJson.map(p => processWaitPoint(p, "pharmacy"));
   const newArea: AreaPoint = {
-    id: new Date().getTime().toString(),
+    id: Date.now().toString(),
 
     name: "",
     desc: "",

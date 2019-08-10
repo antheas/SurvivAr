@@ -9,7 +9,10 @@ import {
   updatePointMetadata,
   updatePoints,
   updateState,
-  UPDATE_POSITION
+  UPDATE_POSITION,
+  APP_LAUNCH_COMPLETED,
+  APP_EXITING,
+  updatePosition
 } from "../store/actions";
 import { selectPoints, selectPosition } from "../store/selectors";
 import {
@@ -21,6 +24,9 @@ import {
   StateType
 } from "../store/types";
 import fetchPoints from "./pointApi";
+import { Dispatch } from "redux";
+import { AppState } from "react-native";
+import LocationManager from "../location/LocationManager";
 
 function toLatLon(l: Location): LatLon {
   return new LatLon(l.lat, l.lon);
@@ -68,7 +74,7 @@ function* refreshRootNode() {
   let needsUpdate = false;
   if (
     !points.valid ||
-    points.updated > POINT_DATA_STALE_AFTER_MS ||
+    Date.now() - points.updated > POINT_DATA_STALE_AFTER_MS ||
     !withinThreshold(coords, points.location, points.bounds)
   ) {
     needsUpdate = true;
@@ -148,12 +154,29 @@ function* mainEventLoop() {
   }
 }
 
-export default function* rootSaga() {
-  while (yield take(BEGIN_FOREGROUND_FETCH)) {
-    const loopTask = yield fork(mainEventLoop);
+function registerPositionUpdates(dispatch: Dispatch) {
+  const manager = new LocationManager();
+  manager.startJsCallbacks(p => dispatch(updatePosition(p)));
+  return manager;
+}
 
-    // TODO: Handle exiting gracefully
-    yield take(STOP_FOREGROUND_FETCH);
+function unregisterPositionUpdates(manager: LocationManager) {
+  manager.stopJsCallbacks();
+}
+
+export default function* rootSaga(dispatch: Dispatch) {
+  yield take(APP_LAUNCH_COMPLETED);
+
+  let action;
+  do {
+    const loopTask = yield fork(mainEventLoop);
+    const manager = registerPositionUpdates(dispatch);
+
+    action = yield take([STOP_FOREGROUND_FETCH, APP_EXITING]);
     yield cancel(loopTask);
-  }
+    unregisterPositionUpdates(manager);
+    if (action.type === APP_EXITING) break;
+
+    action = yield take([BEGIN_FOREGROUND_FETCH, APP_EXITING]);
+  } while (action.type === BEGIN_FOREGROUND_FETCH);
 }
