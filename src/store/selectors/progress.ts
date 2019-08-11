@@ -1,20 +1,6 @@
 import { isWaitPoint, State } from "../types";
 import { selectCurrentArea, selectDistance } from "./points";
 
-export function selectWaitPointProgress(
-  { progress: { waitPoints } }: State,
-  id: string
-) {
-  return waitPoints[id] ? waitPoints[id] : { elapsedTime: 0 };
-}
-
-export function selectCollectPointProgress(
-  { progress: { collectPoints } }: State,
-  id: string
-) {
-  return collectPoints[id] ? collectPoints[id] : { qrPoints: {} };
-}
-
 export function selectCachedCurrentWaitPoints({
   session: { currentPointCache }
 }: State) {
@@ -35,4 +21,22 @@ export function selectCurrentWaitPoints(state: State) {
       return distance !== -1 && distance <= p.radius;
     })
     .map(p => p.id);
+}
+
+export function selectWaitPointProgress(
+  { progress: { waitPoints } }: State,
+  id: string
+) {
+  return waitPoints[id] ? waitPoints[id] : { elapsedTime: 0 };
+}
+
+export function selectMultipleWaitPointProgress(state: State, ids: string[]) {
+  return ids.map(id => selectWaitPointProgress(state, id));
+}
+
+export function selectCollectPointProgress(
+  { progress: { collectPoints } }: State,
+  id: string
+) {
+  return collectPoints[id] ? collectPoints[id] : { qrPoints: {} };
 }

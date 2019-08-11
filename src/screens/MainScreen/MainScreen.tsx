@@ -16,28 +16,19 @@ import {
   setForegroundFetch,
   updatePosition
 } from "../../store/actions";
-import {
-  AreaPoint,
-  isCollectPoint,
-  isWaitPoint,
-  PositionState,
-  State,
-  StateType
-} from "../../store/types";
-import * as Theme from "../../utils/Theme";
-import { ExtendedCollectPoint } from "../../store/model/ExtendedCollectPoint";
 import { ExtendedPoint } from "../../store/model/ExtendedPoint";
-import { ExtendedWaitPoint } from "../../store/model/ExtendedWaitPoint";
-import Loader from "./Loader";
-import Map from "./Map";
-import PointCardList from "./PointCardList";
 import {
-  selectPosition,
   selectAppState,
   selectAreas,
   selectCurrentArea,
-  selectExtendedPoints
+  selectExtendedPoints,
+  selectPosition
 } from "../../store/selectors";
+import { AreaPoint, PositionState, State, StateType } from "../../store/types";
+import * as Theme from "../../utils/Theme";
+import Loader from "./Loader";
+import Map from "./Map";
+import PointCardList from "./PointCardList";
 
 const styles = StyleSheet.create({
   container: {
