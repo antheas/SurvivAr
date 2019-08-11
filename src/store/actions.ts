@@ -90,21 +90,22 @@ export function updateHeading(heading: HeadingState): HeadingAction {
   };
 }
 
+export type ProgressUpdate = Array<{
+  id: string;
+  progress: PointProgress;
+}>;
+
 export interface ProgressAction {
   type: typeof UPDATE_PROGRESS;
 
-  id: string;
-  point: PointProgress;
+  update: ProgressUpdate;
 }
 
-export function updateProgress(
-  id: string,
-  point: PointProgress
-): ProgressAction {
+export function updateProgress(update: ProgressUpdate): ProgressAction {
   return {
     type: UPDATE_PROGRESS,
-    id,
-    point
+
+    update
   };
 }
 
@@ -141,12 +142,14 @@ export interface CurrentPointAction {
   type: typeof UPDATE_CURRENT_POINT_CACHE;
 
   currentIds: string[];
+  updated: number;
 }
 
-export function updateCurrentPointCache(pointIds: string[]) {
+export function updateCurrentPointCache(pointIds: string[], updated: number) {
   return {
     type: UPDATE_CURRENT_POINT_CACHE,
 
-    currentIds: pointIds
+    currentIds: pointIds,
+    updated
   };
 }

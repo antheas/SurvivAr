@@ -154,7 +154,7 @@ export const map = {
   point: {
     completed: {
       icon: {
-        color: colors.disabled,
+        color: colors.disabledDark,
         size: 20
       },
       marker: {

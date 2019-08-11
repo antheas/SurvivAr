@@ -89,7 +89,10 @@ function progress(
 ): ProgressState {
   if (action.type === UPDATE_PROGRESS) {
     const newState = { ...state };
-    newState.points = { ...state.points, [action.id]: action.point };
+    newState.points = { ...state.points };
+    for (const { id, progress: pointProgress } of action.update) {
+      newState.points[id] = pointProgress;
+    }
     return newState;
   } else {
     return state;
@@ -102,7 +105,10 @@ function session(
     pointMetadata: {
       sortedPoints: []
     },
-    currentPointIdCache: []
+    currentPointCache: {
+      ids: [],
+      updated: 0
+    }
   },
   action: StateAction | PointMetadataAction | CurrentPointAction
 ): SessionState {
@@ -116,7 +122,10 @@ function session(
     return newState;
   } else if (action.type === UPDATE_CURRENT_POINT_CACHE) {
     const newState: SessionState = { ...state };
-    newState.currentPointIdCache = action.currentIds;
+    newState.currentPointCache = {
+      ids: action.currentIds,
+      updated: action.updated
+    };
     return newState;
   } else {
     return state;

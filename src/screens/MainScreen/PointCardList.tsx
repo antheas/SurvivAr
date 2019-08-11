@@ -74,14 +74,17 @@ const PointCard = ({ item: p }: { item: ExtendedPoint }): ReactElement => {
       <View style={styles.cardProgress}>
         <Text style={{ ...styles.progressDetail, ...chooseProgressColor(p) }}>
           {p instanceof ExtendedWaitPoint &&
-            `${p.completedDuration}s / ${p.duration}s`}
+            `${Math.floor(p.completedDuration)}s / ${p.duration}s`}
           {p instanceof ExtendedCollectPoint &&
             `${p.completedPoints} / ${p.totalPoints}`}
         </Text>
         <Spacer small horz />
         <Text style={{ ...styles.progressStatus, ...chooseProgressColor(p) }}>
-          {p.completed && "Completed"}
-          {!p.completed && p.userWithin ? "Active" : "Not Completed"}
+          {p.completed
+            ? "Completed"
+            : p.userWithin
+            ? "Active"
+            : "Not Completed"}
         </Text>
       </View>
       <Glue />
@@ -116,9 +119,9 @@ export const PointCardList = ({
   const completed = sorted.filter((p): boolean => p.completed);
 
   const sections = [];
-  if (completed.length) sections.push({ title: "Completed", data: completed });
   if (active.length) sections.push({ title: "Active", data: active });
   if (pending.length) sections.push({ title: "Pending", data: pending });
+  if (completed.length) sections.push({ title: "Completed", data: completed });
 
   return (
     <SectionList

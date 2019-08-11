@@ -1,13 +1,13 @@
-import {
-  State,
-  PointState,
-  PositionState,
-  isWaitPoint,
-  isCollectPoint
-} from "./types";
+import { ExtendedCollectPoint } from "./model/ExtendedCollectPoint";
 import { ExtendedPoint } from "./model/ExtendedPoint";
 import { ExtendedWaitPoint } from "./model/ExtendedWaitPoint";
-import { ExtendedCollectPoint } from "./model/ExtendedCollectPoint";
+import {
+  isCollectPoint,
+  isWaitPoint,
+  PointState,
+  PositionState,
+  State
+} from "./types";
 
 export function selectPoints({ points }: State): PointState {
   return points;
@@ -46,14 +46,18 @@ export function selectSortedPoints({
   return sortedPoints;
 }
 
-export function selectExtendedPoints(state: State) {
+export function selectExtendedPoints(state: State, ids?: string[]) {
   const currentArea = selectCurrentArea(state);
 
   if (!currentArea) return [];
   const areaPoints = currentArea.children;
   const progressPoints = state.progress.points;
 
-  return selectSortedPoints(state).map(
+  let sortedPoints = selectSortedPoints(state);
+  if (ids)
+    sortedPoints = sortedPoints.filter(ps => ids.indexOf(ps.pointId) !== -1);
+
+  return sortedPoints.map(
     (ps): ExtendedPoint => {
       const p = areaPoints.find((c): boolean => c.id === ps.pointId);
       const progress = progressPoints[ps.pointId];
@@ -90,14 +94,25 @@ export function selectExtendedCollectPoint(state: State, id: string) {
   }
 }
 
-export function selectCachedCurrentPoints({
-  session: { currentPointIdCache }
+export function selectCachedCurrentWaitPoints({
+  session: { currentPointCache }
 }: State) {
-  return currentPointIdCache;
+  return currentPointCache;
 }
 
-export function selectCurrentPoints(state: State) {
+export function selectCurrentWaitPoints(state: State) {
   return selectExtendedPoints(state)
-    .filter(p => p.userWithin)
+    .filter(p => p.userWithin && !p.completed && p instanceof ExtendedWaitPoint)
     .map(p => p.id);
+}
+
+export function selectWaitPointProgress(
+  { progress: { points } }: State,
+  ids: string[]
+) {
+  return ids.map(id =>
+    points[id]
+      ? { id, progress: points[id] }
+      : { id, progress: { elapsedTime: 0 } }
+  );
 }

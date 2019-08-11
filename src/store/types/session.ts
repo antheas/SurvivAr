@@ -17,5 +17,9 @@ export interface PointMetadata {
 export interface SessionState {
   state: StateType;
   pointMetadata: PointMetadata;
-  currentPointIdCache: string[];
+  currentPointCache: {
+    // WaitPoints Only
+    ids: string[];
+    updated: number;
+  };
 }

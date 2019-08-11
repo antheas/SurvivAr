@@ -14,16 +14,26 @@ import {
   updatePoints,
   updatePosition,
   updateState,
-  UPDATE_POSITION
+  UPDATE_POSITION,
+  ProgressUpdate,
+  updateProgress,
+  updateCurrentPointCache
 } from "../store/actions";
-import { selectPoints, selectPosition } from "../store/selectors";
+import {
+  selectCachedCurrentWaitPoints,
+  selectCurrentWaitPoints,
+  selectPoints,
+  selectPosition,
+  selectWaitPointProgress
+} from "../store/selectors";
 import {
   FINE_LOCATION_THRESHOLD,
   Location,
   PointState,
   POINT_DATA_STALE_AFTER_DAYS,
   PositionState,
-  StateType
+  StateType,
+  PointProgress
 } from "../store/types";
 import fetchPoints from "./pointApi";
 
@@ -107,8 +117,9 @@ function* refreshRootNode() {
   }
 }
 
-function* updateMetadata(pos: PositionState, points: PointState) {
+function* updateMetadata(pos: PositionState) {
   // Find current area and point
+  const points: PointState = yield select(selectPoints);
   const currentArea = points.areas
     .sort((a, b) => distance(pos.coords, a.loc) - distance(pos.coords, b.loc))
     .find(a => withinThreshold(pos.coords, a.loc, a.radius));
@@ -132,13 +143,55 @@ function* updateMetadata(pos: PositionState, points: PointState) {
   );
 }
 
+function* updateWaitProgress(pos: PositionState) {
+  // Current Point Cache contains the points we pulled on the previous update
+  // Whereas the current ones are calculated based on the current location
+  const {
+    ids: currentPointCache,
+    updated: previousTime
+  }: { ids: string[]; updated: number } = yield select(
+    selectCachedCurrentWaitPoints
+  );
+
+  const currentPoints: string[] = yield select(selectCurrentWaitPoints);
+  const currentTime = pos.updated;
+
+  const addedTime = (currentTime - previousTime) / 1000;
+
+  // Calculate intersection
+  const commonPoints = currentPoints.filter(
+    id => currentPointCache.indexOf(id) !== -1
+  );
+
+  // Retrieve Current Progress
+  const progressPoints: ProgressUpdate = yield select(
+    selectWaitPointProgress,
+    commonPoints
+  );
+
+  // Add new progress
+  const updatedProgress = progressPoints.map(pp => ({
+    id: pp.id,
+    progress: {
+      elapsedTime:
+        (pp.progress.elapsedTime ? pp.progress.elapsedTime : 0) + addedTime
+    }
+  }));
+
+  yield put(updateProgress(updatedProgress));
+
+  // Update Cache
+  yield put(updateCurrentPointCache(currentPoints, currentTime));
+}
+
 function* watchLocationUpdates() {
   yield put(updateState(StateType.TRACKING));
 
   let pos: PositionState = yield select(selectPosition);
-  const points: PointState = yield select(selectPoints);
+
   while (1) {
-    yield* updateMetadata(pos, points);
+    yield* updateMetadata(pos);
+    yield* updateWaitProgress(pos);
 
     ({ position: pos } = yield take(UPDATE_POSITION));
   }
