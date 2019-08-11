@@ -1,4 +1,4 @@
-import { CollectPoint, PointProgress } from "../../store/types";
+import { CollectPoint, PointProgress } from "../types";
 import { ExtendedPoint } from "./ExtendedPoint";
 import { ExtendedQrPoint } from "./ExtendedQrPoint";
 

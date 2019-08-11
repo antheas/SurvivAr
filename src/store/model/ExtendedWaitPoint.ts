@@ -1,4 +1,4 @@
-import { PointProgress, WaitPoint } from "../../store/types";
+import { PointProgress, WaitPoint } from "../types";
 import { ExtendedPoint } from "./ExtendedPoint";
 
 export class ExtendedWaitPoint extends ExtendedPoint implements WaitPoint {

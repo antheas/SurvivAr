@@ -1,20 +1,20 @@
 import React, { Component, ReactElement } from "react";
 import {
+  AppState,
+  AppStateStatus,
   StatusBar,
   StyleSheet,
-  View,
-  AppState,
-  AppStateStatus
+  View
 } from "react-native";
 import { NavigationParams } from "react-navigation";
 import { connect } from "react-redux";
-import LocationManager from "../../location/LocationManager";
+import { Dispatch } from "redux";
 import { checkLocationPermission } from "../../location/Permissions";
 import {
+  appLaunchCompleted,
   retryFetch,
   setForegroundFetch,
-  updatePosition,
-  appLaunchCompleted
+  updatePosition
 } from "../../store/actions";
 import {
   AreaPoint,
@@ -25,13 +25,19 @@ import {
   StateType
 } from "../../store/types";
 import * as Theme from "../../utils/Theme";
-import { ExtendedCollectPoint } from "../model/ExtendedCollectPoint";
-import { ExtendedPoint } from "../model/ExtendedPoint";
-import { ExtendedWaitPoint } from "../model/ExtendedWaitPoint";
+import { ExtendedCollectPoint } from "../../store/model/ExtendedCollectPoint";
+import { ExtendedPoint } from "../../store/model/ExtendedPoint";
+import { ExtendedWaitPoint } from "../../store/model/ExtendedWaitPoint";
 import Loader from "./Loader";
 import Map from "./Map";
 import PointCardList from "./PointCardList";
-import { Dispatch } from "redux";
+import {
+  selectPosition,
+  selectAppState,
+  selectAreas,
+  selectCurrentArea,
+  selectExtendedPoints
+} from "../../store/selectors";
 
 const styles = StyleSheet.create({
   container: {
@@ -129,43 +135,14 @@ class MainScreen extends Component<MainProps> {
 /**
  * Maps normalized state of redux model to objects.
  */
-const mapStateToProps = ({
-  navigation: { position },
-  points,
-  progress: { points: progressPoints },
-  session: {
-    state,
-    pointMetadata: { currentAreaId, sortedPoints }
-  }
-}: State): MainStateProps => {
-  const areas = points.areas;
-  const currentArea = currentAreaId
-    ? areas.find((a): boolean => a.id === currentAreaId)
-    : undefined;
-
-  let extendedPoints: ExtendedPoint[] = [];
-  if (currentArea) {
-    const areaPoints = currentArea.children;
-
-    extendedPoints = sortedPoints.map(
-      (ps): ExtendedPoint => {
-        const p = areaPoints.find((c): boolean => c.id === ps.pointId);
-        const progress = progressPoints[ps.pointId];
-
-        if (!p) throw new Error(`Point with id: ${ps.pointId} not found!`);
-
-        if (isWaitPoint(p)) {
-          return new ExtendedWaitPoint(p, ps.distance, progress);
-        } else if (isCollectPoint(p)) {
-          return new ExtendedCollectPoint(p, ps.distance, progressPoints);
-        } else {
-          return new ExtendedPoint(p, ps.distance);
-        }
-      }
-    );
-  }
-
-  return { position, state, areas, currentArea, points: extendedPoints };
+const mapStateToProps = (state: State): MainStateProps => {
+  return {
+    position: selectPosition(state),
+    state: selectAppState(state),
+    areas: selectAreas(state),
+    currentArea: selectCurrentArea(state),
+    points: selectExtendedPoints(state)
+  };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch): MainDispatchProps => {

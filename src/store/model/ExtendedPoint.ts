@@ -3,7 +3,7 @@
  * in an attempt to make them easier to handle by components.
  */
 
-import { Location, Point } from "../../store/types";
+import { Location, Point } from "../types";
 
 export class ExtendedPoint implements Point {
   public id: string;

@@ -12,7 +12,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { AreaPoint, Location, PositionState } from "../../store/types";
 import coordinateDeltas from "../../utils/coordinateDeltas";
 import * as Theme from "../../utils/Theme";
-import { ExtendedPoint } from "../model/ExtendedPoint";
+import { ExtendedPoint } from "../../store/model/ExtendedPoint";
 import MapButtons, { ZoomState } from "./MapButtons";
 
 const NEARBY_RATIO = 3;

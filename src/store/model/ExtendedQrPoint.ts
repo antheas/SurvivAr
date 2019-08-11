@@ -1,4 +1,4 @@
-import { PointProgress, QrPoint } from "../../store/types";
+import { PointProgress, QrPoint } from "../types";
 import { ExtendedPoint } from "./ExtendedPoint";
 export class ExtendedQrPoint extends ExtendedPoint implements QrPoint {
   public qrData: string;
