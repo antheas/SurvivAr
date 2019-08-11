@@ -1,8 +1,9 @@
+// @ts-ignore
+import LatLon from "geodesy/latlon-spherical";
 import { Location } from "../store/types";
-import { LatLonSpherical } from "geodesy";
 
-export function toLatLon(l: Location): LatLonSpherical {
-  return new LatLonSpherical(l.lat, l.lon);
+export function toLatLon(l: Location): LatLon {
+  return new LatLon(l.lat, l.lon);
 }
 
 export function getDistance(start: Location, end: Location): number {
@@ -14,5 +15,5 @@ export function withinThreshold(
   end: Location,
   threshold: number
 ): boolean {
-  return distance(start, end) <= threshold;
+  return getDistance(start, end) <= threshold;
 }
