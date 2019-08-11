@@ -1,6 +1,11 @@
 apply plugin: "com.android.application"
 // added for react-native-config
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
+// added for react-native-vector-icons
+project.ext.vectoricons = [
+        iconFontNames: [ 'MaterialCommunityIcons.ttf' ]
+]
+apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 
 import com.android.build.OutputFile
 

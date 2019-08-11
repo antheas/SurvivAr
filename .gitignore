@@ -62,7 +62,4 @@ buck-out/
 # CocoaPods
 /ios/Pods/
 
-# Vector Icons
-android/app/src/main/assets/fonts/
-
 .env.local
