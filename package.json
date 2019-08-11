@@ -5,7 +5,7 @@
   "main": "index.html",
   "private": true,
   "scripts": {
-    "start": "react-native start",
+    "start": "cross-env REACT_DEBUGGER=\"echo noop\" react-native start --config rn-cli.config.js",
     "push": "cross-env ENVFILE=.env.local react-native run-android --no-packager",
     "dev": "react-native run-android",
     "test": "jest",
