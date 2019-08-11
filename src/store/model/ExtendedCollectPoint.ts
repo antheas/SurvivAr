@@ -1,4 +1,4 @@
-import { CollectPoint, PointProgress } from "../types";
+import { CollectPoint, CollectPointProgress } from "../types";
 import { ExtendedPoint } from "./ExtendedPoint";
 import { ExtendedQrPoint } from "./ExtendedQrPoint";
 
@@ -10,12 +10,12 @@ export class ExtendedCollectPoint extends ExtendedPoint
   public constructor(
     p: CollectPoint,
     distance: number,
-    progress: Record<string, PointProgress>
+    progress: CollectPointProgress
   ) {
     super(p, distance);
     // setup qr points
     this.qrPoints = p.qrPoints.map(
-      (qr): ExtendedQrPoint => new ExtendedQrPoint(qr, progress[qr.id])
+      qr => new ExtendedQrPoint(qr, progress.qrPoints[qr.id])
     );
     // mark completed qr points
     this.completedPoints = 0;

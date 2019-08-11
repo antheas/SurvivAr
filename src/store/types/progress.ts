@@ -4,11 +4,19 @@ export interface PointEvent {
   end: Date;
 }
 
-export interface PointProgress {
-  completed?: boolean; // Only applicable for QrPoint
-  elapsedTime?: number; // Only applicable for WaitPoint
+export interface WaitPointProgress {
+  elapsedTime: number;
+}
+
+export interface QrPointProgress {
+  completed: boolean;
+}
+
+export interface CollectPointProgress {
+  qrPoints: Record<string, QrPointProgress>;
 }
 
 export interface ProgressState {
-  points: Record<string, PointProgress>;
+  waitPoints: Record<string, WaitPointProgress>;
+  collectPoints: Record<string, CollectPointProgress>;
 }

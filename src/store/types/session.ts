@@ -8,12 +8,10 @@ export enum StateType {
 
 export interface PointMetadata {
   currentAreaId?: string;
-  sortedPoints: Array<{
-    pointId: string;
-    distance: number;
-  }>;
+  distances: Record<string, number>;
 }
 
+// Session contains the transient application state
 export interface SessionState {
   state: StateType;
   pointMetadata: PointMetadata;

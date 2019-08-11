@@ -1,14 +1,18 @@
-import { PointProgress, WaitPoint } from "../types";
+import { WaitPointProgress, WaitPoint } from "../types";
 import { ExtendedPoint } from "./ExtendedPoint";
 
 export class ExtendedWaitPoint extends ExtendedPoint implements WaitPoint {
   public duration: number;
   public completedDuration: number;
 
-  public constructor(p: WaitPoint, distance: number, progress?: PointProgress) {
+  public constructor(
+    p: WaitPoint,
+    distance: number,
+    progress: WaitPointProgress
+  ) {
     super(p, distance);
     this.duration = p.duration;
-    this.completedDuration = progress ? (progress.elapsedTime as number) : 0;
+    this.completedDuration = progress.elapsedTime;
 
     // Make sure we don't exceed duration
     if (this.completedDuration > this.duration)
