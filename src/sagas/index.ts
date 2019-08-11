@@ -19,10 +19,8 @@ function* mainEventLoop() {
   }
 }
 
-function registerPositionUpdates(dispatch: Dispatch) {
-  const manager = new LocationManager();
+function registerPositionUpdates(manager: LocationManager, dispatch: Dispatch) {
   manager.startJsCallbacks(p => dispatch(updatePosition(p)));
-  return manager;
 }
 
 function unregisterPositionUpdates(manager: LocationManager) {
@@ -31,11 +29,12 @@ function unregisterPositionUpdates(manager: LocationManager) {
 
 export default function* rootSaga(dispatch: Dispatch) {
   yield take(APP_LAUNCH_COMPLETED);
+  const manager = new LocationManager();
 
   let action;
   do {
     const loopTask = yield fork(mainEventLoop);
-    const manager = registerPositionUpdates(dispatch);
+    registerPositionUpdates(manager, dispatch);
 
     action = yield take([STOP_FOREGROUND_FETCH, APP_EXITING]);
     yield cancel(loopTask);
