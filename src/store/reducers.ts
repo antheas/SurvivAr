@@ -11,7 +11,9 @@ import {
   UPDATE_PROGRESS,
   UPDATE_STATE,
   HeadingAction,
-  UPDATE_HEADING
+  UPDATE_HEADING,
+  UPDATE_CURRENT_POINT_CACHE,
+  CurrentPointAction
 } from "./actions";
 import {
   PointState,
@@ -99,9 +101,10 @@ function session(
     state: StateType.STARTUP,
     pointMetadata: {
       sortedPoints: []
-    }
+    },
+    currentPointIdCache: []
   },
-  action: StateAction | PointMetadataAction
+  action: StateAction | PointMetadataAction | CurrentPointAction
 ): SessionState {
   if (action.type === UPDATE_STATE) {
     const newState: SessionState = { ...state };
@@ -110,6 +113,10 @@ function session(
   } else if (action.type === UPDATE_POINT_METADATA) {
     const newState: SessionState = { ...state };
     newState.pointMetadata = action.metadata;
+    return newState;
+  } else if (action.type === UPDATE_CURRENT_POINT_CACHE) {
+    const newState: SessionState = { ...state };
+    newState.currentPointIdCache = action.currentIds;
     return newState;
   } else {
     return state;

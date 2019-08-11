@@ -38,6 +38,14 @@ export function selectCurrentArea({
     : undefined;
 }
 
+export function selectSortedPoints({
+  session: {
+    pointMetadata: { sortedPoints }
+  }
+}: State) {
+  return sortedPoints;
+}
+
 export function selectExtendedPoints(state: State) {
   const currentArea = selectCurrentArea(state);
 
@@ -45,7 +53,7 @@ export function selectExtendedPoints(state: State) {
   const areaPoints = currentArea.children;
   const progressPoints = state.progress.points;
 
-  return state.session.pointMetadata.sortedPoints.map(
+  return selectSortedPoints(state).map(
     (ps): ExtendedPoint => {
       const p = areaPoints.find((c): boolean => c.id === ps.pointId);
       const progress = progressPoints[ps.pointId];
@@ -61,4 +69,35 @@ export function selectExtendedPoints(state: State) {
       }
     }
   );
+}
+
+export function selectExtendedCollectPoint(state: State, id: string) {
+  const currentArea = selectCurrentArea(state);
+
+  if (!currentArea) return undefined;
+  const areaPoints = currentArea.children;
+  const progressPoints = state.progress.points;
+
+  const ps = selectSortedPoints(state).find(po => po.pointId === id);
+  const p = areaPoints.find((c): boolean => c.id === id);
+
+  if (!p || !ps) throw new Error(`Point with id: ${id} not found!`);
+
+  if (isCollectPoint(p)) {
+    return new ExtendedCollectPoint(p, ps.distance, progressPoints);
+  } else {
+    throw new Error(`Point with id: ${id} is not a collect point.`);
+  }
+}
+
+export function selectCachedCurrentPoints({
+  session: { currentPointIdCache }
+}: State) {
+  return currentPointIdCache;
+}
+
+export function selectCurrentPoints(state: State) {
+  return selectExtendedPoints(state)
+    .filter(p => p.userWithin)
+    .map(p => p.id);
 }

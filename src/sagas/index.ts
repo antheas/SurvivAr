@@ -1,18 +1,20 @@
 // @ts-ignore
 import LatLon from "geodesy/latlon-spherical";
+import { Dispatch } from "redux";
 import { call, cancel, fork, put, select, take } from "redux-saga/effects";
+import LocationManager from "../location/LocationManager";
 import {
+  APP_EXITING,
+  APP_LAUNCH_COMPLETED,
   BEGIN_FOREGROUND_FETCH,
   PositionAction,
   RETRY_FETCH,
   STOP_FOREGROUND_FETCH,
   updatePointMetadata,
   updatePoints,
+  updatePosition,
   updateState,
-  UPDATE_POSITION,
-  APP_LAUNCH_COMPLETED,
-  APP_EXITING,
-  updatePosition
+  UPDATE_POSITION
 } from "../store/actions";
 import { selectPoints, selectPosition } from "../store/selectors";
 import {
@@ -24,9 +26,6 @@ import {
   StateType
 } from "../store/types";
 import fetchPoints from "./pointApi";
-import { Dispatch } from "redux";
-import { AppState } from "react-native";
-import LocationManager from "../location/LocationManager";
 
 function toLatLon(l: Location): LatLon {
   return new LatLon(l.lat, l.lon);

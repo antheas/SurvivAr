@@ -17,4 +17,5 @@ export interface PointMetadata {
 export interface SessionState {
   state: StateType;
   pointMetadata: PointMetadata;
+  currentPointIdCache: string[];
 }

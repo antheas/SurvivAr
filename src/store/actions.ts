@@ -14,6 +14,7 @@ export const UPDATE_PROGRESS = "UPDATE_PROGRESS";
 
 export const UPDATE_STATE = "UPDATE_STATE";
 export const UPDATE_POINT_METADATA = "UPDATE_POINT_METADATA";
+export const UPDATE_CURRENT_POINT_CACHE = "UPDATE_CURRENT_POINT_CACHE";
 export const RETRY_FETCH = "RETRY_FETCH";
 
 export const BEGIN_FOREGROUND_FETCH = "BEGIN_FOREGROUND_FETCH";
@@ -133,5 +134,19 @@ export function updatePointMetadata(
     type: UPDATE_POINT_METADATA,
 
     metadata
+  };
+}
+
+export interface CurrentPointAction {
+  type: typeof UPDATE_CURRENT_POINT_CACHE;
+
+  currentIds: string[];
+}
+
+export function updateCurrentPointCache(pointIds: string[]) {
+  return {
+    type: UPDATE_CURRENT_POINT_CACHE,
+
+    currentIds: pointIds
   };
 }
