@@ -1,8 +1,10 @@
-import Geolocation from "react-native-geolocation-service";
+import { PointEvent } from "../store/types";
 import LocationManagerInterface, {
   PositionCallback
 } from "./LocationInterface";
-import { PointEvent } from "../store/types";
+import { NativeModules } from "react-native";
+
+const NativeLocationManager = NativeModules.NativeLocationManager;
 
 export class LocationManager implements LocationManagerInterface {
   private watchId = -1;
@@ -16,34 +18,23 @@ export class LocationManager implements LocationManagerInterface {
   }
 
   public startJsCallbacks(callback: PositionCallback) {
-    if (this.watchId !== -1) throw Error("callbacks already enabled");
-
-    this.watchId = Geolocation.watchPosition(
-      (pos): void => {
+    setInterval(
+      () =>
         callback({
           coords: {
-            lat: pos.coords.latitude,
-            lon: pos.coords.longitude
+            lat: 37.948018,
+            lon: 23.650656
           },
-          accuracy: pos.coords.accuracy,
-          updated: +pos.timestamp,
+          accuracy: 25,
+          updated: Date.now(),
           valid: true
-        });
-      },
-      undefined,
-      {
-        timeout: 500,
-        maximumAge: 0,
-        enableHighAccuracy: true,
-        distanceFilter: 0
-      }
+        }),
+      2000
     );
   }
 
   public stopJsCallbacks() {
-    if (this.watchId === -1) return;
-    Geolocation.clearWatch(this.watchId);
-    this.watchId = -1;
+    NativeLocationManager.testService();
   }
 
   public enableBackgroundTracking() {

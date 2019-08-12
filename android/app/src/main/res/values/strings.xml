@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">ExplorAr</string>
+    <string name="app_name">SurvivAr</string>
+    <string name="location_service_notification_title">SurvivAr Tracker</string>
+    <string name="location_service_notification_content">Looking for closest target…</string>
+    <string name="location_notification_channel_description">When background tracking is enabled, this notification displays the current status</string>
+    <string name="location_notification_channel_name">Background Tracking Notification</string>
 </resources>

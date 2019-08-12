@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <!-- TODO: Fix indexing -->
     <application
@@ -17,8 +18,8 @@
 
         <activity
             android:name=".SplashActivity"
-            android:theme="@style/SplashTheme"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -28,11 +29,14 @@
         <activity
             android:name=".MainActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/AppTheme"
-            android:windowSoftInputMode="adjustResize"
-            android:exported="true"
-            />
+            android:windowSoftInputMode="adjustResize" />
+
+        <service
+            android:name=".location.BackgroundLocationService"
+            android:exported="false" />
 
         <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
 
