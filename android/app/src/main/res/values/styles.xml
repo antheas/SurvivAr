@@ -14,4 +14,6 @@
     <style name="SplashTheme" parent="BaseSplashTheme" />
 
     <style name="AppTheme" parent="BaseTheme" />
+
+    <style name="DevTheme" parent="Theme.AppCompat.Light.NoActionBar" />
 </resources>
