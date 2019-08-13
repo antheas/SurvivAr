@@ -3,11 +3,18 @@ import LocationManagerInterface, {
   PositionCallback,
   HeadingCallback
 } from "./LocationInterface";
-import { NativeModules } from "react-native";
+import {
+  NativeModules,
+  DeviceEventEmitter,
+  EmitterSubscription
+} from "react-native";
 
 const NativeLocationManager = NativeModules.NativeLocationManager;
 
 export class LocationManager implements LocationManagerInterface {
+  private subPosition?: EmitterSubscription;
+  private subHeading?: EmitterSubscription;
+
   public get supportsBackgroundTracking() {
     return false;
   }
@@ -17,15 +24,27 @@ export class LocationManager implements LocationManagerInterface {
     heading?: HeadingCallback
   ) {
     // TODO: Make sure WritableMap maps 1-1 to state objects
-    NativeLocationManager.registerPositionCallback(callback);
+    this.subPosition = DeviceEventEmitter.addListener(
+      NativeLocationManager.POSITION_EVENT,
+      callback
+    );
+    NativeLocationManager.enablePositionCallback();
+
     if (heading) {
-      NativeLocationManager.registerHeadingCallback(callback);
+      this.subHeading = DeviceEventEmitter.addListener(
+        NativeLocationManager.HEADING_EVENT,
+        callback
+      );
+      NativeLocationManager.enableHeadingCallback();
     }
   }
 
   public stopJsCallbacks() {
-    NativeLocationManager.unregisterPositionCallback();
-    NativeLocationManager.unregisterHeadingCallback();
+    NativeLocationManager.disablePositionCallback();
+    NativeLocationManager.disableHeadingCallback();
+
+    if (this.subPosition) this.subPosition.remove();
+    if (this.subHeading) this.subHeading.remove();
   }
 
   public enableBackgroundTracking() {

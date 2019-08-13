@@ -3,6 +3,8 @@ package gr.tuc.explorar.location.foreground;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
+import android.os.Build;
+import android.os.HandlerThread;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -15,7 +17,10 @@ public class ForegroundLocationManager {
   private static final int NORMAL = 1;
   private static final int SLOW = 2;
 
+  private static final String THREAD_NAME = "location_callback_thread";
+
   private FusedLocationProviderClient client;
+  private HandlerThread thread;
   private LocationCallback currentCallback;
   private int currentSpeed;
 
@@ -26,6 +31,8 @@ public class ForegroundLocationManager {
 
   @SuppressLint("MissingPermission")
   public void registerPositionCallback(PositionCallback callback) {
+    thread = new HandlerThread(THREAD_NAME);
+    thread.start();
     client.getLastLocation().addOnSuccessListener(l -> callback.onPositionUpdated(toState(l)));
 
     currentCallback = new LocationCallback() {
@@ -38,13 +45,20 @@ public class ForegroundLocationManager {
     client.requestLocationUpdates(
             getLocationRequest(currentSpeed),
             currentCallback,
-            null);
+            thread.getLooper());
   }
 
   public void unregisterLocationCallback() {
     if(currentCallback == null) return;
     client.removeLocationUpdates(currentCallback);
     currentCallback = null;
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      thread.quitSafely();
+    } else {
+      thread.quit();
+    }
+    thread = null;
   }
 
   @SuppressLint("MissingPermission")
@@ -56,7 +70,7 @@ public class ForegroundLocationManager {
     client.requestLocationUpdates(
             getLocationRequest(currentSpeed),
             currentCallback,
-            null);
+            thread.getLooper());
   }
 
   private static PositionState toState(Location l) {
