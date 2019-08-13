@@ -6,12 +6,17 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
+import android.os.Handler;
+import android.os.HandlerThread;
 
 import static android.content.Context.SENSOR_SERVICE;
 
 public class ForegroundHeadingManager implements SensorEventListener {
 
+  private static final String THREAD_ID = "location_heading_thread";
+
   private HeadingCallback callback;
+  private HandlerThread thread;
 
   private SensorManager sensorManager;
   private final float[] accelerometerReading = new float[3];
@@ -33,21 +38,36 @@ public class ForegroundHeadingManager implements SensorEventListener {
       return;
     }
 
+    this.callback = callback;
+
+    // Create thread for callbacks
+    thread = new HandlerThread(THREAD_ID);
+    thread.start();
+    Handler handler = new Handler(thread.getLooper());
+
     Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     if (accelerometer != null) {
       sensorManager.registerListener(this, accelerometer,
-              SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
+              SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI, handler);
     }
     Sensor magneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
     if (magneticField != null) {
       sensorManager.registerListener(this, magneticField,
-              SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
+              SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI, handler);
     }
   }
 
   public void unregisterHeadingCallback() {
     sensorManager.unregisterListener(this);
     callback = null;
+
+    if(thread == null) return;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      thread.quitSafely();
+    } else {
+      thread.quit();
+    }
+    thread = null;
   }
 
   @Override

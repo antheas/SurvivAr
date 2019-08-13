@@ -257,9 +257,11 @@ export default class Map extends React.Component<IMapProps, IMapState> {
     // Animate
     this.map.animateToRegion(region, ANIMATION_DELAY);
     if (this.props.heading.valid) {
-      this.map.animateToViewingAngle(
-        this.props.heading.degrees,
-        ANIMATION_DELAY
+      this.map.animateCamera(
+        {
+          heading: this.props.heading.degrees
+        },
+        { duration: ANIMATION_DELAY }
       );
     }
   }

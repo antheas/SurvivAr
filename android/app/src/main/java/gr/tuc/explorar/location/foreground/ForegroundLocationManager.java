@@ -53,6 +53,7 @@ public class ForegroundLocationManager {
     client.removeLocationUpdates(currentCallback);
     currentCallback = null;
 
+    if (thread == null) return;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
       thread.quitSafely();
     } else {
