@@ -69,6 +69,7 @@ public class ForegroundHeadingManager implements SensorEventListener {
     // inform callback
     if (callback == null) {
       unregisterHeadingCallback();
+      return;
     }
     updateOrientationAngles();
 

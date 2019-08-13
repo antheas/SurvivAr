@@ -6,17 +6,28 @@ import { PointEvent } from "../store/types";
 
 export class LocationManager implements LocationManagerInterface {
   private watchId = -1;
+  private callback: PositionCallback;
+
+  public LocationManager() {
+    this.callback = () => {
+      //noop
+    };
+  }
 
   public get supportsBackgroundTracking() {
     return false;
   }
 
-  public startJsCallbacks(callback: PositionCallback) {
+  public registerJsCallbacks(position: PositionCallback) {
+    this.callback = position;
+  }
+
+  public startJsCallbacks() {
     if (this.watchId !== -1) throw Error("callbacks already enabled");
 
     this.watchId = Geolocation.watchPosition(
       (pos): void => {
-        callback({
+        this.callback({
           coords: {
             lat: pos.coords.latitude,
             lon: pos.coords.longitude
@@ -40,6 +51,13 @@ export class LocationManager implements LocationManagerInterface {
     if (this.watchId === -1) return;
     Geolocation.clearWatch(this.watchId);
     this.watchId = -1;
+  }
+
+  public unregisterJsCallbacks() {
+    this.stopJsCallbacks();
+    this.callback = () => {
+      //noop
+    };
   }
 
   public enableBackgroundTracking() {

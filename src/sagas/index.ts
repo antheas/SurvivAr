@@ -7,10 +7,12 @@ import {
   APP_LAUNCH_COMPLETED,
   BEGIN_FOREGROUND_FETCH,
   STOP_FOREGROUND_FETCH,
-  updatePosition
+  updatePosition,
+  updateHeading
 } from "../store/actions";
 import init from "./init";
 import watch from "./watch";
+import LocationManagerInterface from "../location/LocationInterface";
 
 function* mainEventLoop() {
   while (1) {
@@ -19,28 +21,38 @@ function* mainEventLoop() {
   }
 }
 
-function registerPositionUpdates(manager: LocationManager, dispatch: Dispatch) {
-  manager.startJsCallbacks(p => dispatch(updatePosition(p)));
+function registerPositionUpdates(
+  manager: LocationManagerInterface,
+  dispatch: Dispatch
+) {
+  manager.registerJsCallbacks(
+    p => dispatch(updatePosition(p)),
+    p => dispatch(updateHeading(p))
+  );
 }
 
-function unregisterPositionUpdates(manager: LocationManager) {
-  manager.stopJsCallbacks();
-}
+const BEGIN_ACTIONS = [BEGIN_FOREGROUND_FETCH, APP_EXITING];
+const STOP_ACTIONS = [STOP_FOREGROUND_FETCH, APP_EXITING];
 
 export default function* rootSaga(dispatch: Dispatch) {
   yield take(APP_LAUNCH_COMPLETED);
-  const manager = new LocationManager();
+  // Setup callbacks
+  const manager: LocationManagerInterface = new LocationManager();
+  registerPositionUpdates(manager, dispatch);
 
-  let action;
-  do {
+  while ((yield take(BEGIN_ACTIONS)).type !== APP_EXITING) {
+    // Start
+    manager.startJsCallbacks();
     const loopTask = yield fork(mainEventLoop);
-    registerPositionUpdates(manager, dispatch);
 
-    action = yield take([STOP_FOREGROUND_FETCH, APP_EXITING]);
+    const action = yield take(STOP_ACTIONS);
+
+    // Stop
     yield cancel(loopTask);
-    unregisterPositionUpdates(manager);
-    if (action.type === APP_EXITING) break;
+    manager.stopJsCallbacks();
 
-    action = yield take([BEGIN_FOREGROUND_FETCH, APP_EXITING]);
-  } while (action.type === BEGIN_FOREGROUND_FETCH);
+    if (action.type === APP_EXITING) break;
+  }
+
+  manager.unregisterJsCallbacks();
 }

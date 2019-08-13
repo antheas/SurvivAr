@@ -19,32 +19,44 @@ export class LocationManager implements LocationManagerInterface {
     return false;
   }
 
-  public startJsCallbacks(
-    callback: PositionCallback,
+  public registerJsCallbacks(
+    position: PositionCallback,
     heading?: HeadingCallback
   ) {
     // TODO: Make sure WritableMap maps 1-1 to state objects
     this.subPosition = DeviceEventEmitter.addListener(
       NativeLocationManager.POSITION_EVENT,
-      callback
+      position
     );
-    NativeLocationManager.enablePositionCallback();
-
     if (heading) {
       this.subHeading = DeviceEventEmitter.addListener(
         NativeLocationManager.HEADING_EVENT,
-        callback
+        heading
       );
-      NativeLocationManager.enableHeadingCallback();
     }
+  }
+
+  public unregisterJsCallbacks() {
+    this.stopJsCallbacks();
+
+    if (this.subPosition) {
+      this.subPosition.remove();
+      this.subPosition = undefined;
+    }
+    if (this.subHeading) {
+      this.subHeading.remove();
+      this.subHeading = undefined;
+    }
+  }
+
+  public startJsCallbacks() {
+    NativeLocationManager.enablePositionCallback();
+    if (this.subHeading) NativeLocationManager.enableHeadingCallback();
   }
 
   public stopJsCallbacks() {
     NativeLocationManager.disablePositionCallback();
     NativeLocationManager.disableHeadingCallback();
-
-    if (this.subPosition) this.subPosition.remove();
-    if (this.subHeading) this.subHeading.remove();
   }
 
   public enableBackgroundTracking() {

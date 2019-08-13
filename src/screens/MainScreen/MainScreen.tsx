@@ -78,6 +78,8 @@ class MainScreen extends Component<MainProps> {
       } else {
         this.props.appLaunchCompleted();
         AppState.addEventListener("change", this.stateListenerCallback);
+        // Call callback once since app is already active
+        this.stateListenerCallback("active");
       }
     });
   }
