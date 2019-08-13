@@ -8,14 +8,3 @@ export interface PositionState {
   updated: number;
   valid: boolean;
 }
-
-export interface HeadingState {
-  degrees: number;
-  updated: number;
-  valid: boolean;
-}
-
-export interface NavigationState {
-  position: PositionState;
-  heading: HeadingState;
-}

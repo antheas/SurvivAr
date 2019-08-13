@@ -19,21 +19,12 @@ export class LocationManager implements LocationManagerInterface {
     return false;
   }
 
-  public registerJsCallbacks(
-    position: PositionCallback,
-    heading?: HeadingCallback
-  ) {
+  public registerJsCallbacks(position: PositionCallback) {
     // TODO: Make sure WritableMap maps 1-1 to state objects
     this.subPosition = DeviceEventEmitter.addListener(
       NativeLocationManager.POSITION_EVENT,
       position
     );
-    if (heading) {
-      this.subHeading = DeviceEventEmitter.addListener(
-        NativeLocationManager.HEADING_EVENT,
-        heading
-      );
-    }
   }
 
   public unregisterJsCallbacks() {
@@ -42,10 +33,6 @@ export class LocationManager implements LocationManagerInterface {
     if (this.subPosition) {
       this.subPosition.remove();
       this.subPosition = undefined;
-    }
-    if (this.subHeading) {
-      this.subHeading.remove();
-      this.subHeading = undefined;
     }
   }
 

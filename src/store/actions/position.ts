@@ -1,4 +1,4 @@
-import { PositionState, HeadingState } from "../types";
+import { PositionState } from "../types";
 
 export const UPDATE_POSITION = "UPDATE_POSITION";
 export const UPDATE_HEADING = "UPDATE_HEADING";
@@ -9,22 +9,9 @@ export interface PositionAction {
   position: PositionState;
 }
 
-export interface HeadingAction {
-  type: typeof UPDATE_HEADING;
-
-  heading: HeadingState;
-}
-
 export function updatePosition(position: PositionState): PositionAction {
   return {
     type: UPDATE_POSITION,
     position
-  };
-}
-
-export function updateHeading(heading: HeadingState): HeadingAction {
-  return {
-    type: UPDATE_HEADING,
-    heading
   };
 }

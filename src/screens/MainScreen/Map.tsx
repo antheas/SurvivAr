@@ -9,12 +9,7 @@ import MapView, {
   Region
 } from "react-native-maps";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import {
-  AreaPoint,
-  Location,
-  PositionState,
-  HeadingState
-} from "../../store/types";
+import { AreaPoint, Location, PositionState } from "../../store/types";
 import coordinateDeltas from "../../utils/coordinateDeltas";
 import * as Theme from "../../utils/Theme";
 import { ExtendedPoint } from "../../store/model/ExtendedPoint";
@@ -97,7 +92,6 @@ enum ZoomLevel {
 
 export interface IMapProps {
   position: PositionState;
-  heading: HeadingState;
   areas: AreaPoint[];
   points: ExtendedPoint[]; // Sorted by distance
 
@@ -112,7 +106,6 @@ interface IMapState {
   zoomLevel: ZoomLevel;
   userTracked: boolean;
   headingTracked: boolean;
-  mapIsAnimating: boolean;
 }
 
 export default class Map extends React.Component<IMapProps, IMapState> {
@@ -256,14 +249,6 @@ export default class Map extends React.Component<IMapProps, IMapState> {
 
     // Animate
     this.map.animateToRegion(region, ANIMATION_DELAY);
-    if (this.props.heading.valid) {
-      this.map.animateCamera(
-        {
-          heading: this.props.heading.degrees
-        },
-        { duration: ANIMATION_DELAY }
-      );
-    }
   }
 
   private mapMoved = () => {
