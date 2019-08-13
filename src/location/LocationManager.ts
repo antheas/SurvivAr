@@ -11,10 +11,6 @@ export class LocationManager implements LocationManagerInterface {
     return false;
   }
 
-  public get supportsHeading() {
-    return false;
-  }
-
   public startJsCallbacks(callback: PositionCallback) {
     if (this.watchId !== -1) throw Error("callbacks already enabled");
 

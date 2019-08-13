@@ -1,4 +1,4 @@
-package gr.tuc.explorar.location;
+package gr.tuc.explorar.location.background;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -17,7 +17,7 @@ import gr.tuc.explorar.R;
 /**
  * Simplifies common {@link Notification} tasks.
  */
-public class LocationNotificationManager {
+public class BackgroundNotificationManager {
 
   private static final int LOCATION_NOTIFICATION_ID = 345657543;
   private static final String LOCATION_NOTIFICATION_CHANNEL_ID = "location_notification_channel";
@@ -25,12 +25,11 @@ public class LocationNotificationManager {
   private NotificationCompat.Builder builder;
   private NotificationManagerCompat manager;
 
-  public LocationNotificationManager(Context c,
-                                     PendingIntent onClick,
-                                     PendingIntent onExit,
-                                     PendingIntent onRefresh) {
+  public BackgroundNotificationManager(Context c,
+                                       PendingIntent onClick,
+                                       PendingIntent onExit,
+                                       PendingIntent onRefresh) {
     createNotificationChannel(c);
-
     manager = NotificationManagerCompat.from(c);
     builder = createBaseBuilder(c).setContentIntent(onClick);
   }

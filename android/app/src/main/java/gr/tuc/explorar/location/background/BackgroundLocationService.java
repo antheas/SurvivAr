@@ -1,4 +1,4 @@
-package gr.tuc.explorar.location;
+package gr.tuc.explorar.location.background;
 
 import android.app.PendingIntent;
 import android.app.Service;
@@ -12,7 +12,7 @@ import gr.tuc.explorar.MainActivity;
 
 public class BackgroundLocationService extends Service {
 
-  private LocationNotificationManager manager;
+  private BackgroundNotificationManager manager;
 
   @Override
   public void onCreate() {
@@ -27,7 +27,7 @@ public class BackgroundLocationService extends Service {
             new Intent(this, MainActivity.class),
             0);
 
-    manager = new LocationNotificationManager(this, openAppIntent, null, null);
+    manager = new BackgroundNotificationManager(this, openAppIntent, null, null);
     manager.startForeground(this);
 
     new Handler().postDelayed(this::stopSelf, 20000);

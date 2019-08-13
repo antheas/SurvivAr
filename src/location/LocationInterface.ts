@@ -10,7 +10,6 @@ export type HeadingCallback = (heading: HeadingState) => void;
 
 export default interface LocationManagerInterface {
   supportsBackgroundTracking: boolean;
-  supportsHeading: boolean;
 
   startJsCallbacks(position: PositionCallback, heading?: HeadingCallback): void;
 
