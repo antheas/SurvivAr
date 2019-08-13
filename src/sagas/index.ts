@@ -1,18 +1,17 @@
 // @ts-ignore
 import { Dispatch } from "redux";
 import { cancel, fork, take } from "redux-saga/effects";
-import LocationManager from "../location/LocationManager";
+import LocationManager from "../location/position/LocationManager";
 import {
   APP_EXITING,
   APP_LAUNCH_COMPLETED,
   BEGIN_FOREGROUND_FETCH,
   STOP_FOREGROUND_FETCH,
-  updatePosition,
-  updateHeading
+  updatePosition
 } from "../store/actions";
 import init from "./init";
 import watch from "./watch";
-import LocationManagerInterface from "../location/LocationInterface";
+import LocationManagerInterface from "../location/position/LocationInterface";
 
 function* mainEventLoop() {
   while (1) {
@@ -25,10 +24,7 @@ function registerPositionUpdates(
   manager: LocationManagerInterface,
   dispatch: Dispatch
 ) {
-  manager.registerJsCallbacks(
-    p => dispatch(updatePosition(p)),
-    p => dispatch(updateHeading(p))
-  );
+  manager.registerJsCallbacks(p => dispatch(updatePosition(p)));
 }
 
 const BEGIN_ACTIONS = [BEGIN_FOREGROUND_FETCH, APP_EXITING];

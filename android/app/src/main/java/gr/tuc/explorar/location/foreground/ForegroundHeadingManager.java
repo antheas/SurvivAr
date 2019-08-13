@@ -14,6 +14,7 @@ import static android.content.Context.SENSOR_SERVICE;
 public class ForegroundHeadingManager implements SensorEventListener {
 
   private static final String THREAD_ID = "location_heading_thread";
+  private static final Double FILTER = 10d;
 
   private HeadingCallback callback;
   private HandlerThread thread;
@@ -24,6 +25,8 @@ public class ForegroundHeadingManager implements SensorEventListener {
 
   private final float[] rotationMatrix = new float[9];
   private final float[] orientationAngles = new float[3];
+
+  private double currAzimuth = 0;
 
   public ForegroundHeadingManager(Context c) {
     sensorManager = (SensorManager) c.getSystemService(SENSOR_SERVICE);
@@ -61,7 +64,7 @@ public class ForegroundHeadingManager implements SensorEventListener {
     sensorManager.unregisterListener(this);
     callback = null;
 
-    if(thread == null) return;
+    if (thread == null) return;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
       thread.quitSafely();
     } else {
@@ -74,8 +77,6 @@ public class ForegroundHeadingManager implements SensorEventListener {
   public void onAccuracyChanged(Sensor sensor, int accuracy) {
   }
 
-  // Get readings from accelerometer and magnetometer. To simplify calculations,
-  // consider storing these readings as unit vectors.
   @Override
   public void onSensorChanged(SensorEvent event) {
     if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
@@ -91,27 +92,24 @@ public class ForegroundHeadingManager implements SensorEventListener {
       unregisterHeadingCallback();
       return;
     }
-    updateOrientationAngles();
 
-    callback.onHeadingUpdated(new HeadingState(
-            orientationAngles[0],
-            System.currentTimeMillis(),
-            true
-    ));
-  }
-
-  // Compute the three orientation angles based on the most recent readings from
-  // the device's accelerometer and magnetometer.
-  public void updateOrientationAngles() {
-    // Update rotation matrix, which is needed to update orientation angles.
-    SensorManager.getRotationMatrix(rotationMatrix, null,
+    boolean success = SensorManager.getRotationMatrix(rotationMatrix, null,
             accelerometerReading, magnetometerReading);
-
-    // "mRotationMatrix" now has up-to-date information.
+    if (!success) return;
 
     SensorManager.getOrientation(rotationMatrix, orientationAngles);
 
-    // "mOrientationAngles" now has up-to-date information.
+    double newAzimuth = Math.toDegrees(orientationAngles[0]);
+    newAzimuth = (newAzimuth + 360) % 360;
+
+    if (Math.abs(newAzimuth - currAzimuth) >= FILTER) {
+      currAzimuth = newAzimuth;
+      callback.onHeadingUpdated(new HeadingState(
+              newAzimuth,
+              System.currentTimeMillis(),
+              true
+      ));
+    }
   }
 
   public static class HeadingState {

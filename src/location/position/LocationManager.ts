@@ -2,7 +2,7 @@ import Geolocation from "react-native-geolocation-service";
 import LocationManagerInterface, {
   PositionCallback
 } from "./LocationInterface";
-import { PointEvent } from "../store/types";
+import { PointEvent } from "../../store/types";
 
 export class LocationManager implements LocationManagerInterface {
   private watchId = -1;

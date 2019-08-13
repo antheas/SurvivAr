@@ -1,7 +1,6 @@
-import { PointEvent } from "../store/types";
+import { PointEvent } from "../../store/types";
 import LocationManagerInterface, {
-  PositionCallback,
-  HeadingCallback
+  PositionCallback
 } from "./LocationInterface";
 import {
   NativeModules,
@@ -13,17 +12,16 @@ const NativeLocationManager = NativeModules.NativeLocationManager;
 
 export class LocationManager implements LocationManagerInterface {
   private subPosition?: EmitterSubscription;
-  private subHeading?: EmitterSubscription;
 
   public get supportsBackgroundTracking() {
     return false;
   }
 
-  public registerJsCallbacks(position: PositionCallback) {
+  public registerJsCallbacks(callback: PositionCallback) {
     // TODO: Make sure WritableMap maps 1-1 to state objects
     this.subPosition = DeviceEventEmitter.addListener(
       NativeLocationManager.POSITION_EVENT,
-      position
+      callback
     );
   }
 
@@ -38,12 +36,10 @@ export class LocationManager implements LocationManagerInterface {
 
   public startJsCallbacks() {
     NativeLocationManager.enablePositionCallback();
-    if (this.subHeading) NativeLocationManager.enableHeadingCallback();
   }
 
   public stopJsCallbacks() {
     NativeLocationManager.disablePositionCallback();
-    NativeLocationManager.disableHeadingCallback();
   }
 
   public enableBackgroundTracking() {

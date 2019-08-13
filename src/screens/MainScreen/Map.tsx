@@ -1,5 +1,5 @@
 import React, { Fragment, ReactElement } from "react";
-import { Platform, View } from "react-native";
+import { Platform, View, AppState } from "react-native";
 import MapView, {
   AnimatedRegion,
   Circle,
@@ -9,14 +9,17 @@ import MapView, {
   Region
 } from "react-native-maps";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import HeadingManager from "../../location/heading/HeadingManager.android";
+import { ExtendedPoint } from "../../store/model/ExtendedPoint";
 import { AreaPoint, Location, PositionState } from "../../store/types";
 import coordinateDeltas from "../../utils/coordinateDeltas";
 import * as Theme from "../../utils/Theme";
-import { ExtendedPoint } from "../../store/model/ExtendedPoint";
 import MapButtons, { ZoomState } from "./MapButtons";
+import { Heading } from "../../location/heading/HeadingInterface";
 
 const NEARBY_RATIO = 3;
 const ANIMATION_DELAY = 900;
+const HEADING_DELAY = 300;
 const GREECE_COORDS: Region = {
   latitude: 39.282502,
   longitude: 22.61817,
@@ -117,6 +120,7 @@ export default class Map extends React.Component<IMapProps, IMapState> {
   };
   private userMarker?: MarkerAnimated;
   private map?: MapView;
+  private heading?: HeadingManager;
 
   public componentDidMount() {
     // Set marker to previous position, if it is valid
@@ -125,6 +129,29 @@ export default class Map extends React.Component<IMapProps, IMapState> {
       ...convertCoords(this.props.position.coords),
       ...DEFAULT_ZOOM
     });
+
+    // Manage Heading
+    const heading = new HeadingManager();
+    if (heading.supported) {
+      heading.registerJsCallbacks(this.animateHeading);
+      heading.startJsCallbacks();
+      this.heading = heading;
+
+      AppState.addEventListener("change", s => {
+        if (s === "active") {
+          heading.startJsCallbacks();
+        } else {
+          heading.stopJsCallbacks();
+        }
+      });
+    }
+  }
+
+  public componentWillUnmount() {
+    if (this.heading) {
+      this.heading.stopJsCallbacks();
+      this.heading.unregisterJsCallbacks();
+    }
   }
 
   public componentDidUpdate() {
@@ -250,6 +277,14 @@ export default class Map extends React.Component<IMapProps, IMapState> {
     // Animate
     this.map.animateToRegion(region, ANIMATION_DELAY);
   }
+
+  private animateHeading = (h: Heading) => {
+    if (!this.map) return;
+    if (!this.state.userTracked) return;
+    if (!h.valid) return;
+
+    this.map.animateCamera({ heading: h.degrees }, { duration: HEADING_DELAY });
+  };
 
   private mapMoved = () => {
     if (this.state.userTracked) this.setState({ userTracked: false });
