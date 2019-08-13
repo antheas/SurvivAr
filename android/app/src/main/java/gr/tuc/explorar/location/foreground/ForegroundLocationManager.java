@@ -96,12 +96,12 @@ public class ForegroundLocationManager {
     switch (speed) {
       case FAST:
         return new LocationRequest()
-                .setFastestInterval(0)
+                .setFastestInterval(1000)
                 .setInterval(2000)
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
       case NORMAL:
         return new LocationRequest()
-                .setFastestInterval(0)
+                .setFastestInterval(1000)
                 .setInterval(10000)
                 .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
       case SLOW:
@@ -110,6 +110,7 @@ public class ForegroundLocationManager {
         return new LocationRequest()
                 .setFastestInterval(0)
                 .setInterval(30000)
+                .setFastestInterval(1000)
                 .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
                 .setSmallestDisplacement(30);
     }

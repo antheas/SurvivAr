@@ -9,14 +9,19 @@ import MapView, {
   Region
 } from "react-native-maps";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { AreaPoint, Location, PositionState } from "../../store/types";
+import {
+  AreaPoint,
+  Location,
+  PositionState,
+  HeadingState
+} from "../../store/types";
 import coordinateDeltas from "../../utils/coordinateDeltas";
 import * as Theme from "../../utils/Theme";
 import { ExtendedPoint } from "../../store/model/ExtendedPoint";
 import MapButtons, { ZoomState } from "./MapButtons";
 
 const NEARBY_RATIO = 3;
-const ANIMATION_DELAY = 1000;
+const ANIMATION_DELAY = 900;
 const GREECE_COORDS: Region = {
   latitude: 39.282502,
   longitude: 22.61817,
@@ -92,10 +97,10 @@ enum ZoomLevel {
 
 export interface IMapProps {
   position: PositionState;
+  heading: HeadingState;
   areas: AreaPoint[];
   points: ExtendedPoint[]; // Sorted by distance
 
-  headingSupport: boolean;
   syncEnabled: boolean;
   loading: boolean;
 
@@ -107,6 +112,7 @@ interface IMapState {
   zoomLevel: ZoomLevel;
   userTracked: boolean;
   headingTracked: boolean;
+  mapIsAnimating: boolean;
 }
 
 export default class Map extends React.Component<IMapProps, IMapState> {
@@ -170,7 +176,7 @@ export default class Map extends React.Component<IMapProps, IMapState> {
           {/* Points */}
           {this.props.points.map(PointMarker)}
           {/* User Marker */}
-          {pos.accuracy > 20 && pos.accuracy !== Infinity ? (
+          {pos.accuracy > 20 ? (
             <Circle
               center={userCoords}
               radius={pos.accuracy}
@@ -189,7 +195,7 @@ export default class Map extends React.Component<IMapProps, IMapState> {
           <MapButtons
             zoomState={this.getZoomState()}
             headingTracked={this.state.headingTracked}
-            headingSupport={this.props.headingSupport}
+            headingSupport={false}
             syncEnabled={this.props.syncEnabled}
             hidden={this.props.loading}
             onZoomedIn={this.onZoomedIn}
@@ -221,16 +227,17 @@ export default class Map extends React.Component<IMapProps, IMapState> {
     if (points.length) {
       // Find points that need to be included based on zoom
       let includedPoints: ExtendedPoint[];
-      const closestPoint = points.sort((a, b) => a.distance - b.distance)[0];
+      const sortedPoints = points.sort((a, b) => a.distance - b.distance);
       switch (this.state.zoomLevel) {
         case ZoomLevel.CLOSEST_POINTS:
           // Find closest points
-          includedPoints = points.filter(p => isPointClose(p));
+          includedPoints = sortedPoints.filter(p => isPointClose(p));
 
-          // If there are none fallthrough to closest point
-          if (includedPoints.length) break;
+          // If there are none fallback to 3 closest points
+          if (!includedPoints.length) includedPoints = sortedPoints.slice(0, 3);
+          break;
         case ZoomLevel.CLOSEST_POINT:
-          includedPoints = [closestPoint];
+          includedPoints = sortedPoints.slice(0, 1);
           break;
         default:
           // ZoomLevel.AREA_POINTS
@@ -242,13 +249,19 @@ export default class Map extends React.Component<IMapProps, IMapState> {
         region = coordinateDeltas(
           newCoords,
           includedPoints.map(({ loc }) => convertCoords(loc)),
-          closestPoint.radius
+          includedPoints[0].radius // Should be the closest one
         );
       }
     }
 
     // Animate
     this.map.animateToRegion(region, ANIMATION_DELAY);
+    if (this.props.heading.valid) {
+      this.map.animateToViewingAngle(
+        this.props.heading.degrees,
+        ANIMATION_DELAY
+      );
+    }
   }
 
   private mapMoved = () => {

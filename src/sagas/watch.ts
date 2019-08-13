@@ -103,10 +103,12 @@ function* updateWaitProgress(pos: PositionState) {
     };
   }
 
-  yield put(updateWaitPointProgress(progressUpdate));
+  // Add checks to lower pushes to the store
+  if (progressUpdate.length) yield put(updateWaitPointProgress(progressUpdate));
 
   // Update Cache
-  yield put(updateCurrentWaitPointCache(newCurrentPoints, newTime));
+  if (oldCurrentPoints !== newCurrentPoints)
+    yield put(updateCurrentWaitPointCache(newCurrentPoints, newTime));
 }
 
 function* watchLocationUpdates() {

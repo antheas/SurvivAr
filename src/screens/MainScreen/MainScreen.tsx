@@ -22,9 +22,16 @@ import {
   selectAreas,
   selectCurrentArea,
   selectExtendedPoints,
-  selectPosition
+  selectPosition,
+  selectHeading
 } from "../../store/selectors";
-import { AreaPoint, PositionState, State, StateType } from "../../store/types";
+import {
+  AreaPoint,
+  PositionState,
+  State,
+  StateType,
+  HeadingState
+} from "../../store/types";
 import * as Theme from "../../utils/Theme";
 import Loader from "./Loader";
 import Map from "./Map";
@@ -53,6 +60,7 @@ const styles = StyleSheet.create({
 
 interface MainStateProps {
   position: PositionState;
+  heading: HeadingState;
   state: StateType;
   areas: AreaPoint[];
   currentArea?: AreaPoint;
@@ -101,9 +109,9 @@ class MainScreen extends Component<MainProps> {
         <View style={styles.map}>
           <Map
             position={this.props.position}
+            heading={this.props.heading}
             areas={this.props.areas}
             points={this.props.points}
-            headingSupport={false}
             syncEnabled={false}
             loading={loaderActive}
             onSyncToggled={() => {}}
@@ -131,6 +139,7 @@ class MainScreen extends Component<MainProps> {
 const mapStateToProps = (state: State): MainStateProps => {
   return {
     position: selectPosition(state),
+    heading: selectHeading(state),
     state: selectAppState(state),
     areas: selectAreas(state),
     currentArea: selectCurrentArea(state),
