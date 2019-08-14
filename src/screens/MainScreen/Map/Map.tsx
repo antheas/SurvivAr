@@ -162,7 +162,11 @@ class Map extends React.Component<IMapProps, IMapState> {
             coordinate={this.state.coordinate}
             {...Theme.map.user.marker}
           >
-            <Icon {...Theme.map.user.icon} />
+            <Icon
+              {...(this.state.headingTracked
+                ? Theme.map.user.headingIcon
+                : Theme.map.user.icon)}
+            />
           </MarkerAnimated>
         </MapView>
         <View style={Theme.map.button.styles.base.container}>

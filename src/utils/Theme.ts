@@ -127,6 +127,11 @@ export const map = {
       color: colors.primary,
       size: 30
     },
+    headingIcon: {
+      name: "navigation",
+      color: colors.primary,
+      size: 40
+    },
     marker: {
       anchor: { x: 0.5, y: 0.5 }
     },
