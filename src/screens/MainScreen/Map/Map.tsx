@@ -8,19 +8,18 @@ import MapView, {
   Region
 } from "react-native-maps";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import HeadingManager from "../../../location/heading/HeadingManager.android";
 import { ExtendedPoint } from "../../../store/model/ExtendedPoint";
 import { AreaPoint, PositionState } from "../../../store/types";
 import * as Theme from "../../../utils/Theme";
-import MapButtons, { ZoomState } from "./MapButtons";
-import { convertCoords } from "./Utils";
-import CameraManager, {
-  ZoomLevel,
-  ANIMATION_DELAY,
-  DEFAULT_ZOOM
-} from "./CameraManager";
 import AreaMarker from "./AreaMarker";
+import CameraManager, {
+  ANIMATION_DELAY,
+  DEFAULT_ZOOM,
+  ZoomLevel
+} from "./CameraManager";
+import MapButtons, { ZoomState } from "./MapButtons";
 import PointMarker from "./PointMarker";
+import { convertCoords } from "./Utils";
 
 const GREECE_COORDS: Region = {
   latitude: 39.282502,
@@ -52,7 +51,7 @@ export default class Map extends React.Component<IMapProps, IMapState> {
     coordinate: new AnimatedRegion(GREECE_COORDS),
     zoomLevel: ZoomLevel.AREA_POINTS,
     userTracked: true,
-    headingTracked: true
+    headingTracked: false
   };
   private map?: MapView;
   private userMarker?: MarkerAnimated;
@@ -110,7 +109,7 @@ export default class Map extends React.Component<IMapProps, IMapState> {
     }
 
     // Handle Map
-    this.cameraManager.onCoordsChange();
+    this.cameraManager.update();
   }
 
   public render() {
@@ -151,7 +150,7 @@ export default class Map extends React.Component<IMapProps, IMapState> {
           <MapButtons
             zoomState={this.getZoomState()}
             headingTracked={this.state.headingTracked}
-            headingSupport={false}
+            headingSupport={this.cameraManager.supported}
             syncEnabled={this.props.syncEnabled}
             hidden={this.props.loading}
             onZoomedIn={this.onZoomedIn}
@@ -166,7 +165,9 @@ export default class Map extends React.Component<IMapProps, IMapState> {
   }
 
   private mapMoved = () => {
-    if (this.state.userTracked) this.setState({ userTracked: false });
+    if (!this.state.userTracked) return;
+    this.setState({ userTracked: false });
+    this.cameraManager.update();
   };
   private getZoomState = () => {
     if (!this.state.userTracked) return ZoomState.NOT_CENTERED;
@@ -219,5 +220,6 @@ export default class Map extends React.Component<IMapProps, IMapState> {
   private onHeadingToggled = () => {
     if (!this.state.userTracked) return;
     this.setState({ headingTracked: !this.state.headingTracked });
+    this.cameraManager.update();
   };
 }

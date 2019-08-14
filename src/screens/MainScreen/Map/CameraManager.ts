@@ -49,16 +49,18 @@ export type MapReference = () => {
 };
 
 export default class CameraManager {
+  public supported: boolean;
   private r: MapReference;
   private headingManager: HeadingManager;
   private heading: Heading;
-  private supported: boolean;
+  private enabled: boolean;
 
   public constructor(reference: MapReference) {
     this.headingManager = new HeadingManager();
     this.heading = DEFAULT_HEADING;
     this.r = reference;
     this.supported = this.headingManager.supported;
+    this.enabled = false;
   }
 
   public registerCallbacks() {
@@ -73,15 +75,19 @@ export default class CameraManager {
 
   public enable() {
     if (!this.supported) return;
+    this.enabled = true;
     this.headingManager.startJsCallbacks();
   }
 
   public disable() {
     if (!this.supported) return;
+    this.enabled = false;
     this.headingManager.stopJsCallbacks();
   }
 
-  public onCoordsChange() {
+  public update() {
+    this.updateCallbackState();
+
     if (this.supported && this.r().headingTracked) {
       this.animateWithHeading(false);
     } else {
@@ -93,6 +99,14 @@ export default class CameraManager {
     this.heading = h;
     this.animateWithHeading(true);
   };
+
+  private updateCallbackState() {
+    if (this.r().headingTracked && this.enabled) {
+      this.headingManager.startJsCallbacks();
+    } else {
+      this.headingManager.stopJsCallbacks();
+    }
+  }
 
   private findIncludedPoints(): ExtendedPoint[] {
     const points = this.r().points.filter(p => !p.completed);
