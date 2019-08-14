@@ -76,13 +76,13 @@ export default class CameraManager {
   public enable() {
     if (!this.supported) return;
     this.enabled = true;
-    this.headingManager.startJsCallbacks();
+    this.updateCallbackState();
   }
 
   public disable() {
     if (!this.supported) return;
     this.enabled = false;
-    this.headingManager.stopJsCallbacks();
+    this.updateCallbackState();
   }
 
   public update() {
