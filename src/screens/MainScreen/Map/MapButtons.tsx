@@ -92,6 +92,7 @@ const MapButtons: FunctionComponent<IMapButtons> = props => {
       />
       <MapButton
         icon={props.headingTracked ? "compass-outline" : "compass-off-outline"}
+        active={props.headingTracked}
         hidden={
           props.zoomState === ZoomState.NOT_CENTERED || !props.headingSupport
         }

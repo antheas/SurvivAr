@@ -9,7 +9,12 @@ import MapView, {
 } from "react-native-maps";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { ExtendedPoint } from "../../../store/model/ExtendedPoint";
-import { AreaPoint, PositionState } from "../../../store/types";
+import {
+  AreaPoint,
+  PositionState,
+  StateType,
+  State
+} from "../../../store/types";
 import * as Theme from "../../../utils/Theme";
 import AreaMarker from "./AreaMarker";
 import CameraManager, {
@@ -20,6 +25,16 @@ import CameraManager, {
 import MapButtons, { ZoomState } from "./MapButtons";
 import PointMarker from "./PointMarker";
 import { convertCoords } from "./Utils";
+import {
+  selectPosition,
+  selectAppState,
+  selectAreas,
+  selectExtendedPoints,
+  selectBackgroundTrackingState
+} from "../../../store/selectors";
+import { connect } from "react-redux";
+import { setBackgroundTracking } from "../../../store/actions";
+import { Dispatch } from "redux";
 
 const GREECE_COORDS: Region = {
   latitude: 39.282502,
@@ -28,16 +43,20 @@ const GREECE_COORDS: Region = {
   longitudeDelta: 15
 };
 
-export interface IMapProps {
+interface IMapStateProps {
   position: PositionState;
   areas: AreaPoint[];
   points: ExtendedPoint[]; // Sorted by distance
 
   syncEnabled: boolean;
   loading: boolean;
-
-  onSyncToggled: () => void;
 }
+
+interface IMapDispatchProps {
+  onSyncToggled: (enable: boolean) => void;
+}
+
+interface IMapProps extends IMapStateProps, IMapDispatchProps {}
 
 interface IMapState {
   coordinate: AnimatedRegion;
@@ -46,7 +65,7 @@ interface IMapState {
   headingTracked: boolean;
 }
 
-export default class Map extends React.Component<IMapProps, IMapState> {
+class Map extends React.Component<IMapProps, IMapState> {
   public state = {
     coordinate: new AnimatedRegion(GREECE_COORDS),
     zoomLevel: ZoomLevel.AREA_POINTS,
@@ -216,10 +235,33 @@ export default class Map extends React.Component<IMapProps, IMapState> {
   private onCentered = () => {
     this.setState({ userTracked: true });
   };
-  private onSyncToggled = () => {};
+  private onSyncToggled = () =>
+    this.props.onSyncToggled(!this.props.syncEnabled);
   private onHeadingToggled = () => {
     if (!this.state.userTracked) return;
     this.setState({ headingTracked: !this.state.headingTracked });
     this.cameraManager.update();
   };
 }
+
+const mapStateToProps = (state: State): IMapStateProps => {
+  return {
+    position: selectPosition(state),
+    areas: selectAreas(state),
+    points: selectExtendedPoints(state),
+
+    syncEnabled: selectBackgroundTrackingState(state),
+    loading: selectAppState(state) !== StateType.TRACKING
+  };
+};
+
+const mapDispatchToProps = (dispatch: Dispatch): IMapDispatchProps => {
+  return {
+    onSyncToggled: enable => dispatch(setBackgroundTracking(enable))
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Map);

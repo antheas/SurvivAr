@@ -13,18 +13,10 @@ import { checkLocationPermission } from "../../location/Permissions";
 import {
   appLaunchCompleted,
   retryFetch,
-  setForegroundFetch,
-  updatePosition
+  setForegroundFetch
 } from "../../store/actions";
-import { ExtendedPoint } from "../../store/model/ExtendedPoint";
-import {
-  selectAppState,
-  selectAreas,
-  selectCurrentArea,
-  selectExtendedPoints,
-  selectPosition
-} from "../../store/selectors";
-import { AreaPoint, PositionState, State, StateType } from "../../store/types";
+import { selectAppState } from "../../store/selectors";
+import { State, StateType } from "../../store/types";
 import * as Theme from "../../utils/Theme";
 import Loader from "./Loader";
 import Map from "./Map";
@@ -52,15 +44,10 @@ const styles = StyleSheet.create({
 });
 
 interface MainStateProps {
-  position: PositionState;
   state: StateType;
-  areas: AreaPoint[];
-  currentArea?: AreaPoint;
-  points: ExtendedPoint[];
 }
 
 interface MainDispatchProps {
-  updatePosition: (pos: PositionState) => void;
   appLaunchCompleted: () => void;
   setForegroundFetch: (state: boolean) => void;
   retry: () => void;
@@ -99,21 +86,13 @@ class MainScreen extends Component<MainProps> {
           backgroundColor={"transparent"}
         />
         <View style={styles.map}>
-          <Map
-            position={this.props.position}
-            heading={this.props.heading}
-            areas={this.props.areas}
-            points={this.props.points}
-            syncEnabled={false}
-            loading={loaderActive}
-            onSyncToggled={() => {}}
-          />
+          <Map />
         </View>
         <View style={loaderActive ? styles.loader : styles.cards}>
           {loaderActive ? (
             <Loader state={this.props.state} retry={this.props.retry} />
           ) : (
-            <PointCardList points={this.props.points} />
+            <PointCardList />
           )}
         </View>
       </View>
@@ -130,17 +109,12 @@ class MainScreen extends Component<MainProps> {
  */
 const mapStateToProps = (state: State): MainStateProps => {
   return {
-    position: selectPosition(state),
-    state: selectAppState(state),
-    areas: selectAreas(state),
-    currentArea: selectCurrentArea(state),
-    points: selectExtendedPoints(state)
+    state: selectAppState(state)
   };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch): MainDispatchProps => {
   return {
-    updatePosition: (pos: PositionState) => dispatch(updatePosition(pos)),
     appLaunchCompleted: () => dispatch(appLaunchCompleted()),
     setForegroundFetch: (state: boolean) => dispatch(setForegroundFetch(state)),
     retry: () => dispatch(retryFetch())

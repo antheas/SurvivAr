@@ -1,10 +1,13 @@
 import React, { ReactElement } from "react";
 import { SectionList, StyleSheet, Text, View } from "react-native";
-import { Glue, Spacer } from "../../utils/Components";
-import * as Theme from "../../utils/Theme";
+import { connect } from "react-redux";
 import { ExtendedCollectPoint } from "../../store/model/ExtendedCollectPoint";
 import { ExtendedPoint } from "../../store/model/ExtendedPoint";
 import { ExtendedWaitPoint } from "../../store/model/ExtendedWaitPoint";
+import { selectExtendedPoints } from "../../store/selectors";
+import { State } from "../../store/types";
+import { Glue, Spacer } from "../../utils/Components";
+import * as Theme from "../../utils/Theme";
 
 const styles = StyleSheet.create({
   card: {
@@ -55,13 +58,13 @@ const styles = StyleSheet.create({
   list: {}
 });
 
-function chooseProgressColor(p: ExtendedPoint): StyleSheet {
+function chooseProgressColor(p: ExtendedPoint) {
   if (p.completed) return styles.progressCompleted;
   if (p.userWithin) return styles.progressActive;
   return styles.progressPending;
 }
 
-function chooseDistanceColor(p: ExtendedPoint): StyleSheet {
+function chooseDistanceColor(p: ExtendedPoint) {
   return p.userWithin ? styles.distanceInRange : styles.distanceNotInRange;
 }
 
@@ -134,4 +137,10 @@ export const PointCardList = ({
   );
 };
 
-export default PointCardList;
+const mapStateToProps = (state: State): { points: ExtendedPoint[] } => {
+  return {
+    points: selectExtendedPoints(state)
+  };
+};
+
+export default connect(mapStateToProps)(PointCardList);
