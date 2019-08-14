@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import * as Theme from "../../utils/Theme";
+import * as Theme from "../../../utils/Theme";
 
 interface IMapButton {
   icon: string;

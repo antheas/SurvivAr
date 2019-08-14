@@ -1,97 +1,33 @@
-import React, { Fragment, ReactElement } from "react";
-import { Platform, View, AppState } from "react-native";
+import React from "react";
+import { AppState, Platform, View } from "react-native";
 import MapView, {
   AnimatedRegion,
   Circle,
-  Marker,
   MarkerAnimated,
   PROVIDER_GOOGLE,
   Region
 } from "react-native-maps";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import HeadingManager from "../../location/heading/HeadingManager.android";
-import { ExtendedPoint } from "../../store/model/ExtendedPoint";
-import { AreaPoint, Location, PositionState } from "../../store/types";
-import coordinateDeltas from "../../utils/coordinateDeltas";
-import * as Theme from "../../utils/Theme";
+import HeadingManager from "../../../location/heading/HeadingManager.android";
+import { ExtendedPoint } from "../../../store/model/ExtendedPoint";
+import { AreaPoint, PositionState } from "../../../store/types";
+import * as Theme from "../../../utils/Theme";
 import MapButtons, { ZoomState } from "./MapButtons";
-import { Heading } from "../../location/heading/HeadingInterface";
+import { convertCoords } from "./Utils";
+import CameraManager, {
+  ZoomLevel,
+  ANIMATION_DELAY,
+  DEFAULT_ZOOM
+} from "./CameraManager";
+import AreaMarker from "./AreaMarker";
+import PointMarker from "./PointMarker";
 
-const NEARBY_RATIO = 3;
-const ANIMATION_DELAY = 900;
-const HEADING_DELAY = 300;
 const GREECE_COORDS: Region = {
   latitude: 39.282502,
   longitude: 22.61817,
   latitudeDelta: 20,
   longitudeDelta: 15
 };
-const DEFAULT_ZOOM = {
-  latitudeDelta: 0.035,
-  longitudeDelta: 0.02
-};
-
-function convertCoords(coords: Location) {
-  return {
-    latitude: coords.lat,
-    longitude: coords.lon
-  };
-}
-
-function isPointClose(point: ExtendedPoint) {
-  return point.distance <= NEARBY_RATIO * point.radius;
-}
-
-const AreaMarker = (a: AreaPoint): ReactElement => {
-  const coords = convertCoords(a.loc);
-  return (
-    <Fragment key={a.id}>
-      <Circle center={coords} radius={a.radius} {...Theme.map.area.circle} />
-      <Marker
-        coordinate={coords}
-        tracksViewChanges={false}
-        {...Theme.map.area.marker}
-      >
-        <Icon {...Theme.map.area.icon} />
-      </Marker>
-    </Fragment>
-  );
-};
-
-const PointMarker = (point: ExtendedPoint) => {
-  let theme;
-  let circle;
-  if (point.completed) {
-    theme = Theme.map.point.completed;
-  } else if (point.userWithin) {
-    theme = Theme.map.point.active;
-    circle = theme.circle;
-  } else if (isPointClose(point)) {
-    theme = Theme.map.point.nearby;
-    circle = theme.circle;
-  } else {
-    theme = Theme.map.point.default;
-  }
-
-  const coords = convertCoords(point.loc);
-
-  return (
-    <Fragment key={point.id}>
-      {circle ? (
-        <Circle center={coords} radius={point.radius} {...circle} />
-      ) : null}
-      <Marker coordinate={coords} tracksViewChanges={false} {...theme.marker}>
-        <Icon name={point.icon} {...theme.icon} />
-      </Marker>
-    </Fragment>
-  );
-};
-
-enum ZoomLevel {
-  CLOSEST_POINT,
-  CLOSEST_POINTS,
-  AREA_POINTS
-}
 
 export interface IMapProps {
   position: PositionState;
@@ -118,9 +54,16 @@ export default class Map extends React.Component<IMapProps, IMapState> {
     userTracked: true,
     headingTracked: true
   };
-  private userMarker?: MarkerAnimated;
   private map?: MapView;
-  private heading?: HeadingManager;
+  private userMarker?: MarkerAnimated;
+  private cameraManager = new CameraManager(() => ({
+    map: this.map,
+    coords: this.props.position.coords,
+    points: this.props.points,
+    userTracked: this.state.userTracked,
+    headingTracked: this.state.headingTracked,
+    zoomLevel: this.state.zoomLevel
+  }));
 
   public componentDidMount() {
     // Set marker to previous position, if it is valid
@@ -130,28 +73,21 @@ export default class Map extends React.Component<IMapProps, IMapState> {
       ...DEFAULT_ZOOM
     });
 
-    // Manage Heading
-    const heading = new HeadingManager();
-    if (heading.supported) {
-      heading.registerJsCallbacks(this.animateHeading);
-      heading.startJsCallbacks();
-      this.heading = heading;
+    // Manage Map animation
+    this.cameraManager.registerCallbacks();
+    this.cameraManager.enable();
 
-      AppState.addEventListener("change", s => {
-        if (s === "active") {
-          heading.startJsCallbacks();
-        } else {
-          heading.stopJsCallbacks();
-        }
-      });
-    }
+    AppState.addEventListener("change", s => {
+      if (s === "active") {
+        this.cameraManager.enable();
+      } else {
+        this.cameraManager.enable();
+      }
+    });
   }
 
   public componentWillUnmount() {
-    if (this.heading) {
-      this.heading.stopJsCallbacks();
-      this.heading.unregisterJsCallbacks();
-    }
+    this.cameraManager.unregisterCallbacks();
   }
 
   public componentDidUpdate() {
@@ -174,7 +110,7 @@ export default class Map extends React.Component<IMapProps, IMapState> {
     }
 
     // Handle Map
-    this.animateMap();
+    this.cameraManager.onCoordsChange();
   }
 
   public render() {
@@ -228,63 +164,6 @@ export default class Map extends React.Component<IMapProps, IMapState> {
       </View>
     );
   }
-
-  private animateMap() {
-    if (!this.map) return;
-    if (!this.state.userTracked) return;
-
-    // Default values
-    const newCoords = convertCoords(this.props.position.coords);
-    let region = {
-      ...newCoords,
-      ...DEFAULT_ZOOM
-    };
-
-    // Only use active points
-    const points = this.props.points.filter(p => !p.completed);
-
-    // Run only if there are points
-    if (points.length) {
-      // Find points that need to be included based on zoom
-      let includedPoints: ExtendedPoint[];
-      const sortedPoints = points.sort((a, b) => a.distance - b.distance);
-      switch (this.state.zoomLevel) {
-        case ZoomLevel.CLOSEST_POINTS:
-          // Find closest points
-          includedPoints = sortedPoints.filter(p => isPointClose(p));
-
-          // If there are none fallback to 3 closest points
-          if (!includedPoints.length) includedPoints = sortedPoints.slice(0, 3);
-          break;
-        case ZoomLevel.CLOSEST_POINT:
-          includedPoints = sortedPoints.slice(0, 1);
-          break;
-        default:
-          // ZoomLevel.AREA_POINTS
-          includedPoints = points;
-      }
-
-      // Calculate new zoom only if there are points
-      if (includedPoints.length) {
-        region = coordinateDeltas(
-          newCoords,
-          includedPoints.map(({ loc }) => convertCoords(loc)),
-          includedPoints[0].radius // Should be the closest one
-        );
-      }
-    }
-
-    // Animate
-    this.map.animateToRegion(region, ANIMATION_DELAY);
-  }
-
-  private animateHeading = (h: Heading) => {
-    if (!this.map) return;
-    if (!this.state.userTracked) return;
-    if (!h.valid) return;
-
-    this.map.animateCamera({ heading: h.degrees }, { duration: HEADING_DELAY });
-  };
 
   private mapMoved = () => {
     if (this.state.userTracked) this.setState({ userTracked: false });
