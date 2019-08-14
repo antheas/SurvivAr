@@ -14,6 +14,7 @@ export interface PointMetadata {
 // Session contains the transient application state
 export interface SessionState {
   state: StateType;
+  backgroundTrackingEnabled: boolean;
   pointMetadata: PointMetadata;
   currentPointCache: {
     // WaitPoints Only
