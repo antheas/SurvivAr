@@ -3,6 +3,7 @@ package gr.tuc.explorar.location.background.model;
 import androidx.annotation.NonNull;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,7 +17,7 @@ public class BackgroundProgress {
   private Map<String, Double> initial;
   private Map<String, Double> progress;
 
-  public BackgroundProgress(@NonNull ParcelablePoint[] points) {
+  public BackgroundProgress(@NonNull List<ParcelablePoint> points) {
     initial = parsePoints(points);
     progress = new HashMap<>();
   }
@@ -26,7 +27,7 @@ public class BackgroundProgress {
     progress = parseString(data);
   }
 
-  public BackgroundProgress(@Nonnull ParcelablePoint[] points, @Nullable String data) {
+  public BackgroundProgress(@Nonnull List<ParcelablePoint> points, @Nullable String data) {
     initial = parsePoints(points);
     progress = data == null ? new HashMap<>() : parseString(data);
   }
@@ -77,7 +78,7 @@ public class BackgroundProgress {
     return progressMap;
   }
 
-  private static Map<String, Double> parsePoints(ParcelablePoint[] points) {
+  private static Map<String, Double> parsePoints(List<ParcelablePoint> points) {
     Map<String, Double> initialMap = new HashMap<>();
 
     for (ParcelablePoint point : points) {

@@ -68,7 +68,7 @@ public class BackgroundLocationService extends Service implements BackgroundLoca
     notifications.startForeground(this);
 
     // Point Data
-    ParcelablePoint[] points = (ParcelablePoint[]) intent.getParcelableArrayExtra(POINT_DATA_KEY);
+    List<ParcelablePoint> points = intent.getParcelableArrayListExtra(POINT_DATA_KEY);
 
     // Previous Progress
     SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -83,6 +83,8 @@ public class BackgroundLocationService extends Service implements BackgroundLoca
   @Override
   public void onDestroy() {
     super.onDestroy();
+    manager.stopHeading();
+    manager.stopPosition();
   }
 
   @Nullable
@@ -123,7 +125,9 @@ public class BackgroundLocationService extends Service implements BackgroundLoca
           @Nullable BackgroundLocationManager.PointMetadata closestPoint,
           @Nullable BackgroundLocationManager.PointMetadata closestWaitPoint,
           @Nonnull List<ParcelablePoint> completedPoints) {
-    if (closestPoint != null) System.out.println(closestPoint.distance);
-    if (closestWaitPoint != null) System.out.println(closestWaitPoint.distance);
+    if (closestPoint != null)
+      System.out.println("Closest Point: " + closestPoint.point.name + " " + closestPoint.distance + " Bearing: " + closestPoint.bearing);
+    if (closestWaitPoint != null)
+      System.out.println("Wait Point: " + closestWaitPoint.point.name + " " + closestWaitPoint.distance + " Bearing: " + closestWaitPoint.bearing);
   }
 }

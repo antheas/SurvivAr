@@ -12,6 +12,9 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
+import java.util.ArrayList;
+import java.util.Objects;
+
 import gr.tuc.explorar.location.background.model.BackgroundProgress;
 import gr.tuc.explorar.location.background.model.ParcelablePoint;
 
@@ -21,9 +24,9 @@ import static gr.tuc.explorar.location.background.BackgroundLocationService.PROG
 
 public class BackgroundServiceWrapper {
 
-  private static ParcelablePoint[] convertPoints(ReadableArray points) {
+  private static ArrayList<ParcelablePoint> convertPoints(ReadableArray points) {
     int length = points.size();
-    ParcelablePoint[] output = new ParcelablePoint[length];
+    ArrayList<ParcelablePoint> output = new ArrayList<>();
 
     for (int i = 0; i < length; i++) {
       ReadableMap p = points.getMap(i);
@@ -36,12 +39,12 @@ public class BackgroundServiceWrapper {
       double duration = isWaitpoint ? p.getDouble("duration") : -1;
       double completedDuration = isWaitpoint ? p.getDouble("completedDuration") : -1;
 
-      output[i] = new ParcelablePoint(
-              p.getString("id"),
-              p.getString("icon"),
+      output.add(new ParcelablePoint(
+              Objects.requireNonNull(p.getString("id")),
+              Objects.requireNonNull(p.getString("icon")),
 
-              p.getString("name"),
-              p.getString("desc"),
+              Objects.requireNonNull(p.getString("name")),
+              Objects.requireNonNull(p.getString("desc")),
 
               coords.getDouble("lat"),
               coords.getDouble("lon"),
@@ -50,17 +53,16 @@ public class BackgroundServiceWrapper {
               isWaitpoint,
               duration,
               completedDuration
-      );
+      ));
     }
-
     return output;
   }
 
   public static void startBackgroundService(Context context, ReadableArray rawPoints) {
-    ParcelablePoint[] points = convertPoints(rawPoints);
+    ArrayList<ParcelablePoint> points = convertPoints(rawPoints);
 
     Intent intent = new Intent(ACTION_INITIALISE, null, context, BackgroundLocationService.class);
-    intent.putExtra(POINT_DATA_KEY, points);
+    intent.putParcelableArrayListExtra(POINT_DATA_KEY, points);
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       context.startForegroundService(intent);

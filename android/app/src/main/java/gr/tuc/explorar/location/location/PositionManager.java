@@ -70,6 +70,7 @@ public class PositionManager {
 
   public void unregisterPositionCallback() {
     if(currentCallback == null) return;
+    client.flushLocations();
     client.removeLocationUpdates(currentCallback);
     currentCallback = null;
 

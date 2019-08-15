@@ -18,11 +18,10 @@ import gr.tuc.explorar.location.location.PositionManager;
 public class BackgroundLocationManager implements HeadingManager.HeadingCallback, PositionManager.PositionCallback {
   private HeadingManager heading;
   private PositionManager position;
-  private Context context;
   private LocationListener listener;
 
   // Data
-  private ParcelablePoint[] points;
+  private List<ParcelablePoint> points;
   private BackgroundProgress progress;
 
   // Progress
@@ -30,10 +29,11 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
   private PositionManager.PositionState currentPosition;
   private long previousTimestamp;
 
-  public BackgroundLocationManager(Context c, LocationListener listener, ParcelablePoint[] points, @Nullable String previousProgress) {
+  public BackgroundLocationManager(Context c, LocationListener listener, List<ParcelablePoint> points, @Nullable String previousProgress) {
     // Setup Listeners
     heading = new HeadingManager(c, false);
     position = new PositionManager(c, false, true);
+    this.listener = listener;
 
     // Setup Data
     this.points = points;
@@ -134,9 +134,9 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
   }
 
   private void updateListener() {
-    if (points.length == 0) return;
+    if (points.size() == 0) return;
     // Find closest point
-    double minDistance = distanceFromUser(points[0]);
+    double minDistance = distanceFromUser(points.get(0));
     ParcelablePoint closestPoint = null;
 
     double minDistanceWait = minDistance;
@@ -156,7 +156,7 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
         minDistance = distance;
       }
 
-      if (p.isWaitPoint && distance < minDistanceWait) {
+      if (p.isWaitPoint && distance <= minDistanceWait) {
         closestWaitPoint = p;
         minDistanceWait = distance;
       }
