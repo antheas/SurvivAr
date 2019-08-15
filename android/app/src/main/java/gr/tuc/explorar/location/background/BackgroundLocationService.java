@@ -3,14 +3,21 @@ package gr.tuc.explorar.location.background;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 
 import androidx.annotation.Nullable;
 
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
 import gr.tuc.explorar.BuildConfig;
 import gr.tuc.explorar.SplashActivity;
+import gr.tuc.explorar.location.background.model.ParcelablePoint;
 
-public class BackgroundLocationService extends Service {
+public class BackgroundLocationService extends Service implements BackgroundLocationManager.LocationListener {
 
   public static final String POINT_DATA_KEY = "points";
   public static final String PROGRESS_DATA_KEY = "progress";
@@ -19,7 +26,8 @@ public class BackgroundLocationService extends Service {
   public static final String ACTION_REFRESH = BuildConfig.APPLICATION_ID + "/refresh";
   public static final String ACTION_EXIT = BuildConfig.APPLICATION_ID + "/exit";
 
-  private BackgroundNotificationManager manager;
+  private BackgroundNotificationManager notifications;
+  private BackgroundLocationManager manager;
 
   @Override
   public void onCreate() {
@@ -52,15 +60,22 @@ public class BackgroundLocationService extends Service {
     // From now on we run initialisation
     if (!ACTION_INITIALISE.equals(action)) return returnFlag;
 
-    manager = new BackgroundNotificationManager(
+    notifications = new BackgroundNotificationManager(
             this,
             getOpenAppIntent(),
             getExitIntent(),
             getRefreshIntent());
-    manager.startForeground(this);
+    notifications.startForeground(this);
 
-    Intent intent2 = new Intent();
-    intent2.setAction(ACTION_EXIT);
+    // Point Data
+    ParcelablePoint[] points = (ParcelablePoint[]) intent.getParcelableArrayExtra(POINT_DATA_KEY);
+
+    // Previous Progress
+    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+    String previousProgress = sp.getString(PROGRESS_DATA_KEY, null);
+
+    manager = new BackgroundLocationManager(this, this, points, previousProgress);
+    manager.startPosition();
 
     return returnFlag;
   }
@@ -101,5 +116,14 @@ public class BackgroundLocationService extends Service {
   private PendingIntent getExitIntent() {
     Intent intent = new Intent(ACTION_EXIT, null, this, BackgroundLocationService.class);
     return PendingIntent.getService(this, 0, intent, 0);
+  }
+
+  @Override
+  public void onDataUpdated(
+          @Nullable BackgroundLocationManager.PointMetadata closestPoint,
+          @Nullable BackgroundLocationManager.PointMetadata closestWaitPoint,
+          @Nonnull List<ParcelablePoint> completedPoints) {
+    if (closestPoint != null) System.out.println(closestPoint.distance);
+    if (closestWaitPoint != null) System.out.println(closestWaitPoint.distance);
   }
 }

@@ -1,13 +1,23 @@
-package gr.tuc.explorar.location.background;
+package gr.tuc.explorar.location.background.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Objects;
+
+import javax.annotation.Nonnull;
+
+import gr.tuc.explorar.location.background.utils.Haversine;
+
 public class ParcelablePoint implements Parcelable {
+  @Nonnull
   public final String id;
+  @Nonnull
   public final String icon;
 
+  @Nonnull
   public final String name;
+  @Nonnull
   public final String desc;
 
   public final double lat;
@@ -18,7 +28,9 @@ public class ParcelablePoint implements Parcelable {
   public final double duration;
   public final double completedDuration;
 
-  public ParcelablePoint(String id, String icon, String name, String desc, double lat, double lon,
+  public ParcelablePoint(@Nonnull String id, @Nonnull String icon,
+                         @Nonnull String name, @Nonnull String desc,
+                         double lat, double lon,
                          double radius, boolean isWaitPoint,
                          double duration, double completedDuration) {
     this.id = id;
@@ -37,12 +49,16 @@ public class ParcelablePoint implements Parcelable {
     return isWaitPoint && (completedDuration >= duration);
   }
 
-  protected ParcelablePoint(Parcel in) {
-    this.id = in.readString();
-    this.icon = in.readString();
+  public double distanceFrom(double lat, double lon) {
+    return Haversine.distance(this.lat, this.lon, lat, lon);
+  }
 
-    this.name = in.readString();
-    this.desc = in.readString();
+  protected ParcelablePoint(Parcel in) {
+    this.id = Objects.requireNonNull(in.readString());
+    this.icon = Objects.requireNonNull(in.readString());
+
+    this.name = Objects.requireNonNull(in.readString());
+    this.desc = Objects.requireNonNull(in.readString());
 
     this.lat = in.readDouble();
     this.lon = in.readDouble();

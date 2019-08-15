@@ -48,8 +48,8 @@ public class BackgroundNotificationManager {
             .setContentText(c.getText(R.string.location_service_notification_content))
 
             .setContentIntent(onClick)
-            .addAction(0, "Refresh", onRefresh)
-            .addAction(0, "Exit", onExit)
+            .addAction(0, c.getString(R.string.location_notification_refresh), onRefresh)
+            .addAction(0, c.getString(R.string.location_notification_exit), onExit)
 
             .setSmallIcon(R.drawable.location_notification_icon)
             .setColor(ContextCompat.getColor(c, R.color.primary_color))

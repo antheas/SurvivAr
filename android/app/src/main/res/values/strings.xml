@@ -4,4 +4,6 @@
     <string name="location_service_notification_content">Looking for closest target…</string>
     <string name="location_notification_channel_description">When background tracking is enabled, this notification displays the current status</string>
     <string name="location_notification_channel_name">Background Tracking Notification</string>
+    <string name="location_notification_refresh">Refresh</string>
+    <string name="location_notification_exit">Exit</string>
 </resources>

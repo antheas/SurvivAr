@@ -12,6 +12,9 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
+import gr.tuc.explorar.location.background.model.BackgroundProgress;
+import gr.tuc.explorar.location.background.model.ParcelablePoint;
+
 import static gr.tuc.explorar.location.background.BackgroundLocationService.ACTION_INITIALISE;
 import static gr.tuc.explorar.location.background.BackgroundLocationService.POINT_DATA_KEY;
 import static gr.tuc.explorar.location.background.BackgroundLocationService.PROGRESS_DATA_KEY;
@@ -79,7 +82,7 @@ public class BackgroundServiceWrapper {
     // Clear data since we received it
     sp.edit().remove(PROGRESS_DATA_KEY).apply();
 
-    BackgroundProgress progress = BackgroundProgress.parse(data);
+    BackgroundProgress progress = new BackgroundProgress(data);
     WritableArray array = Arguments.createArray();
     for (String id : progress.getIds()) {
       WritableMap map = Arguments.createMap();

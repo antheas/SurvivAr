@@ -68,7 +68,7 @@ public class PositionManager {
             looper);
   }
 
-  public void unregisterLocationCallback() {
+  public void unregisterPositionCallback() {
     if(currentCallback == null) return;
     client.removeLocationUpdates(currentCallback);
     currentCallback = null;
@@ -181,6 +181,8 @@ public class PositionManager {
   }
 
   public static class PositionState {
+    public static final PositionState NUL = new PositionState(0, 0, 0, 0, false);
+
     public final double lat;
     public final double lon;
     public final double accuracy;

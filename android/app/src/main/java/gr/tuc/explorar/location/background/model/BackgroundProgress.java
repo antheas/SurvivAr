@@ -1,8 +1,13 @@
-package gr.tuc.explorar.location.background;
+package gr.tuc.explorar.location.background.model;
+
+import androidx.annotation.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class BackgroundProgress {
 
@@ -11,19 +16,19 @@ public class BackgroundProgress {
   private Map<String, Double> initial;
   private Map<String, Double> progress;
 
-  public BackgroundProgress(ParcelablePoint[] points) {
+  public BackgroundProgress(@NonNull ParcelablePoint[] points) {
+    initial = parsePoints(points);
     progress = new HashMap<>();
-
-    // Create initial progress
-    initial = new HashMap<>();
-    for (ParcelablePoint point : points) {
-      initial.put(point.id, point.completedDuration);
-    }
   }
 
-  private BackgroundProgress(Map<String, Double> progress) {
+  public BackgroundProgress(@Nonnull String data) {
     initial = new HashMap<>();
-    this.progress = progress;
+    progress = parseString(data);
+  }
+
+  public BackgroundProgress(@Nonnull ParcelablePoint[] points, @Nullable String data) {
+    initial = parsePoints(points);
+    progress = data == null ? new HashMap<>() : parseString(data);
   }
 
   public void update(String id, double newDuration) {
@@ -37,7 +42,7 @@ public class BackgroundProgress {
   public double get(String id) {
     Double p;
     if (progress.containsKey(id))
-      p =  progress.get(id);
+      p = progress.get(id);
     else
       p = initial.get(id);
 
@@ -49,8 +54,38 @@ public class BackgroundProgress {
     return get(point.id);
   }
 
+  public void add(ParcelablePoint point, double addedTime) {
+    update(point, get(point) + addedTime);
+  }
+
   public Set<String> getIds() {
     return progress.keySet();
+  }
+
+  private static Map<String, Double> parseString(String data) {
+    String[] stringPoints = data.split("&");
+
+    Map<String, Double> progressMap = new HashMap<>();
+    for (String stringPoint : stringPoints) {
+      String[] point = stringPoint.split(">");
+      String id = decodeId(point[0]);
+      double progress = Double.valueOf(point[2]);
+
+      progressMap.put(id, progress);
+    }
+
+    return progressMap;
+  }
+
+  private static Map<String, Double> parsePoints(ParcelablePoint[] points) {
+    Map<String, Double> initialMap = new HashMap<>();
+
+    for (ParcelablePoint point : points) {
+      if (point.isWaitPoint)
+        initialMap.put(point.id, point.completedDuration);
+    }
+
+    return initialMap;
   }
 
   public String stringify() {
@@ -70,21 +105,6 @@ public class BackgroundProgress {
     sb.setLength(sb.length() - 1);
 
     return sb.toString();
-  }
-
-  public static BackgroundProgress parse(String data) {
-    String[] stringPoints = data.split("&");
-
-    Map<String, Double> progressMap = new HashMap<>();
-    for (String stringPoint : stringPoints) {
-      String[] point = stringPoint.split(">");
-      String id = decodeId(point[0]);
-      double progress = Double.valueOf(point[2]);
-
-      progressMap.put(id, progress);
-    }
-
-    return new BackgroundProgress(progressMap);
   }
 
   private static String encodeId(String id) {

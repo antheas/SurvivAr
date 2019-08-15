@@ -73,7 +73,7 @@ public class LocationManagerModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void disablePositionCallback() {
-    location.unregisterLocationCallback();
+    location.unregisterPositionCallback();
   }
 
   @ReactMethod
