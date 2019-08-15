@@ -1,9 +1,3 @@
-export interface PointEvent {
-  duration: number;
-  start: Date;
-  end: Date;
-}
-
 export interface WaitPointProgress {
   elapsedTime: number;
 }

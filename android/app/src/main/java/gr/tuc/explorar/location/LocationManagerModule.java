@@ -3,9 +3,12 @@ package gr.tuc.explorar.location;
 import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
@@ -14,6 +17,7 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
+import gr.tuc.explorar.location.background.BackgroundServiceWrapper;
 import gr.tuc.explorar.location.foreground.ForegroundHeadingManager;
 import gr.tuc.explorar.location.foreground.ForegroundLocationManager;
 
@@ -104,4 +108,19 @@ public class LocationManagerModule extends ReactContextBaseJavaModule {
             .emit(eventName, params);
   }
 
+
+  @ReactMethod
+  public void enableBackgroundTracking(ReadableArray points) {
+    BackgroundServiceWrapper.startBackgroundService(context, points);
+  }
+
+  @ReactMethod
+  public void disableBackgroundTracking() {
+    BackgroundServiceWrapper.stopBackgroundService(context);
+  }
+
+  public void retrieveBackgroundProgress(Promise promise) {
+    ReadableArray data = BackgroundServiceWrapper.retrieveProgress(context);
+    promise.resolve(data);
+  }
 }

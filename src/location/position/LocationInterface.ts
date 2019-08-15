@@ -1,4 +1,6 @@
-import { AreaPoint, PointEvent, PositionState } from "../../store/types";
+import { WaitProgressUpdate } from "../../store/actions";
+import { ExtendedPoint } from "../../store/model/ExtendedPoint";
+import { PositionState } from "../../store/types";
 
 export type PositionCallback = (position: PositionState) => void;
 
@@ -13,9 +15,9 @@ export default interface LocationManagerInterface {
 
   stopJsCallbacks(): void;
 
-  enableBackgroundTracking(point: AreaPoint): void;
+  enableBackgroundTracking(points: ExtendedPoint[]): void;
 
   disableBackgroundTracking(): void;
 
-  loadBackgroundEvents(): Promise<PointEvent[]>;
+  loadBackgroundEvents(): Promise<WaitProgressUpdate[]>;
 }

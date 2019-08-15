@@ -1,13 +1,13 @@
-import { PointEvent } from "../../store/types";
+import {
+  DeviceEventEmitter,
+  EmitterSubscription,
+  NativeModules
+} from "react-native";
+import { WaitProgressUpdate } from "../../store/actions";
+import { ExtendedPoint } from "../../store/model/ExtendedPoint";
 import LocationManagerInterface, {
   PositionCallback
 } from "./LocationInterface";
-import {
-  NativeModules,
-  DeviceEventEmitter,
-  EmitterSubscription
-} from "react-native";
-
 const NativeLocationManager = NativeModules.NativeLocationManager;
 
 export class LocationManager implements LocationManagerInterface {
@@ -42,16 +42,26 @@ export class LocationManager implements LocationManagerInterface {
     NativeLocationManager.disablePositionCallback();
   }
 
-  public enableBackgroundTracking() {
-    // noop
+  public enableBackgroundTracking(points: ExtendedPoint[]) {
+    NativeLocationManager.enableBackgroundTracking(points);
   }
 
   public disableBackgroundTracking() {
-    // noop
+    NativeLocationManager.disableBackgroundTracking();
   }
 
-  public async loadBackgroundEvents(): Promise<PointEvent[]> {
-    return [] as PointEvent[];
+  public async loadBackgroundEvents(): Promise<WaitProgressUpdate[]> {
+    const rawProgress: Array<{
+      id: string;
+      progress: number;
+    }> = await NativeLocationManager.retrieveBackgroundProgress();
+
+    return rawProgress.map(
+      (p): WaitProgressUpdate => ({
+        id: p.id,
+        progress: { elapsedTime: p.progress }
+      })
+    );
   }
 }
 

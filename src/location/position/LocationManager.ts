@@ -3,6 +3,7 @@ import LocationManagerInterface, {
   PositionCallback
 } from "./LocationInterface";
 import { PointEvent } from "../../store/types";
+import { WaitProgressUpdate } from "../../store/actions";
 
 export class LocationManager implements LocationManagerInterface {
   private watchId = -1;
@@ -68,8 +69,8 @@ export class LocationManager implements LocationManagerInterface {
     // noop
   }
 
-  public async loadBackgroundEvents(): Promise<PointEvent[]> {
-    return [] as PointEvent[];
+  public async loadBackgroundEvents(): Promise<WaitProgressUpdate[]> {
+    return [];
   }
 }
 

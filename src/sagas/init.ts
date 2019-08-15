@@ -17,11 +17,6 @@ import { selectPosition, selectPoints } from "../store/selectors";
 import { withinThreshold } from "./distance";
 import fetchPoints from "./pointApi";
 
-function* handleBackgroundEvents() {
-  // noop
-  yield null;
-}
-
 // Wait until we have the required meters of accuracy.
 function* waitForFineLocation() {
   yield put(updateState(StateType.WAITING_FOR_FINE_LOCATION));
@@ -82,7 +77,6 @@ function* refreshRootNode() {
 }
 
 export default function* init() {
-  yield* handleBackgroundEvents();
   yield* waitForFineLocation();
   yield* refreshRootNode();
 }

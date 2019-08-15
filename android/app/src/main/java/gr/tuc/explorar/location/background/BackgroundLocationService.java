@@ -12,6 +12,9 @@ import gr.tuc.explorar.MainActivity;
 
 public class BackgroundLocationService extends Service {
 
+  public static final String POINT_DATA_KEY = "points";
+  public static final String PROGRESS_DATA_KEY = "progress";
+
   private BackgroundNotificationManager manager;
 
   @Override
