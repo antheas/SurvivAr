@@ -9,6 +9,7 @@ import android.os.IBinder;
 import androidx.annotation.Nullable;
 
 import gr.tuc.explorar.MainActivity;
+import gr.tuc.explorar.SplashActivity;
 
 public class BackgroundLocationService extends Service {
 
@@ -24,13 +25,14 @@ public class BackgroundLocationService extends Service {
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
-    PendingIntent openAppIntent = PendingIntent.getActivity(
-            this,
-            0,
-            new Intent(this, MainActivity.class),
-            0);
+    Intent openAppIntent = new Intent(this, SplashActivity.class);
+    openAppIntent.setAction(Intent.ACTION_MAIN);
+    openAppIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+    openAppIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-    manager = new BackgroundNotificationManager(this, openAppIntent, null, null);
+    PendingIntent openAppPending = PendingIntent.getActivity(this, 0, openAppIntent, 0);
+
+    manager = new BackgroundNotificationManager(this, openAppPending, null, null);
     manager.startForeground(this);
 
     new Handler().postDelayed(this::stopSelf, 20000);
