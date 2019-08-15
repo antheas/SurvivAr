@@ -25,12 +25,10 @@ const minWidth = Math.round(
 );
 
 // https://groups.google.com/forum/#!topic/google-maps-js-api-v3/hDRO4oHVSeM
-const zoomFromRadius = (c: Location, r: number, margin: number = 0.2) =>
-  Math.ceil(
-    Math.log2(
-      (156543.03392 * Math.cos((c.lat * Math.PI) / 180) * minWidth) /
-        (2 * r * (margin + 1))
-    )
+const zoomFromRadius = (c: Location, r: number, margin: number = -0.2) =>
+  Math.log2(
+    (156543.03392 * Math.cos((c.lat * Math.PI) / 180) * minWidth) /
+      (2 * r * (margin + 1))
   );
 
 export enum ZoomLevel {
@@ -186,8 +184,7 @@ export default class CameraManager {
     if (includedPoints.length) {
       const maxDistance = includedPoints
         .map(p => p.distance)
-        .sort()
-        .reverse()[0];
+        .sort((a, b) => b - a)[0];
 
       camera.zoom = zoomFromRadius(this.r().coords, maxDistance);
     }

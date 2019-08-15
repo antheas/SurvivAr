@@ -42,7 +42,6 @@ function* updateClosestDistance(manager: LocationManagerInterface) {
       .sort((a, b) => a - b);
     if (distances.length) {
       const minDistance = distances[0];
-      console.log(minDistance);
       manager.updateClosestDistance(minDistance);
     }
   }
