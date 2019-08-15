@@ -119,6 +119,7 @@ public class LocationManagerModule extends ReactContextBaseJavaModule {
     BackgroundServiceWrapper.stopBackgroundService(context);
   }
 
+  @ReactMethod
   public void retrieveBackgroundProgress(Promise promise) {
     ReadableArray data = BackgroundServiceWrapper.retrieveProgress(context);
     promise.resolve(data);

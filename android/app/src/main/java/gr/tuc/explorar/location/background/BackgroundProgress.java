@@ -6,17 +6,23 @@ import java.util.Set;
 
 public class BackgroundProgress {
 
+  // Initial is kept separate so only the changed progress will
+  // be retained
+  private Map<String, Double> initial;
   private Map<String, Double> progress;
 
   public BackgroundProgress(ParcelablePoint[] points) {
-    // Create initial progress
     progress = new HashMap<>();
+
+    // Create initial progress
+    initial = new HashMap<>();
     for (ParcelablePoint point : points) {
-      progress.put(point.id, point.completedDuration);
+      initial.put(point.id, point.completedDuration);
     }
   }
 
   private BackgroundProgress(Map<String, Double> progress) {
+    initial = new HashMap<>();
     this.progress = progress;
   }
 
@@ -29,7 +35,14 @@ public class BackgroundProgress {
   }
 
   public double get(String id) {
-    return progress.get(id);
+    Double p;
+    if (progress.containsKey(id))
+      p =  progress.get(id);
+    else
+      p = initial.get(id);
+
+    if (p == null) return 0;
+    return p;
   }
 
   public double get(ParcelablePoint point) {
@@ -59,7 +72,7 @@ public class BackgroundProgress {
     return sb.toString();
   }
 
-  public static BackgroundProgress unstringify(String data) {
+  public static BackgroundProgress parse(String data) {
     String[] stringPoints = data.split("&");
 
     Map<String, Double> progressMap = new HashMap<>();

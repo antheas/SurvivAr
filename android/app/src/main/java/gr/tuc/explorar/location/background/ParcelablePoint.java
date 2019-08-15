@@ -14,14 +14,12 @@ public class ParcelablePoint implements Parcelable {
   public final double lon;
   public final double radius;
 
-  public final boolean completed;
-
   public final boolean isWaitPoint;
   public final double duration;
   public final double completedDuration;
 
   public ParcelablePoint(String id, String icon, String name, String desc, double lat, double lon,
-                         double radius, boolean completed, boolean isWaitPoint,
+                         double radius, boolean isWaitPoint,
                          double duration, double completedDuration) {
     this.id = id;
     this.icon = icon;
@@ -30,7 +28,6 @@ public class ParcelablePoint implements Parcelable {
     this.lat = lat;
     this.lon = lon;
     this.radius = radius;
-    this.completed = completed;
     this.isWaitPoint = isWaitPoint;
     this.duration = duration;
     this.completedDuration = completedDuration;
@@ -47,7 +44,6 @@ public class ParcelablePoint implements Parcelable {
     this.lon = in.readDouble();
 
     this.radius = in.readDouble();
-    this.completed = in.readByte() == 1;
 
     this.isWaitPoint = in.readByte() == 1;
     this.duration = in.readDouble();
@@ -66,7 +62,6 @@ public class ParcelablePoint implements Parcelable {
     dest.writeDouble(lon);
 
     dest.writeDouble(radius);
-    dest.writeByte((byte) (completed ? 1 : 0));
 
     dest.writeByte((byte) (isWaitPoint ? 1 : 0));
     dest.writeDouble(duration);

@@ -25,6 +25,9 @@ public class BackgroundServiceWrapper {
       ReadableMap p = points.getMap(i);
       if (p == null) throw new RuntimeException("Invalid Bundle");
 
+      ReadableMap coords = p.getMap("loc");
+      if (coords == null) throw new RuntimeException("Invalid Bundle");
+
       boolean isWaitpoint = p.hasKey("duration");
       double duration = isWaitpoint ? p.getDouble("duration") : -1;
       double completedDuration = isWaitpoint ? p.getDouble("completedDuration") : -1;
@@ -36,11 +39,9 @@ public class BackgroundServiceWrapper {
               p.getString("name"),
               p.getString("desc"),
 
-              p.getDouble("lat"),
-              p.getDouble("lon"),
+              coords.getDouble("lat"),
+              coords.getDouble("lon"),
               p.getDouble("radius"),
-
-              p.getBoolean("completed"),
 
               isWaitpoint,
               duration,
@@ -77,7 +78,7 @@ public class BackgroundServiceWrapper {
     // Clear data since we received it
     sp.edit().remove(PROGRESS_DATA_KEY).apply();
 
-    BackgroundProgress progress = BackgroundProgress.unstringify(data);
+    BackgroundProgress progress = BackgroundProgress.parse(data);
     WritableArray array = Arguments.createArray();
     for (String id : progress.getIds()) {
       WritableMap map = Arguments.createMap();
