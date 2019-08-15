@@ -31,20 +31,30 @@ public class BackgroundNotificationManager {
                                        PendingIntent onRefresh) {
     createNotificationChannel(c);
     manager = NotificationManagerCompat.from(c);
-    builder = createBaseBuilder(c).setContentIntent(onClick);
+    builder = createBaseBuilder(c, onClick, onExit, onRefresh);
   }
 
   public void startForeground(Service service) {
     service.startForeground(LOCATION_NOTIFICATION_ID, builder.build());
   }
 
-  private static NotificationCompat.Builder createBaseBuilder(Context c) {
+  private static NotificationCompat.Builder createBaseBuilder(
+          Context c,
+          PendingIntent onClick,
+          PendingIntent onExit,
+          PendingIntent onRefresh) {
     return new NotificationCompat.Builder(c, LOCATION_NOTIFICATION_CHANNEL_ID)
             .setContentTitle(c.getText(R.string.location_service_notification_title))
             .setContentText(c.getText(R.string.location_service_notification_content))
+
+            .setContentIntent(onClick)
+            .addAction(0, "Refresh", onRefresh)
+            .addAction(0, "Exit", onExit)
+
             .setSmallIcon(R.drawable.location_notification_icon)
             .setColor(ContextCompat.getColor(c, R.color.primary_color))
             .setColorized(true)
+
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setOngoing(true)
             .setOnlyAlertOnce(true);

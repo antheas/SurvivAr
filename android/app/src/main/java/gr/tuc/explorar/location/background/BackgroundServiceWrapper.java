@@ -12,6 +12,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
+import static gr.tuc.explorar.location.background.BackgroundLocationService.ACTION_INITIALISE;
 import static gr.tuc.explorar.location.background.BackgroundLocationService.POINT_DATA_KEY;
 import static gr.tuc.explorar.location.background.BackgroundLocationService.PROGRESS_DATA_KEY;
 
@@ -55,7 +56,7 @@ public class BackgroundServiceWrapper {
   public static void startBackgroundService(Context context, ReadableArray rawPoints) {
     ParcelablePoint[] points = convertPoints(rawPoints);
 
-    Intent intent = new Intent(context, BackgroundLocationService.class);
+    Intent intent = new Intent(ACTION_INITIALISE, null, context, BackgroundLocationService.class);
     intent.putExtra(POINT_DATA_KEY, points);
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
