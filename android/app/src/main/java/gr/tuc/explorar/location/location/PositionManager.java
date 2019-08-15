@@ -28,16 +28,18 @@ public class PositionManager {
   private HandlerThread thread;
   private LocationCallback currentCallback;
 
+  private boolean inBackground;
   private int currentSpeed;
   private long updatesSinceLastSpeedChange;
 
   // Foreground thread gets killed so we need to spawn a thread.
-  public PositionManager(Context c, boolean spawnThread) {
+  public PositionManager(Context c, boolean spawnThread, boolean inBackground) {
     client = new FusedLocationProviderClient(c);
     currentSpeed = FAST;
     updatesSinceLastSpeedChange = 0;
     this.context = c;
     this.spawnThread = spawnThread;
+    this.inBackground = inBackground;
   }
 
   @SuppressLint("MissingPermission")
@@ -91,7 +93,8 @@ public class PositionManager {
     // The following request will re-trigger an update which may have stale data
     // If the stale location distance is big then it will re-trigger a speed change
     // which will cause an endless loop
-    if (updatesSinceLastSpeedChange < 10) {
+    // While in background the update rate is much smaller so we require less updates to stay responsive.
+    if (updatesSinceLastSpeedChange < (inBackground ? 2 : 10)) {
       updatesSinceLastSpeedChange++;
       return;
     }
@@ -125,27 +128,56 @@ public class PositionManager {
   }
 
   private LocationRequest getLocationRequest(int speed) {
-    switch (speed) {
-      case FAST:
-        return new LocationRequest()
-                .setFastestInterval(MAX_INTERVAL)
-                .setInterval(2000)
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-      case NORMAL:
-        return new LocationRequest()
-                .setFastestInterval(MAX_INTERVAL)
-                .setInterval(10000)
-                .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-      case SLOW:
-        // fallthrough
-      default:
-        return new LocationRequest()
-                .setFastestInterval(MAX_INTERVAL)
-                .setFastestInterval(0)
-                .setInterval(30000)
-                .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
-                .setSmallestDisplacement(30);
+    if (!inBackground) {
+      // When the screen is on the user might be looking at the map, so we require a high update rate
+      // even when we are far away
+      switch (speed) {
+        case FAST:
+          return new LocationRequest()
+                  .setFastestInterval(MAX_INTERVAL)
+                  .setInterval(2000)
+                  .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        case NORMAL:
+          return new LocationRequest()
+                  .setFastestInterval(MAX_INTERVAL)
+                  .setInterval(10000)
+                  .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        case SLOW:
+          // fallthrough
+        default:
+          return new LocationRequest()
+                  .setFastestInterval(MAX_INTERVAL)
+                  .setInterval(30000)
+                  .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
+                  .setSmallestDisplacement(30);
+      }
+    } else {
+      switch (speed) {
+        case FAST:
+          return new LocationRequest()
+                  .setFastestInterval(MAX_INTERVAL)
+                  .setInterval(1000)
+                  .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        case NORMAL:
+          return new LocationRequest()
+                  .setFastestInterval(MAX_INTERVAL)
+                  .setInterval(toMs(2))
+                  .setSmallestDisplacement(130)
+                  .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        case SLOW:
+          // fallthrough
+        default:
+          return new LocationRequest()
+                  .setFastestInterval(MAX_INTERVAL)
+                  .setInterval(toMs(5))
+                  .setSmallestDisplacement(100)
+                  .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+      }
     }
+  }
+
+  private long toMs(int minutes) {
+    return 60 * 1000 * minutes;
   }
 
   public static class PositionState {

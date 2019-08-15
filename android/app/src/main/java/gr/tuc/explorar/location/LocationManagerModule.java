@@ -35,7 +35,7 @@ public class LocationManagerModule extends ReactContextBaseJavaModule {
     super(reactContext);
 
     context = reactContext;
-    location = new PositionManager(reactContext, true);
+    location = new PositionManager(reactContext, true, false);
     heading = new HeadingManager(reactContext, true);
   }
 
