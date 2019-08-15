@@ -1,17 +1,18 @@
-package gr.tuc.explorar.location.foreground;
+package gr.tuc.explorar.location.location;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
 import android.os.Build;
 import android.os.HandlerThread;
+import android.os.Looper;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 
-public class ForegroundLocationManager {
+public class PositionManager {
 
   private static final int FAST = 0;
   private static final int NORMAL = 1;
@@ -22,22 +23,34 @@ public class ForegroundLocationManager {
   private static final int MAX_INTERVAL = 1000;
 
   private FusedLocationProviderClient client;
+  private Context context;
+  private boolean spawnThread;
   private HandlerThread thread;
   private LocationCallback currentCallback;
 
   private int currentSpeed;
   private long updatesSinceLastSpeedChange;
 
-  public ForegroundLocationManager(Context c) {
+  // Foreground thread gets killed so we need to spawn a thread.
+  public PositionManager(Context c, boolean spawnThread) {
     client = new FusedLocationProviderClient(c);
     currentSpeed = FAST;
     updatesSinceLastSpeedChange = 0;
+    this.context = c;
+    this.spawnThread = spawnThread;
   }
 
   @SuppressLint("MissingPermission")
   public void registerPositionCallback(PositionCallback callback) {
-    thread = new HandlerThread(THREAD_NAME);
-    thread.start();
+    Looper looper;
+    if (spawnThread) {
+      thread = new HandlerThread(THREAD_NAME);
+      thread.start();
+      looper = thread.getLooper();
+    } else {
+      looper = context.getMainLooper();
+    }
+
     client.getLastLocation().addOnSuccessListener(l -> callback.onPositionUpdated(toState(l)));
 
     currentCallback = new LocationCallback() {
@@ -50,7 +63,7 @@ public class ForegroundLocationManager {
     client.requestLocationUpdates(
             getLocationRequest(currentSpeed),
             currentCallback,
-            thread.getLooper());
+            looper);
   }
 
   public void unregisterLocationCallback() {
@@ -58,7 +71,7 @@ public class ForegroundLocationManager {
     client.removeLocationUpdates(currentCallback);
     currentCallback = null;
 
-    if (thread == null) return;
+    if (!spawnThread || thread == null) return;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
       thread.quitSafely();
     } else {

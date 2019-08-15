@@ -1,4 +1,4 @@
-package gr.tuc.explorar.location.foreground;
+package gr.tuc.explorar.location.location;
 
 import android.content.Context;
 import android.hardware.Sensor;
@@ -8,16 +8,19 @@ import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Looper;
 
 import static android.content.Context.SENSOR_SERVICE;
 
-public class ForegroundHeadingManager implements SensorEventListener {
+public class HeadingManager implements SensorEventListener {
 
   private static final String THREAD_ID = "location_heading_thread";
   private static final Double FILTER = 8d;
 
   private HeadingCallback callback;
+  private boolean spawnThread;
   private HandlerThread thread;
+  private Context context;
 
   private SensorManager sensorManager;
   private final float[] accelerometerReading = new float[3];
@@ -28,8 +31,10 @@ public class ForegroundHeadingManager implements SensorEventListener {
 
   private double currAzimuth = 0;
 
-  public ForegroundHeadingManager(Context c) {
+  public HeadingManager(Context c, boolean spawnThread) {
     sensorManager = (SensorManager) c.getSystemService(SENSOR_SERVICE);
+    context = c;
+    this.spawnThread = spawnThread;
   }
 
   public void registerHeadingCallback(HeadingCallback callback) {
@@ -44,9 +49,15 @@ public class ForegroundHeadingManager implements SensorEventListener {
     this.callback = callback;
 
     // Create thread for callbacks
-    thread = new HandlerThread(THREAD_ID);
-    thread.start();
-    Handler handler = new Handler(thread.getLooper());
+    Looper looper;
+    if (spawnThread) {
+      thread = new HandlerThread(THREAD_ID);
+      thread.start();
+      looper = thread.getLooper();
+    } else {
+      looper = context.getMainLooper();
+    }
+    Handler handler = new Handler(looper);
 
     Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     if (accelerometer != null) {
@@ -64,7 +75,7 @@ public class ForegroundHeadingManager implements SensorEventListener {
     sensorManager.unregisterListener(this);
     callback = null;
 
-    if (thread == null) return;
+    if (!spawnThread || thread == null) return;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
       thread.quitSafely();
     } else {

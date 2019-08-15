@@ -17,8 +17,8 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 
 import gr.tuc.explorar.location.background.BackgroundServiceWrapper;
-import gr.tuc.explorar.location.foreground.ForegroundHeadingManager;
-import gr.tuc.explorar.location.foreground.ForegroundLocationManager;
+import gr.tuc.explorar.location.location.HeadingManager;
+import gr.tuc.explorar.location.location.PositionManager;
 
 public class LocationManagerModule extends ReactContextBaseJavaModule {
 
@@ -28,15 +28,15 @@ public class LocationManagerModule extends ReactContextBaseJavaModule {
   private static final String EVENT_POSITION = "LOCATION_POSITION_EVENT";
 
   private ReactApplicationContext context;
-  private ForegroundLocationManager location;
-  private ForegroundHeadingManager heading;
+  private PositionManager location;
+  private HeadingManager heading;
 
   public LocationManagerModule(@Nonnull ReactApplicationContext reactContext) {
     super(reactContext);
 
     context = reactContext;
-    location = new ForegroundLocationManager(reactContext);
-    heading = new ForegroundHeadingManager(reactContext);
+    location = new PositionManager(reactContext, true);
+    heading = new HeadingManager(reactContext, true);
   }
 
   @Nonnull
