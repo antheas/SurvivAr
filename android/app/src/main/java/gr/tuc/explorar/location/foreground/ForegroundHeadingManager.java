@@ -14,7 +14,7 @@ import static android.content.Context.SENSOR_SERVICE;
 public class ForegroundHeadingManager implements SensorEventListener {
 
   private static final String THREAD_ID = "location_heading_thread";
-  private static final Double FILTER = 10d;
+  private static final Double FILTER = 8d;
 
   private HeadingCallback callback;
   private HandlerThread thread;

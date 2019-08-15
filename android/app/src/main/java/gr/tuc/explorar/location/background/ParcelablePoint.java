@@ -33,6 +33,10 @@ public class ParcelablePoint implements Parcelable {
     this.completedDuration = completedDuration;
   }
 
+  public boolean isComplete() {
+    return isWaitPoint && (completedDuration >= duration);
+  }
+
   protected ParcelablePoint(Parcel in) {
     this.id = in.readString();
     this.icon = in.readString();

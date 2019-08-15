@@ -19,14 +19,19 @@ public class ForegroundLocationManager {
 
   private static final String THREAD_NAME = "location_callback_thread";
 
+  private static final int MAX_INTERVAL = 1000;
+
   private FusedLocationProviderClient client;
   private HandlerThread thread;
   private LocationCallback currentCallback;
+
   private int currentSpeed;
+  private long updatesSinceLastSpeedChange;
 
   public ForegroundLocationManager(Context c) {
     client = new FusedLocationProviderClient(c);
-    currentSpeed = 0;
+    currentSpeed = FAST;
+    updatesSinceLastSpeedChange = 0;
   }
 
   @SuppressLint("MissingPermission")
@@ -65,7 +70,20 @@ public class ForegroundLocationManager {
   @SuppressLint("MissingPermission")
   public void setClosestPointDistance(double distance) {
     int newSpeed = getUpdatedSpeed(distance);
-    if (newSpeed == currentSpeed) return;
+    if (newSpeed == currentSpeed) {
+      updatesSinceLastSpeedChange = 0;
+      return;
+    }
+
+    // The following request will re-trigger an update which may have stale data
+    // If the stale location distance is big then it will re-trigger a speed change
+    // which will cause an endless loop
+    if (updatesSinceLastSpeedChange < 10) {
+      updatesSinceLastSpeedChange++;
+      return;
+    }
+    updatesSinceLastSpeedChange = 0;
+    currentSpeed = newSpeed;
 
     // If we have changed speed we have to re-register the callback with the new speed.
     client.requestLocationUpdates(
@@ -97,21 +115,21 @@ public class ForegroundLocationManager {
     switch (speed) {
       case FAST:
         return new LocationRequest()
-                .setFastestInterval(1000)
+                .setFastestInterval(MAX_INTERVAL)
                 .setInterval(2000)
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
       case NORMAL:
         return new LocationRequest()
-                .setFastestInterval(1000)
+                .setFastestInterval(MAX_INTERVAL)
                 .setInterval(10000)
                 .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
       case SLOW:
         // fallthrough
       default:
         return new LocationRequest()
+                .setFastestInterval(MAX_INTERVAL)
                 .setFastestInterval(0)
                 .setInterval(30000)
-                .setFastestInterval(1000)
                 .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
                 .setSmallestDisplacement(30);
     }

@@ -5,6 +5,7 @@ import {
   selectBackgroundTrackingState,
   selectExtendedPoints
 } from "../store/selectors";
+import { ExtendedPoint } from "../store/model/ExtendedPoint";
 
 export function* handleBackgroundEvents(manager: LocationManagerInterface) {
   yield call([manager, "disableBackgroundTracking"]);
@@ -14,13 +15,14 @@ export function* handleBackgroundEvents(manager: LocationManagerInterface) {
     "loadBackgroundEvents"
   ]);
 
-  yield put(updateWaitPointProgress(updates));
+  if (updates.length) yield put(updateWaitPointProgress(updates));
 }
 
 export function* startBackgroundService(manager: LocationManagerInterface) {
   const state = yield select(selectBackgroundTrackingState);
   if (!state) return;
 
-  const points = yield select(selectExtendedPoints);
-  yield call([manager, "enableBackgroundTracking"], points);
+  const points: ExtendedPoint[] = yield select(selectExtendedPoints);
+  const pending = points.filter(p => !p.completed);
+  yield call([manager, "enableBackgroundTracking"], pending);
 }

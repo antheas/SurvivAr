@@ -47,7 +47,8 @@ if (process.env.NODE_ENV !== "production") {
       ACTION_BLACKLIST.indexOf(action.type) === -1,
     collapsed: (getState, action) =>
       NON_COLLAPSED_ACTIONS.indexOf(action.type) === -1,
-    actionTransformer: action => action.type
+    actionTransformer: action => action.type,
+    stateTransformer: state => ""
   });
 
   middleware.push(logger);

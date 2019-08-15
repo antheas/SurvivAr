@@ -15,6 +15,8 @@ export default interface LocationManagerInterface {
 
   stopJsCallbacks(): void;
 
+  updateClosestDistance(distance: number): void;
+
   enableBackgroundTracking(points: ExtendedPoint[]): void;
 
   disableBackgroundTracking(): void;

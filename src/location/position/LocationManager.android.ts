@@ -42,6 +42,10 @@ export class LocationManager implements LocationManagerInterface {
     NativeLocationManager.disablePositionCallback();
   }
 
+  public updateClosestDistance(distance: number) {
+    NativeLocationManager.setClosestPointDistance(distance);
+  }
+
   public enableBackgroundTracking(points: ExtendedPoint[]) {
     NativeLocationManager.enableBackgroundTracking(points);
   }

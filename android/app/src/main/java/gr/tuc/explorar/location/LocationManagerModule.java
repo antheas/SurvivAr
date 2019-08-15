@@ -3,7 +3,6 @@ package gr.tuc.explorar.location;
 import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;

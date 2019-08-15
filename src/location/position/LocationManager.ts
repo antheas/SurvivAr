@@ -61,6 +61,10 @@ export class LocationManager implements LocationManagerInterface {
     };
   }
 
+  public updateClosestDistance(distance: number) {
+    // noopO
+  }
+
   public enableBackgroundTracking() {
     // noop
   }
