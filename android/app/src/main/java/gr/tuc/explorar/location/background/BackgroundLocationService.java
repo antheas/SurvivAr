@@ -165,7 +165,7 @@ public class BackgroundLocationService extends Service implements BackgroundLoca
           @Nullable ParcelPoint.Metadata closestWaitPoint,
           @Nonnull List<ParcelPoint> completedPoints,
           int event) {
-
+    if (progressSaved) return;
     notifications.updateNotification(closestPoint, closestWaitPoint, completedPoints, event);
   }
 
