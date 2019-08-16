@@ -19,7 +19,5 @@ export default interface LocationManagerInterface {
 
   enableBackgroundTracking(points: ExtendedPoint[]): void;
 
-  disableBackgroundTracking(): void;
-
-  loadBackgroundEvents(): Promise<WaitProgressUpdate[]>;
+  stopAndRetrieveProgress(): Promise<WaitProgressUpdate[]>;
 }

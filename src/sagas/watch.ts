@@ -12,7 +12,8 @@ import {
   selectCurrentWaitPoints,
   selectMultipleWaitPointProgress,
   selectPoints,
-  selectPosition
+  selectPosition,
+  selectCurrentArea
 } from "../store/selectors";
 import {
   PointState,
@@ -121,6 +122,11 @@ function* watchLocationUpdates() {
     yield* updateWaitProgress(pos);
 
     ({ position: pos } = yield take(UPDATE_POSITION));
+
+    // Check area from previous update and if it is undefined
+    // load another one
+    const currArea = yield select(selectCurrentArea);
+    if (!currArea) break;
   }
 }
 

@@ -59,6 +59,10 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
     heading.unregisterHeadingCallback();
   }
 
+  public String getProgress() {
+    return progress.stringify();
+  }
+
   @Override
   public void onHeadingUpdated(HeadingManager.HeadingState heading) {
 
@@ -85,7 +89,7 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
   }
 
   private boolean pointCompleted(ParcelablePoint point) {
-    return progress.get(point) >= point.duration;
+    return progress.get(point) > point.duration;
   }
 
   // the list of current points has only wait points that have not been completed
@@ -136,10 +140,10 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
   private void updateListener() {
     if (points.size() == 0) return;
     // Find closest point
-    double minDistance = distanceFromUser(points.get(0));
+    double minDistance = -1;
     ParcelablePoint closestPoint = null;
 
-    double minDistanceWait = minDistance;
+    double minDistanceWait = -1;
     ParcelablePoint closestWaitPoint = null;
 
     List<ParcelablePoint> completedPoints = new ArrayList<>();
@@ -151,12 +155,12 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
       }
       double distance = distanceFromUser(p);
 
-      if (distance <= minDistance) {
+      if (distance <= minDistance || minDistance < 0) {
         closestPoint = p;
         minDistance = distance;
       }
 
-      if (p.isWaitPoint && distance <= minDistanceWait) {
+      if (p.isWaitPoint && (distance <= minDistanceWait || minDistanceWait < 0)) {
         closestWaitPoint = p;
         minDistanceWait = distance;
       }

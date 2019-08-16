@@ -85,6 +85,12 @@ public class BackgroundLocationService extends Service implements BackgroundLoca
     super.onDestroy();
     manager.stopHeading();
     manager.stopPosition();
+
+    // Save progress
+    PreferenceManager.getDefaultSharedPreferences(this)
+            .edit()
+            .putString(PROGRESS_DATA_KEY, manager.getProgress())
+            .apply();
   }
 
   @Nullable
@@ -126,7 +132,7 @@ public class BackgroundLocationService extends Service implements BackgroundLoca
           @Nullable BackgroundLocationManager.PointMetadata closestWaitPoint,
           @Nonnull List<ParcelablePoint> completedPoints) {
     if (closestPoint != null)
-      System.out.println("Closest Point: " + closestPoint.point.name + " " + closestPoint.distance + " Bearing: " + closestPoint.bearing);
+      System.out.println("Closest Point: " + closestPoint.point.name + " " + closestPoint.distance + " Bearing: " + closestPoint.bearing + "progress: " + closestPoint.progress);
     if (closestWaitPoint != null)
       System.out.println("Wait Point: " + closestWaitPoint.point.name + " " + closestWaitPoint.distance + " Bearing: " + closestWaitPoint.bearing);
   }

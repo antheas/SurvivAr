@@ -69,11 +69,7 @@ export class LocationManager implements LocationManagerInterface {
     // noop
   }
 
-  public disableBackgroundTracking() {
-    // noop
-  }
-
-  public async loadBackgroundEvents(): Promise<WaitProgressUpdate[]> {
+  public async stopAndRetrieveProgress(): Promise<WaitProgressUpdate[]> {
     return [];
   }
 }

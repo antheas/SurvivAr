@@ -8,11 +8,9 @@ import {
 import { ExtendedPoint } from "../store/model/ExtendedPoint";
 
 export function* handleBackgroundEvents(manager: LocationManagerInterface) {
-  yield call([manager, "disableBackgroundTracking"]);
-
   const updates: WaitProgressUpdate[] = yield call([
     manager,
-    "loadBackgroundEvents"
+    "stopAndRetrieveProgress"
   ]);
 
   if (updates.length) yield put(updateWaitPointProgress(updates));

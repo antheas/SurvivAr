@@ -37,7 +37,7 @@ function* updateClosestDistance(manager: LocationManagerInterface) {
     const points: ExtendedPoint[] = yield select(selectExtendedPoints);
 
     const distances = points
-      .filter(p => p.completed)
+      .filter(p => !p.completed)
       .map(p => p.distance)
       .sort((a, b) => a - b);
     if (distances.length) {

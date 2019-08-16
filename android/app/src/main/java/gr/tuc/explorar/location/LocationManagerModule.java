@@ -114,13 +114,7 @@ public class LocationManagerModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void disableBackgroundTracking() {
-    BackgroundServiceWrapper.stopBackgroundService(context);
-  }
-
-  @ReactMethod
-  public void retrieveBackgroundProgress(Promise promise) {
-    ReadableArray data = BackgroundServiceWrapper.retrieveProgress(context);
-    promise.resolve(data);
+  public void stopAndRetrieveProgress(Promise promise) {
+    BackgroundServiceWrapper.stopAndRetrieve(context, promise);
   }
 }

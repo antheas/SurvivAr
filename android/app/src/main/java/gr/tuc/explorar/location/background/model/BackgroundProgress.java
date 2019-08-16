@@ -68,9 +68,10 @@ public class BackgroundProgress {
 
     Map<String, Double> progressMap = new HashMap<>();
     for (String stringPoint : stringPoints) {
+      if("".equals(stringPoint)) continue;
       String[] point = stringPoint.split(">");
       String id = decodeId(point[0]);
-      double progress = Double.valueOf(point[2]);
+      double progress = Double.valueOf(point[1]);
 
       progressMap.put(id, progress);
     }
@@ -103,7 +104,7 @@ public class BackgroundProgress {
       sb.append('&');
     }
     // Remove last separator
-    sb.setLength(sb.length() - 1);
+    if (sb.length() > 0) sb.setLength(sb.length() - 1);
 
     return sb.toString();
   }

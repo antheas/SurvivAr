@@ -53,11 +53,15 @@ public class PositionManager {
       looper = context.getMainLooper();
     }
 
-    client.getLastLocation().addOnSuccessListener(l -> callback.onPositionUpdated(toState(l)));
+    client.getLastLocation().addOnSuccessListener(l -> {
+      if (l == null) return;
+      callback.onPositionUpdated(toState(l));
+    });
 
     currentCallback = new LocationCallback() {
       @Override
       public void onLocationResult(LocationResult l) {
+        if (l == null) return;
         callback.onPositionUpdated(toState(l.getLastLocation()));
       }
     };

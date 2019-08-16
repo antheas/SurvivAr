@@ -50,15 +50,11 @@ export class LocationManager implements LocationManagerInterface {
     NativeLocationManager.enableBackgroundTracking(points);
   }
 
-  public disableBackgroundTracking() {
-    NativeLocationManager.disableBackgroundTracking();
-  }
-
-  public async loadBackgroundEvents(): Promise<WaitProgressUpdate[]> {
+  public async stopAndRetrieveProgress(): Promise<WaitProgressUpdate[]> {
     const rawProgress: Array<{
       id: string;
       progress: number;
-    }> = await NativeLocationManager.retrieveBackgroundProgress();
+    }> = await NativeLocationManager.stopAndRetrieveProgress();
 
     return rawProgress.map(
       (p): WaitProgressUpdate => ({

@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
@@ -71,9 +73,9 @@ public class BackgroundServiceWrapper {
     }
   }
 
-  public static void stopBackgroundService(Context context) {
+  public static boolean stopBackgroundService(Context context) {
     Intent i = new Intent(context, BackgroundLocationService.class);
-    context.stopService(i);
+    return context.stopService(i);
   }
 
   public static ReadableArray retrieveProgress(Context c) {
@@ -97,4 +99,16 @@ public class BackgroundServiceWrapper {
     return array;
   }
 
+  public static void stopAndRetrieve(Context c, Promise promise) {
+    boolean wasRunning = stopBackgroundService(c);
+
+    // FIXME: Hacky solution. We need to wait for service to exit in order to retrieve preferences.
+    if (wasRunning) {
+      new Handler().postDelayed(() -> {
+        promise.resolve(retrieveProgress(c));
+      }, 500);
+    } else {
+      promise.resolve(retrieveProgress(c));
+    }
+  }
 }
