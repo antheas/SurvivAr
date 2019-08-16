@@ -5,15 +5,14 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.res.Resources;
-import android.text.Html;
 
 import androidx.core.app.NotificationManagerCompat;
-import androidx.core.text.HtmlCompat;
+import androidx.core.os.ConfigurationCompat;
+
+import java.util.Locale;
 
 import gr.tuc.explorar.R;
-import gr.tuc.explorar.location.background.model.ParcelablePoint;
-
-import static androidx.core.text.HtmlCompat.FROM_HTML_MODE_LEGACY;
+import gr.tuc.explorar.location.background.model.ParcelPoint;
 
 /**
  * Simplifies common {@link Notification} tasks.
@@ -26,6 +25,7 @@ public class BackgroundNotificationManager {
   private NotificationManagerCompat nm;
   private Context c;
   private Resources r;
+  private Locale l;
 
   public BackgroundNotificationManager(Context c,
                                        PendingIntent onClick,
@@ -36,6 +36,7 @@ public class BackgroundNotificationManager {
     builder.createChannels();
     this.c = c;
     this.r = c.getResources();
+    this.l = ConfigurationCompat.getLocales(r.getConfiguration()).get(0);
   }
 
   public void startForeground(Service service) {
@@ -44,16 +45,17 @@ public class BackgroundNotificationManager {
             builder.createPersistentNotification().build());
   }
 
-  public void setClosestPoint(ParcelablePoint p, double distance) {
+  public void setClosestPoint(ParcelPoint p, double distance) {
     nm.notify(LOCATION_NOTIFICATION_ID,
             builder.createPersistentNotification()
                     .setContentTitle(p.name)
-                    .setContentText(HtmlCompat.fromHtml(c.getString(
-                            R.string.location_notification_closest_point,
-                            distance,
-                            "NW",
-                            p.desc
-                    ), FROM_HTML_MODE_LEGACY))
+                    .setContentText(
+                            formatHtml(
+                                    R.string.location_notification_closest_point,
+                                    distance,
+                                    "NW",
+                                    p.desc
+                            ))
                     .setOnlyAlertOnce(false)
                     .build());
 

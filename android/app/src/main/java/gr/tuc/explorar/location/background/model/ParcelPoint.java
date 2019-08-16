@@ -9,7 +9,13 @@ import javax.annotation.Nonnull;
 
 import gr.tuc.explorar.location.background.utils.Haversine;
 
-public class ParcelablePoint implements Parcelable {
+public class ParcelPoint implements Parcelable {
+
+  public static final int DEFAULT = 0;
+  public static final int ON_ENTER = 1;
+  public static final int ON_EXIT = 2;
+  public static final int ON_COMPLETE = 3;
+
   @Nonnull
   public final String id;
   @Nonnull
@@ -28,11 +34,11 @@ public class ParcelablePoint implements Parcelable {
   public final double duration;
   public final double completedDuration;
 
-  public ParcelablePoint(@Nonnull String id, @Nonnull String icon,
-                         @Nonnull String name, @Nonnull String desc,
-                         double lat, double lon,
-                         double radius, boolean isWaitPoint,
-                         double duration, double completedDuration) {
+  public ParcelPoint(@Nonnull String id, @Nonnull String icon,
+                     @Nonnull String name, @Nonnull String desc,
+                     double lat, double lon,
+                     double radius, boolean isWaitPoint,
+                     double duration, double completedDuration) {
     this.id = id;
     this.icon = icon;
     this.name = name;
@@ -53,7 +59,7 @@ public class ParcelablePoint implements Parcelable {
     return Haversine.distance(this.lat, this.lon, lat, lon);
   }
 
-  protected ParcelablePoint(Parcel in) {
+  protected ParcelPoint(Parcel in) {
     this.id = Objects.requireNonNull(in.readString());
     this.icon = Objects.requireNonNull(in.readString());
 
@@ -93,15 +99,29 @@ public class ParcelablePoint implements Parcelable {
     return 0;
   }
 
-  public static final Creator<ParcelablePoint> CREATOR = new Creator<ParcelablePoint>() {
+  public static final Creator<ParcelPoint> CREATOR = new Creator<ParcelPoint>() {
     @Override
-    public ParcelablePoint createFromParcel(Parcel in) {
-      return new ParcelablePoint(in);
+    public ParcelPoint createFromParcel(Parcel in) {
+      return new ParcelPoint(in);
     }
 
     @Override
-    public ParcelablePoint[] newArray(int size) {
-      return new ParcelablePoint[size];
+    public ParcelPoint[] newArray(int size) {
+      return new ParcelPoint[size];
     }
   };
+
+  public static class Metadata {
+    public final ParcelPoint point;
+    public final double progress;
+    public final double distance;
+    public final double bearing;
+
+    public Metadata(ParcelPoint point, double progress, double distance, double bearing) {
+      this.point = point;
+      this.progress = progress;
+      this.distance = distance;
+      this.bearing = bearing;
+    }
+  }
 }

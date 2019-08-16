@@ -17,7 +17,7 @@ public class BackgroundProgress {
   private Map<String, Double> initial;
   private Map<String, Double> progress;
 
-  public BackgroundProgress(@NonNull List<ParcelablePoint> points) {
+  public BackgroundProgress(@NonNull List<ParcelPoint> points) {
     initial = parsePoints(points);
     progress = new HashMap<>();
   }
@@ -27,7 +27,7 @@ public class BackgroundProgress {
     progress = parseString(data);
   }
 
-  public BackgroundProgress(@Nonnull List<ParcelablePoint> points, @Nullable String data) {
+  public BackgroundProgress(@Nonnull List<ParcelPoint> points, @Nullable String data) {
     initial = parsePoints(points);
     progress = data == null ? new HashMap<>() : parseString(data);
   }
@@ -36,7 +36,7 @@ public class BackgroundProgress {
     progress.put(id, newDuration);
   }
 
-  public void update(ParcelablePoint point, double newDuration) {
+  public void update(ParcelPoint point, double newDuration) {
     update(point.id, newDuration);
   }
 
@@ -51,11 +51,11 @@ public class BackgroundProgress {
     return p;
   }
 
-  public double get(ParcelablePoint point) {
+  public double get(ParcelPoint point) {
     return get(point.id);
   }
 
-  public void add(ParcelablePoint point, double addedTime) {
+  public void add(ParcelPoint point, double addedTime) {
     update(point, get(point) + addedTime);
   }
 
@@ -79,10 +79,10 @@ public class BackgroundProgress {
     return progressMap;
   }
 
-  private static Map<String, Double> parsePoints(List<ParcelablePoint> points) {
+  private static Map<String, Double> parsePoints(List<ParcelPoint> points) {
     Map<String, Double> initialMap = new HashMap<>();
 
-    for (ParcelablePoint point : points) {
+    for (ParcelPoint point : points) {
       if (point.isWaitPoint)
         initialMap.put(point.id, point.completedDuration);
     }

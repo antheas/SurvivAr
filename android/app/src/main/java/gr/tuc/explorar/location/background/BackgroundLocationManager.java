@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import gr.tuc.explorar.location.background.model.BackgroundProgress;
-import gr.tuc.explorar.location.background.model.ParcelablePoint;
+import gr.tuc.explorar.location.background.model.ParcelPoint;
 import gr.tuc.explorar.location.background.utils.Haversine;
 import gr.tuc.explorar.location.location.HeadingManager;
 import gr.tuc.explorar.location.location.PositionManager;
@@ -21,15 +21,15 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
   private LocationListener listener;
 
   // Data
-  private List<ParcelablePoint> points;
+  private List<ParcelPoint> points;
   private BackgroundProgress progress;
 
   // Progress
-  private List<ParcelablePoint> previousPoints;
+  private List<ParcelPoint> previousPoints;
   private PositionManager.PositionState currentPosition;
   private long previousTimestamp;
 
-  public BackgroundLocationManager(Context c, LocationListener listener, List<ParcelablePoint> points, @Nullable String previousProgress) {
+  public BackgroundLocationManager(Context c, LocationListener listener, List<ParcelPoint> points, @Nullable String previousProgress) {
     // Setup Listeners
     heading = new HeadingManager(c, false);
     position = new PositionManager(c, false, true);
@@ -76,26 +76,26 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
     updateListener();
   }
 
-  private double distanceFromUser(ParcelablePoint point) {
+  private double distanceFromUser(ParcelPoint point) {
     return point.distanceFrom(currentPosition.lat, currentPosition.lon);
   }
 
-  private boolean userWithin(ParcelablePoint point) {
+  private boolean userWithin(ParcelPoint point) {
     return distanceFromUser(point) <= point.radius;
   }
 
-  private double bearingFromUser(ParcelablePoint point) {
+  private double bearingFromUser(ParcelPoint point) {
     return Haversine.bearing(currentPosition.lat, currentPosition.lon, point.lat, point.lon);
   }
 
-  private boolean pointCompleted(ParcelablePoint point) {
+  private boolean pointCompleted(ParcelPoint point) {
     return progress.get(point) > point.duration;
   }
 
   // the list of current points has only wait points that have not been completed
-  private List<ParcelablePoint> calculateCurrentWaitPoints() {
-    List<ParcelablePoint> currentPoints = new ArrayList<>();
-    for (ParcelablePoint point : points) {
+  private List<ParcelPoint> calculateCurrentWaitPoints() {
+    List<ParcelPoint> currentPoints = new ArrayList<>();
+    for (ParcelPoint point : points) {
       if (userWithin(point) && point.isWaitPoint && !pointCompleted(point))
         currentPoints.add(point);
     }
@@ -103,10 +103,10 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
     return currentPoints;
   }
 
-  private static List<ParcelablePoint> findIntersection(List<ParcelablePoint> a, List<ParcelablePoint> b) {
-    List<ParcelablePoint> intersection = new ArrayList<>();
-    for (ParcelablePoint pa : a) {
-      for (ParcelablePoint pb : b) {
+  private static List<ParcelPoint> findIntersection(List<ParcelPoint> a, List<ParcelPoint> b) {
+    List<ParcelPoint> intersection = new ArrayList<>();
+    for (ParcelPoint pa : a) {
+      for (ParcelPoint pb : b) {
         if (pa.id.equals(pb.id)) intersection.add(pa);
       }
     }
@@ -115,12 +115,12 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
 
   private void updateProgress() {
     // Find common wait points that are not completed
-    List<ParcelablePoint> currentPoints = calculateCurrentWaitPoints();
-    List<ParcelablePoint> commonPoints = findIntersection(currentPoints, previousPoints);
+    List<ParcelPoint> currentPoints = calculateCurrentWaitPoints();
+    List<ParcelPoint> commonPoints = findIntersection(currentPoints, previousPoints);
 
     double addedTime = (currentPosition.updated - previousTimestamp) / 1000f;
 
-    for (ParcelablePoint p : commonPoints) {
+    for (ParcelPoint p : commonPoints) {
       progress.add(p, addedTime);
     }
 
@@ -128,8 +128,8 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
     previousPoints = currentPoints;
   }
 
-  private PointMetadata getMetadata(ParcelablePoint point) {
-    return new PointMetadata(
+  private ParcelPoint.Metadata getMetadata(ParcelPoint point) {
+    return new ParcelPoint.Metadata(
             point,
             point.isWaitPoint ? progress.get(point) : -1,
             distanceFromUser(point),
@@ -141,14 +141,14 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
     if (points.size() == 0) return;
     // Find closest point
     double minDistance = -1;
-    ParcelablePoint closestPoint = null;
+    ParcelPoint closestPoint = null;
 
     double minDistanceWait = -1;
-    ParcelablePoint closestWaitPoint = null;
+    ParcelPoint closestWaitPoint = null;
 
-    List<ParcelablePoint> completedPoints = new ArrayList<>();
+    List<ParcelPoint> completedPoints = new ArrayList<>();
 
-    for (ParcelablePoint p : points) {
+    for (ParcelPoint p : points) {
       if (pointCompleted(p)) {
         completedPoints.add(p);
         continue;
@@ -175,23 +175,10 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
 
   public interface LocationListener {
     void onDataUpdated(
-            @Nullable PointMetadata closestPoint,
-            @Nullable PointMetadata closestWaitPoint,
-            @Nonnull List<ParcelablePoint> completedPoints
+            @Nullable ParcelPoint.Metadata closestPoint,
+            @Nullable ParcelPoint.Metadata closestWaitPoint,
+            @Nonnull List<ParcelPoint> completedPoints
     );
   }
 
-  public static class PointMetadata {
-    public final ParcelablePoint point;
-    public final double progress;
-    public final double distance;
-    public final double bearing;
-
-    public PointMetadata(ParcelablePoint point, double progress, double distance, double bearing) {
-      this.point = point;
-      this.progress = progress;
-      this.distance = distance;
-      this.bearing = bearing;
-    }
-  }
 }

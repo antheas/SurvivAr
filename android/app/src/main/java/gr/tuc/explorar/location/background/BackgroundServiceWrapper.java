@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import gr.tuc.explorar.location.background.model.BackgroundProgress;
-import gr.tuc.explorar.location.background.model.ParcelablePoint;
+import gr.tuc.explorar.location.background.model.ParcelPoint;
 
 import static gr.tuc.explorar.location.background.BackgroundLocationService.ACTION_INITIALISE;
 import static gr.tuc.explorar.location.background.BackgroundLocationService.POINT_DATA_KEY;
@@ -26,9 +26,9 @@ import static gr.tuc.explorar.location.background.BackgroundLocationService.PROG
 
 public class BackgroundServiceWrapper {
 
-  private static ArrayList<ParcelablePoint> convertPoints(ReadableArray points) {
+  private static ArrayList<ParcelPoint> convertPoints(ReadableArray points) {
     int length = points.size();
-    ArrayList<ParcelablePoint> output = new ArrayList<>();
+    ArrayList<ParcelPoint> output = new ArrayList<>();
 
     for (int i = 0; i < length; i++) {
       ReadableMap p = points.getMap(i);
@@ -41,7 +41,7 @@ public class BackgroundServiceWrapper {
       double duration = isWaitpoint ? p.getDouble("duration") : -1;
       double completedDuration = isWaitpoint ? p.getDouble("completedDuration") : -1;
 
-      output.add(new ParcelablePoint(
+      output.add(new ParcelPoint(
               Objects.requireNonNull(p.getString("id")),
               Objects.requireNonNull(p.getString("icon")),
 
@@ -61,7 +61,7 @@ public class BackgroundServiceWrapper {
   }
 
   public static void startBackgroundService(Context context, ReadableArray rawPoints) {
-    ArrayList<ParcelablePoint> points = convertPoints(rawPoints);
+    ArrayList<ParcelPoint> points = convertPoints(rawPoints);
 
     Intent intent = new Intent(ACTION_INITIALISE, null, context, BackgroundLocationService.class);
     intent.putParcelableArrayListExtra(POINT_DATA_KEY, points);

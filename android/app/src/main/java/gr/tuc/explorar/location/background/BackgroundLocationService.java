@@ -15,7 +15,7 @@ import javax.annotation.Nonnull;
 
 import gr.tuc.explorar.BuildConfig;
 import gr.tuc.explorar.SplashActivity;
-import gr.tuc.explorar.location.background.model.ParcelablePoint;
+import gr.tuc.explorar.location.background.model.ParcelPoint;
 import gr.tuc.explorar.location.background.notification.BackgroundNotificationManager;
 
 public class BackgroundLocationService extends Service implements BackgroundLocationManager.LocationListener {
@@ -69,7 +69,7 @@ public class BackgroundLocationService extends Service implements BackgroundLoca
     notifications.startForeground(this);
 
     // Point Data
-    List<ParcelablePoint> points = intent.getParcelableArrayListExtra(POINT_DATA_KEY);
+    List<ParcelPoint> points = intent.getParcelableArrayListExtra(POINT_DATA_KEY);
 
     // Previous Progress
     SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -129,9 +129,9 @@ public class BackgroundLocationService extends Service implements BackgroundLoca
 
   @Override
   public void onDataUpdated(
-          @Nullable BackgroundLocationManager.PointMetadata closestPoint,
-          @Nullable BackgroundLocationManager.PointMetadata closestWaitPoint,
-          @Nonnull List<ParcelablePoint> completedPoints) {
+          @Nullable ParcelPoint.Metadata closestPoint,
+          @Nullable ParcelPoint.Metadata closestWaitPoint,
+          @Nonnull List<ParcelPoint> completedPoints) {
     if (closestPoint != null) {
       System.out.println("Closest Point: " + closestPoint.point.name + " " + closestPoint.distance + " Bearing: " + closestPoint.bearing + "progress: " + closestPoint.progress);
       notifications.setClosestPoint(closestPoint.point, closestPoint.distance);
