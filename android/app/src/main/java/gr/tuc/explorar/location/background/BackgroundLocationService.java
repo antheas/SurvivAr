@@ -101,6 +101,11 @@ public class BackgroundLocationService extends Service implements BackgroundLoca
   }
 
   private void exitService() {
+    if (manager != null) {
+      manager.stopHeading();
+      manager.stopPosition();
+    }
+    BackgroundNotificationManager.killNotification(this);
     stopSelf();
   }
 

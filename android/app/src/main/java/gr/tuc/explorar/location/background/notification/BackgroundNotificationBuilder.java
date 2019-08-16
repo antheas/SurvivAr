@@ -20,9 +20,9 @@ class BackgroundNotificationBuilder {
   private static final String NOTIFICATION_ON_EXIT_ID = "location_notification_on_exit";
   private static final String NOTIFICATION_ON_COMPLETE_ID = "location_notification_on_complete";
 
-  private static final long[] VIBRATION_ON_ENTER = {200};
-  private static final long[] VIBRATION_ON_EXIT = {300};
-  private static final long[] VIBRATION_ON_COMPLETE = {200, 150, 250};
+  private static final long[] VIBRATION_ON_ENTER = {0, 200};
+  private static final long[] VIBRATION_ON_EXIT = {0, 400};
+  private static final long[] VIBRATION_ON_COMPLETE = {0, 200, 150, 250};
 
   private Context c;
   private PendingIntent onClick;
@@ -49,7 +49,7 @@ class BackgroundNotificationBuilder {
             .setSmallIcon(R.drawable.location_notification_icon)
             .setColor(ContextCompat.getColor(c, R.color.primary_color))
             .setColorized(true)
-            .setOngoing(true);
+            .setSound(null);
   }
 
   private static NotificationCompat.Builder createVisibleBuilder(
@@ -58,7 +58,7 @@ class BackgroundNotificationBuilder {
           long[] vibration
   ) {
     return createBaseBuilder(c, channelId, onClick, onExit, onRefresh)
-            .setDefaults(NotificationCompat.DEFAULT_ALL)
+            .setDefaults(NotificationCompat.DEFAULT_SOUND | NotificationCompat.DEFAULT_LIGHTS)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
             .setVibrate(vibration)
@@ -73,10 +73,11 @@ class BackgroundNotificationBuilder {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
 
     // Initializes NotificationChannel.
-    NotificationChannel nc = new NotificationChannel(id, name, NotificationManager.IMPORTANCE_DEFAULT);
+    NotificationChannel nc = new NotificationChannel(id, name, NotificationManager.IMPORTANCE_HIGH);
     nc.setDescription(desc);
     nc.setGroup(NOTIFICATION_GROUP_ID);
 
+    nc.setSound(null, null);
     nc.enableLights(true);
     nc.enableVibration(true);
     nc.setShowBadge(true);
@@ -108,9 +109,11 @@ class BackgroundNotificationBuilder {
     NotificationChannel nc = new NotificationChannel(
             NOTIFICATION_PERSISTENT_ID,
             c.getString(R.string.location_notification_persistent_channel_name),
-            NotificationManager.IMPORTANCE_LOW);
+            NotificationManager.IMPORTANCE_DEFAULT);
     nc.setDescription(c.getString(R.string.location_notification_persistent_channel_description));
     nc.setGroup(NOTIFICATION_GROUP_ID);
+
+    nc.setSound(null, null);
 
     nc.enableLights(false);
     nc.enableVibration(false);

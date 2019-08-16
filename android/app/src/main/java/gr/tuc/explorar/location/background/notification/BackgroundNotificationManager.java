@@ -44,6 +44,10 @@ public class BackgroundNotificationManager {
             builder.createPersistentNotification().build());
   }
 
+  public static void killNotification(Context c) {
+    NotificationManagerCompat.from(c).cancel(LOCATION_NOTIFICATION_ID);
+  }
+
   public void updateNotification(
           @Nullable ParcelPoint.Metadata closestPoint,
           @Nullable ParcelPoint.Metadata closestWaitPoint,
