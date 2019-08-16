@@ -41,12 +41,13 @@ public class Haversine {
 
   // Finds the bearing between two points
   // https://stackoverflow.com/questions/8123049/calculate-bearing-between-two-locations-lat-long
+  // https://www.igismap.com/formula-to-find-bearing-or-heading-angle-between-two-points-latitude-longitude/
   public static double bearing(double startLat, double startLon,
                                double endLat, double endLon) {
-    double dLon = (startLon - endLon);
-    double y = Math.sin(dLon) * Math.cos(startLat);
-    double x = Math.cos(endLat) * Math.sin(startLat) - Math.sin(endLat) * Math.cos(startLat) * Math.cos(dLon);
-    double brng = Math.toDegrees((Math.atan2(y, x)));
-    return (360 - ((brng + 360) % 360));
+    double dLon = (endLon - startLon);
+    double x = Math.cos(endLat) * Math.sin(dLon);
+    double y = Math.cos(startLat) * Math.sin(endLat) - Math.sin(startLat) * Math.cos(endLat) * Math.cos(dLon);
+    double bearing = Math.toDegrees((Math.atan2(y, x)));
+    return 360 - (360 + bearing) % 360;
   }
 }
