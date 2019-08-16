@@ -2,9 +2,41 @@
     <string name="app_name">SurvivAr</string>
 
     <!-- Notification Text -->
-    <string name="location_service_notification_title">SurvivAr Tracker</string>
-    <string name="location_service_notification_content">Looking for closest target…</string>
+    <string name="location_notification_default_title">SurvivAr Tracker</string>
+    <string name="location_notification_default_text">Looking for closest target…</string>
 
+    <string name="location_notification_no_points_title">SurvivAr Tracker</string>
+    <string name="location_notification_no_points_text">No points left, open App! </string>
+
+    <string name="location_notification_point_title">
+        &lt;b>%.0fm/%.0fm %.10s:&lt;/b> %s
+    </string>
+    <string name="location_notification_wait_point_text">
+        &lt;b>%.0fs/%.0fs Completed&lt;/b>, %.10s
+    </string>
+    <string name="location_notification_point_text">
+        &lt;b>Not Completed&lt;/b>, %.10s
+    </string>
+    <string name="location_notification_wait_point_subtext">Nearest Wait Point</string>
+    <string name="location_notification_point_subtext">Nearest Point</string>
+    <string name="location_notification_in_point_subtext">Open App!</string>
+
+    <!-- Expanded Notification -->
+    <string name="location_notification_point">
+        &lt;b>Closest %.0fm/%.0fm %s:&lt;/b> %.10s
+    </string>
+    <string name="location_notification_wait_point">
+        &lt;b>Wait Point %.0fm/%.0fm %s: %.8s, &lt;b>%.0fs/%.0fs&lt;/b>
+    </string>
+    <string name="location_notification_completed_point">
+        Completed: %.10s, &lt;b>%.0fs/%.0fs&lt;/b>
+    </string>
+
+    <string name="location_notification_refresh">Refresh</string>
+    <string name="location_notification_exit">Exit</string>
+
+
+    <!-- Notification Channels -->
     <string name="location_notification_channel_group_name">Background Tracking Group</string>
     <string name="location_notification_channel_group_description">Contains the various notification channels used to convey background tracking.</string>
 
@@ -12,21 +44,11 @@
     <string name="location_notification_persistent_channel_description">When background tracking is enabled, this notification displays the current status.</string>
 
     <string name="location_notification_on_enter_channel_name">On Entering Notification</string>
-    <string name="location_notification_on_enter_hannel_description">When you enter a point this notification will fire.</string>
+    <string name="location_notification_on_enter_channel_description">When you enter a point this notification will fire.</string>
 
     <string name="location_notification_on_exit_channel_name">On Exiting Notification</string>
     <string name="location_notification_on_exit_channel_description">When you exit a point without completing it this notification will fire.</string>
 
     <string name="location_notification_on_complete_channel_name">On Completion Notification</string>
     <string name="location_notification_on_complete_channel_description">When you complete a point this notification will fire.</string>
-
-    <!-- Expanded Notification -->
-    <string name="location_notification_closest_point">
-        	&lt;small>&lt;b>%.0fm %s: &lt;/b>%s&lt;/small>
-    </string>
-    <string name="location_notification_closest_wait_point">Refresh</string>
-    <string name="location_notification_completed_point">Refresh</string>
-
-    <string name="location_notification_refresh">Refresh</string>
-    <string name="location_notification_exit">Exit</string>
 </resources>

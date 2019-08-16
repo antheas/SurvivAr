@@ -26,6 +26,7 @@ public class PositionManager {
   private Context context;
   private boolean spawnThread;
   private HandlerThread thread;
+  private Looper looper;
   private LocationCallback currentCallback;
 
   private boolean inBackground;
@@ -44,7 +45,6 @@ public class PositionManager {
 
   @SuppressLint("MissingPermission")
   public void registerPositionCallback(PositionCallback callback) {
-    Looper looper;
     if (spawnThread) {
       thread = new HandlerThread(THREAD_NAME);
       thread.start();
@@ -85,10 +85,13 @@ public class PositionManager {
       thread.quit();
     }
     thread = null;
+    looper = null;
   }
 
   @SuppressLint("MissingPermission")
   public void setClosestPointDistance(double distance) {
+    if (looper == null) return;
+
     int newSpeed = getUpdatedSpeed(distance);
     if (newSpeed == currentSpeed) {
       updatesSinceLastSpeedChange = 0;
@@ -110,7 +113,7 @@ public class PositionManager {
     client.requestLocationUpdates(
             getLocationRequest(currentSpeed),
             currentCallback,
-            thread.getLooper());
+            looper);
   }
 
   private static PositionState toState(Location l) {

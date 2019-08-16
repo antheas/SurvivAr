@@ -131,12 +131,9 @@ public class BackgroundLocationService extends Service implements BackgroundLoca
   public void onDataUpdated(
           @Nullable ParcelPoint.Metadata closestPoint,
           @Nullable ParcelPoint.Metadata closestWaitPoint,
-          @Nonnull List<ParcelPoint> completedPoints) {
-    if (closestPoint != null) {
-      System.out.println("Closest Point: " + closestPoint.point.name + " " + closestPoint.distance + " Bearing: " + closestPoint.bearing + "progress: " + closestPoint.progress);
-      notifications.setClosestPoint(closestPoint.point, closestPoint.distance);
-    }
-    if (closestWaitPoint != null)
-      System.out.println("Wait Point: " + closestWaitPoint.point.name + " " + closestWaitPoint.distance + " Bearing: " + closestWaitPoint.bearing);
+          @Nonnull List<ParcelPoint> completedPoints,
+          int event) {
+
+    notifications.updateNotification(closestPoint, closestWaitPoint, completedPoints, event);
   }
 }

@@ -116,12 +116,14 @@ public class ParcelPoint implements Parcelable {
     public final double progress;
     public final double distance;
     public final double bearing;
+    public final boolean userWithin;
 
-    public Metadata(ParcelPoint point, double progress, double distance, double bearing) {
+    public Metadata(ParcelPoint point, double progress, double distance, double bearing, boolean userWithin) {
       this.point = point;
       this.progress = progress;
       this.distance = distance;
       this.bearing = bearing;
+      this.userWithin = userWithin;
     }
   }
 }

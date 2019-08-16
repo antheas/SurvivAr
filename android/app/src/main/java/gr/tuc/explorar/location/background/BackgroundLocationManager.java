@@ -28,6 +28,7 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
   private List<ParcelPoint> previousPoints;
   private PositionManager.PositionState currentPosition;
   private long previousTimestamp;
+  private int currentEvent;
 
   public BackgroundLocationManager(Context c, LocationListener listener, List<ParcelPoint> points, @Nullable String previousProgress) {
     // Setup Listeners
@@ -41,6 +42,7 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
 
     previousPoints = Collections.emptyList();
     currentPosition = PositionManager.PositionState.NUL;
+    currentEvent = ParcelPoint.DEFAULT;
   }
 
   public void startPosition() {
@@ -66,14 +68,6 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
   @Override
   public void onHeadingUpdated(HeadingManager.HeadingState heading) {
 
-  }
-
-  @Override
-  public void onPositionUpdated(PositionManager.PositionState position) {
-    this.currentPosition = position;
-
-    updateProgress();
-    updateListener();
   }
 
   private double distanceFromUser(ParcelPoint point) {
@@ -113,6 +107,58 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
     return intersection;
   }
 
+  private boolean hasEnteredPoint(List<ParcelPoint> previous, List<ParcelPoint> current) {
+    // Find points that are in current stack and not in previous
+    for (ParcelPoint cp : current) {
+      boolean notFound = true;
+
+      for (ParcelPoint pp : previous) {
+        if (cp.id.equals(pp.id)) {
+          notFound = false;
+          break;
+        }
+      }
+
+      if (notFound) return true;
+    }
+    return false;
+  }
+
+  private boolean hasCompletedPoint(List<ParcelPoint> previous) {
+    for (ParcelPoint p : previous) {
+      if (pointCompleted(p)) return true;
+    }
+    return false;
+  }
+
+  private boolean hasExitedPoint(List<ParcelPoint> previous, List<ParcelPoint> current) {
+    // Find points that are in previous stack, not in current, and have not completed.
+    for (ParcelPoint pp : previous) {
+      if (pointCompleted(pp)) continue;
+      boolean notFound = true;
+
+      for (ParcelPoint cp : current) {
+        if (cp.id.equals(pp.id)) {
+          notFound = false;
+          break;
+        }
+      }
+
+      if (notFound) return true;
+    }
+
+    return false;
+  }
+
+  private ParcelPoint.Metadata getMetadata(ParcelPoint point) {
+    return new ParcelPoint.Metadata(
+            point,
+            point.isWaitPoint ? progress.get(point) : -1,
+            distanceFromUser(point),
+            bearingFromUser(point),
+            userWithin(point));
+  }
+
   private void updateProgress() {
     // Find common wait points that are not completed
     List<ParcelPoint> currentPoints = calculateCurrentWaitPoints();
@@ -124,17 +170,17 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
       progress.add(p, addedTime);
     }
 
+    // Event priority is: completed, entered, exited
+    currentEvent = ParcelPoint.DEFAULT;
+    if (hasCompletedPoint(previousPoints))
+      currentEvent = ParcelPoint.ON_COMPLETE;
+    else if (hasEnteredPoint(previousPoints, currentPoints))
+      currentEvent = ParcelPoint.ON_ENTER;
+    else if (hasExitedPoint(previousPoints, currentPoints))
+      currentEvent = ParcelPoint.ON_EXIT;
+
     previousTimestamp = currentPosition.updated;
     previousPoints = currentPoints;
-  }
-
-  private ParcelPoint.Metadata getMetadata(ParcelPoint point) {
-    return new ParcelPoint.Metadata(
-            point,
-            point.isWaitPoint ? progress.get(point) : -1,
-            distanceFromUser(point),
-            bearingFromUser(point)
-    );
   }
 
   private void updateListener() {
@@ -169,15 +215,28 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
     listener.onDataUpdated(
             closestPoint != null ? getMetadata(closestPoint) : null,
             closestWaitPoint != null ? getMetadata(closestWaitPoint) : null,
-            completedPoints
+            completedPoints,
+            currentEvent
     );
+
+    // update position manager
+    if (minDistance > 0) position.setClosestPointDistance(minDistance);
+  }
+
+  @Override
+  public void onPositionUpdated(PositionManager.PositionState position) {
+    this.currentPosition = position;
+
+    updateProgress();
+    updateListener();
   }
 
   public interface LocationListener {
     void onDataUpdated(
             @Nullable ParcelPoint.Metadata closestPoint,
             @Nullable ParcelPoint.Metadata closestWaitPoint,
-            @Nonnull List<ParcelPoint> completedPoints
+            @Nonnull List<ParcelPoint> completedPoints,
+            int event
     );
   }
 

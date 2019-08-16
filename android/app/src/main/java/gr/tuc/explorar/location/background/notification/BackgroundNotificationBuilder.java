@@ -39,8 +39,8 @@ class BackgroundNotificationBuilder {
   private static NotificationCompat.Builder createBaseBuilder(
           Context c, String channelId, PendingIntent onClick, PendingIntent onExit, PendingIntent onRefresh) {
     return new NotificationCompat.Builder(c, channelId)
-            .setContentTitle(c.getText(R.string.location_service_notification_title))
-            .setContentText(c.getText(R.string.location_service_notification_content))
+            .setContentTitle(c.getText(R.string.location_notification_default_title))
+            .setContentText(c.getText(R.string.location_notification_default_text))
 
             .setContentIntent(onClick)
             .addAction(0, c.getString(R.string.location_notification_refresh), onRefresh)
@@ -61,7 +61,8 @@ class BackgroundNotificationBuilder {
             .setDefaults(NotificationCompat.DEFAULT_ALL)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
-            .setVibrate(vibration);
+            .setVibrate(vibration)
+            .setOnlyAlertOnce(false);
   }
 
   private static void createVisibleNotificationChannel(
@@ -123,7 +124,7 @@ class BackgroundNotificationBuilder {
             c, nm,
             NOTIFICATION_ON_ENTER_ID,
             c.getString(R.string.location_notification_on_enter_channel_name),
-            c.getString(R.string.location_notification_on_enter_hannel_description),
+            c.getString(R.string.location_notification_on_enter_channel_description),
             VIBRATION_ON_ENTER
     );
   }
