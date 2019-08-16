@@ -1,10 +1,12 @@
 package gr.tuc.explorar.location.background;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.os.Handler;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 
 import com.facebook.react.bridge.Arguments;
@@ -17,6 +19,7 @@ import com.facebook.react.bridge.WritableMap;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import gr.tuc.explorar.location.background.BackgroundLocationService.ProgressBinder;
 import gr.tuc.explorar.location.background.model.BackgroundProgress;
 import gr.tuc.explorar.location.background.model.ParcelPoint;
 
@@ -86,7 +89,10 @@ public class BackgroundServiceWrapper {
     // Clear data since we received it
     sp.edit().remove(PROGRESS_DATA_KEY).apply();
 
-    BackgroundProgress progress = new BackgroundProgress(data);
+    return retrieveProgress(new BackgroundProgress(data));
+  }
+
+  public static ReadableArray retrieveProgress(BackgroundProgress progress) {
     WritableArray array = Arguments.createArray();
     for (String id : progress.getIds()) {
       WritableMap map = Arguments.createMap();
@@ -100,14 +106,36 @@ public class BackgroundServiceWrapper {
   }
 
   public static void stopAndRetrieve(Context c, Promise promise) {
-    boolean wasRunning = stopBackgroundService(c);
+    final Intent bindIntent = new Intent(c, BackgroundLocationService.class);
 
-    // FIXME: Hacky solution. We need to wait for service to exit in order to retrieve preferences.
-    if (wasRunning) {
-      new Handler().postDelayed(() -> {
-        promise.resolve(retrieveProgress(c));
-      }, 500);
-    } else {
+    // Use a binder to retrieve progress (https://developer.android.com/guide/components/bound-services)
+    boolean connected = c.bindService(bindIntent, new ServiceConnection() {
+      @Override
+      public void onServiceConnected(ComponentName name, IBinder service) {
+        ProgressBinder binder = (ProgressBinder) service;
+        if (binder.isServiceRunning()) {
+          // If the service was running grab the data directly
+
+          promise.resolve(retrieveProgress(binder.getProgress()));
+
+          // Unbind and stop
+          c.unbindService(this);
+          c.stopService(new Intent(c, BackgroundLocationService.class));
+        } else {
+          // Otherwise grab it from storage
+          promise.resolve(retrieveProgress(c));
+          c.unbindService(this);
+        }
+      }
+
+      @Override
+      public void onServiceDisconnected(ComponentName name) {
+        // Noop
+      }
+    }, Context.BIND_AUTO_CREATE);
+
+    // If we did not connect for some reason retrieve progress from storage.
+    if (!connected) {
       promise.resolve(retrieveProgress(c));
     }
   }

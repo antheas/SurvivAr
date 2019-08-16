@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Binder;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 
@@ -15,6 +16,7 @@ import javax.annotation.Nonnull;
 
 import gr.tuc.explorar.BuildConfig;
 import gr.tuc.explorar.SplashActivity;
+import gr.tuc.explorar.location.background.model.BackgroundProgress;
 import gr.tuc.explorar.location.background.model.ParcelPoint;
 import gr.tuc.explorar.location.background.notification.BackgroundNotificationManager;
 
@@ -30,9 +32,17 @@ public class BackgroundLocationService extends Service implements BackgroundLoca
   private BackgroundNotificationManager notifications;
   private BackgroundLocationManager manager;
 
+  // If the binder of the service is called to retrieve the progress this will be set to true
+  // that way when the service is destroyed, writing to shared preferences will be skipped.
+  private boolean progressSaved;
+  // We need to know if the service was started when we bind to it to avoid retrieving invalid data.
+  private boolean serviceStarted;
+
   @Override
   public void onCreate() {
     super.onCreate();
+    serviceStarted = false;
+    progressSaved = false;
   }
 
   @Override
@@ -74,9 +84,14 @@ public class BackgroundLocationService extends Service implements BackgroundLoca
     // Previous Progress
     SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
     String previousProgress = sp.getString(PROGRESS_DATA_KEY, null);
+    // Clear previous progress
+    sp.edit().remove(PROGRESS_DATA_KEY).apply();
 
     manager = new BackgroundLocationManager(this, this, points, previousProgress);
     manager.startPosition();
+
+    // Service has started
+    serviceStarted = true;
 
     return returnFlag;
   }
@@ -84,28 +99,18 @@ public class BackgroundLocationService extends Service implements BackgroundLoca
   @Override
   public void onDestroy() {
     super.onDestroy();
-    manager.stopHeading();
-    manager.stopPosition();
-
-    // Save progress
-    PreferenceManager.getDefaultSharedPreferences(this)
-            .edit()
-            .putString(PROGRESS_DATA_KEY, manager.getProgress())
-            .apply();
+    deactivateService();
+    saveProgress();
   }
 
   @Nullable
   @Override
   public IBinder onBind(Intent intent) {
-    return null;
+    return new ProgressBinder();
   }
 
   private void exitService() {
-    if (manager != null) {
-      manager.stopHeading();
-      manager.stopPosition();
-    }
-    BackgroundNotificationManager.killNotification(this);
+    deactivateService();
     stopSelf();
   }
 
@@ -113,6 +118,26 @@ public class BackgroundLocationService extends Service implements BackgroundLoca
     if (manager != null) {
       manager.refreshPosition();
     }
+  }
+
+  private void deactivateService() {
+    if (!serviceStarted) return;
+
+    manager.stopHeading();
+    manager.stopPosition();
+  }
+
+  private void saveProgress() {
+    if (!serviceStarted || progressSaved) return;
+
+    // Save progress
+    PreferenceManager.getDefaultSharedPreferences(this)
+            .edit()
+            .putString(PROGRESS_DATA_KEY,
+                    manager.getProgress().stringify())
+            .apply();
+
+    progressSaved = true;
   }
 
   private PendingIntent getOpenAppIntent() {
@@ -142,5 +167,24 @@ public class BackgroundLocationService extends Service implements BackgroundLoca
           int event) {
 
     notifications.updateNotification(closestPoint, closestWaitPoint, completedPoints, event);
+  }
+
+  /**
+   * If the service is active when we try to retrieve the progress, we can not use
+   * shared preferences because we can't be sure when onDestroy will be called or when
+   * the changes will be applied.
+   * <p>
+   * So this binder retrieves the progress of the service before it's shut down.
+   */
+  public class ProgressBinder extends Binder {
+    public boolean isServiceRunning() {
+      return BackgroundLocationService.this.serviceStarted;
+    }
+
+    public BackgroundProgress getProgress() {
+      BackgroundLocationService.this.deactivateService();
+      BackgroundLocationService.this.progressSaved = true;
+      return BackgroundLocationService.this.manager.getProgress();
+    }
   }
 }

@@ -61,8 +61,8 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
     heading.unregisterHeadingCallback();
   }
 
-  public String getProgress() {
-    return progress.stringify();
+  public BackgroundProgress getProgress() {
+    return progress;
   }
 
   public void refreshPosition() {
