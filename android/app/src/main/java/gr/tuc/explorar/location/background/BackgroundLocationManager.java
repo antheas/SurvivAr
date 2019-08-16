@@ -128,8 +128,8 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
     return false;
   }
 
-  private boolean hasCompletedPoint(List<ParcelPoint> previous) {
-    for (ParcelPoint p : previous) {
+  private boolean hasCompletedPoint(List<ParcelPoint> currentPoints) {
+    for (ParcelPoint p : currentPoints) {
       if (pointCompleted(p)) return true;
     }
     return false;
@@ -176,7 +176,7 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
 
     // Event priority is: completed, entered, exited
     currentEvent = ParcelPoint.DEFAULT;
-    if (hasCompletedPoint(previousPoints))
+    if (hasCompletedPoint(currentPoints))
       currentEvent = ParcelPoint.ON_COMPLETE;
     else if (hasEnteredPoint(previousPoints, currentPoints))
       currentEvent = ParcelPoint.ON_ENTER;
