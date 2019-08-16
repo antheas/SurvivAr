@@ -116,6 +116,18 @@ public class PositionManager {
             looper);
   }
 
+
+  @SuppressLint("MissingPermission")
+  public void forceUpdate() {
+    if (looper == null || currentCallback == null) return;
+
+    // If we have changed speed we have to re-register the callback with the new speed.
+    client.requestLocationUpdates(
+            getLocationRequest(currentSpeed),
+            currentCallback,
+            looper);
+  }
+
   private static PositionState toState(Location l) {
     return new PositionState(
             l.getLatitude(),

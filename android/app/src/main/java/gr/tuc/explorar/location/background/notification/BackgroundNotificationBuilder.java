@@ -58,9 +58,7 @@ class BackgroundNotificationBuilder {
           long[] vibration
   ) {
     return createBaseBuilder(c, channelId, onClick, onExit, onRefresh)
-            .setDefaults(NotificationCompat.DEFAULT_SOUND | NotificationCompat.DEFAULT_LIGHTS)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
             .setVibrate(vibration)
             .setOnlyAlertOnce(false);
   }
@@ -156,7 +154,7 @@ class BackgroundNotificationBuilder {
     return createBaseBuilder(c, NOTIFICATION_PERSISTENT_ID, onClick, onExit, onRefresh)
             .setDefaults(0)
             .setPriority(NotificationCompat.PRIORITY_LOW)
-            .setBadgeIconType(NotificationCompat.BADGE_ICON_NONE)
+            .setVibrate(null)
             .setOnlyAlertOnce(true);
   }
 

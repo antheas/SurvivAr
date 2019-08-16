@@ -65,6 +65,10 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
     return progress.stringify();
   }
 
+  public void refreshPosition() {
+    position.forceUpdate();
+  }
+
   @Override
   public void onHeadingUpdated(HeadingManager.HeadingState heading) {
 

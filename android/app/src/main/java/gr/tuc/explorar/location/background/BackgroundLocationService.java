@@ -110,7 +110,9 @@ public class BackgroundLocationService extends Service implements BackgroundLoca
   }
 
   private void refreshData() {
-
+    if (manager != null) {
+      manager.refreshPosition();
+    }
   }
 
   private PendingIntent getOpenAppIntent() {
