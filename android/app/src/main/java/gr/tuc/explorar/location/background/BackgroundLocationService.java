@@ -16,6 +16,7 @@ import javax.annotation.Nonnull;
 import gr.tuc.explorar.BuildConfig;
 import gr.tuc.explorar.SplashActivity;
 import gr.tuc.explorar.location.background.model.ParcelablePoint;
+import gr.tuc.explorar.location.background.notification.BackgroundNotificationManager;
 
 public class BackgroundLocationService extends Service implements BackgroundLocationManager.LocationListener {
 
@@ -131,8 +132,10 @@ public class BackgroundLocationService extends Service implements BackgroundLoca
           @Nullable BackgroundLocationManager.PointMetadata closestPoint,
           @Nullable BackgroundLocationManager.PointMetadata closestWaitPoint,
           @Nonnull List<ParcelablePoint> completedPoints) {
-    if (closestPoint != null)
+    if (closestPoint != null) {
       System.out.println("Closest Point: " + closestPoint.point.name + " " + closestPoint.distance + " Bearing: " + closestPoint.bearing + "progress: " + closestPoint.progress);
+      notifications.setClosestPoint(closestPoint.point, closestPoint.distance);
+    }
     if (closestWaitPoint != null)
       System.out.println("Wait Point: " + closestWaitPoint.point.name + " " + closestWaitPoint.distance + " Bearing: " + closestWaitPoint.bearing);
   }

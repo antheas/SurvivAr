@@ -1,9 +1,32 @@
 <resources>
     <string name="app_name">SurvivAr</string>
+
+    <!-- Notification Text -->
     <string name="location_service_notification_title">SurvivAr Tracker</string>
     <string name="location_service_notification_content">Looking for closest target…</string>
-    <string name="location_notification_channel_description">When background tracking is enabled, this notification displays the current status</string>
-    <string name="location_notification_channel_name">Background Tracking Notification</string>
+
+    <string name="location_notification_channel_group_name">Background Tracking Group</string>
+    <string name="location_notification_channel_group_description">Contains the various notification channels used to convey background tracking.</string>
+
+    <string name="location_notification_persistent_channel_name">Silent Background Tracking Notification</string>
+    <string name="location_notification_persistent_channel_description">When background tracking is enabled, this notification displays the current status.</string>
+
+    <string name="location_notification_on_enter_channel_name">On Entering Notification</string>
+    <string name="location_notification_on_enter_hannel_description">When you enter a point this notification will fire.</string>
+
+    <string name="location_notification_on_exit_channel_name">On Exiting Notification</string>
+    <string name="location_notification_on_exit_channel_description">When you exit a point without completing it this notification will fire.</string>
+
+    <string name="location_notification_on_complete_channel_name">On Completion Notification</string>
+    <string name="location_notification_on_complete_channel_description">When you complete a point this notification will fire.</string>
+
+    <!-- Expanded Notification -->
+    <string name="location_notification_closest_point">
+        &lt;b>%.0fm %s:&lt;/b>&lt;br> &lt;small>%s&lt;/small>
+    </string>
+    <string name="location_notification_closest_wait_point">Refresh</string>
+    <string name="location_notification_completed_point">Refresh</string>
+
     <string name="location_notification_refresh">Refresh</string>
     <string name="location_notification_exit">Exit</string>
 </resources>

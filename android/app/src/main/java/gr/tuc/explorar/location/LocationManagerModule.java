@@ -107,7 +107,6 @@ public class LocationManagerModule extends ReactContextBaseJavaModule {
             .emit(eventName, params);
   }
 
-
   @ReactMethod
   public void enableBackgroundTracking(ReadableArray points) {
     BackgroundServiceWrapper.startBackgroundService(context, points);
