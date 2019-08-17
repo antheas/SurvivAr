@@ -99,13 +99,6 @@ public class LocationManagerModule extends ReactContextBaseJavaModule {
     heading.unregisterHeadingCallback();
   }
 
-  private void emitCallback(
-          String eventName,
-          @Nullable WritableMap params) {
-    context
-            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-            .emit(eventName, params);
-  }
 
   @ReactMethod
   public void enableBackgroundTracking(ReadableArray points) {
@@ -115,5 +108,13 @@ public class LocationManagerModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void stopAndRetrieveProgress(Promise promise) {
     BackgroundServiceWrapper.stopAndRetrieve(context, promise);
+  }
+
+  private void emitCallback(
+          String eventName,
+          @Nullable WritableMap params) {
+    context
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+            .emit(eventName, params);
   }
 }

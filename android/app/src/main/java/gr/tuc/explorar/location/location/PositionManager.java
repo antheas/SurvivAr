@@ -14,9 +14,10 @@ import com.google.android.gms.location.LocationResult;
 
 public class PositionManager {
 
-  private static final int FAST = 0;
-  private static final int NORMAL = 1;
-  private static final int SLOW = 2;
+  private static final int FASTEST = 0;
+  private static final int FAST = 1;
+  private static final int NORMAL = 2;
+  private static final int SLOW = 3;
 
   private static final String THREAD_NAME = "location_callback_thread";
 
@@ -102,7 +103,7 @@ public class PositionManager {
     // If the stale location distance is big then it will re-trigger a speed change
     // which will cause an endless loop
     // While in background the update rate is much smaller so we require less updates to stay responsive.
-    if (updatesSinceLastSpeedChange < (inBackground ? 2 : 10)) {
+    if (updatesSinceLastSpeedChange < (inBackground ? 3 : 10)) {
       updatesSinceLastSpeedChange++;
       return;
     }
@@ -115,7 +116,6 @@ public class PositionManager {
             currentCallback,
             looper);
   }
-
 
   @SuppressLint("MissingPermission")
   public void forceUpdate() {
@@ -138,7 +138,9 @@ public class PositionManager {
   }
 
   private int getUpdatedSpeed(double distance) {
-    if (distance < 250) {
+    if (distance < 100) {
+      return FASTEST;
+    } else if (distance < 250) {
       return FAST;
     } else if (distance < 1000) {
       return NORMAL;
@@ -152,6 +154,8 @@ public class PositionManager {
       // When the screen is on the user might be looking at the map, so we require a high update rate
       // even when we are far away
       switch (speed) {
+        case FASTEST:
+          // fallthrough
         case FAST:
           return new LocationRequest()
                   .setFastestInterval(MAX_INTERVAL)
@@ -173,16 +177,22 @@ public class PositionManager {
       }
     } else {
       switch (speed) {
+        case FASTEST:
+          return new LocationRequest()
+                  .setFastestInterval(MAX_INTERVAL)
+                  .setInterval(2000)
+                  .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         case FAST:
           return new LocationRequest()
                   .setFastestInterval(MAX_INTERVAL)
-                  .setInterval(1000)
+                  .setInterval(3000)
+                  .setSmallestDisplacement(5)
                   .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         case NORMAL:
           return new LocationRequest()
                   .setFastestInterval(MAX_INTERVAL)
                   .setInterval(toMs(2))
-                  .setSmallestDisplacement(130)
+                  .setSmallestDisplacement(30)
                   .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         case SLOW:
           // fallthrough

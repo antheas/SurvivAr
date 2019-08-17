@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 
 import gr.tuc.explorar.location.background.model.BackgroundProgress;
 import gr.tuc.explorar.location.background.model.ParcelPoint;
-import gr.tuc.explorar.location.background.utils.Haversine;
+import gr.tuc.explorar.location.background.utils.CoordinateUtils;
 import gr.tuc.explorar.location.location.HeadingManager;
 import gr.tuc.explorar.location.location.PositionManager;
 
@@ -54,11 +54,12 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
   }
 
   public void startHeading() {
-    heading.registerHeadingCallback(this);
+    throw new UnsupportedOperationException("Not implemented");
+    //heading.registerHeadingCallback(this);
   }
 
   public void stopHeading() {
-    heading.unregisterHeadingCallback();
+    //heading.unregisterHeadingCallback();
   }
 
   public BackgroundProgress getProgress() {
@@ -71,7 +72,7 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
 
   @Override
   public void onHeadingUpdated(HeadingManager.HeadingState heading) {
-
+    throw new UnsupportedOperationException("Not implemented");
   }
 
   private double distanceFromUser(ParcelPoint point) {
@@ -83,7 +84,7 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
   }
 
   private double bearingFromUser(ParcelPoint point) {
-    return Haversine.bearing(currentPosition.lat, currentPosition.lon, point.lat, point.lon);
+    return CoordinateUtils.bearing(currentPosition.lat, currentPosition.lon, point.lat, point.lon);
   }
 
   private boolean pointCompleted(ParcelPoint point) {

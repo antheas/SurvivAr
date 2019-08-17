@@ -36,56 +36,6 @@ class BackgroundNotificationBuilder {
     this.onExit = onExit;
   }
 
-  private static NotificationCompat.Builder createBaseBuilder(
-          Context c, String channelId, PendingIntent onClick, PendingIntent onExit, PendingIntent onRefresh) {
-    return new NotificationCompat.Builder(c, channelId)
-            .setContentTitle(c.getText(R.string.location_notification_default_title))
-            .setContentText(c.getText(R.string.location_notification_default_text))
-
-            .setContentIntent(onClick)
-            .addAction(0, c.getString(R.string.location_notification_refresh), onRefresh)
-            .addAction(0, c.getString(R.string.location_notification_exit), onExit)
-
-            .setSmallIcon(R.drawable.location_notification_icon)
-            .setColor(ContextCompat.getColor(c, R.color.primary_color))
-            .setColorized(true)
-            .setSound(null);
-  }
-
-  private static NotificationCompat.Builder createVisibleBuilder(
-          Context c, String channelId,
-          PendingIntent onClick, PendingIntent onExit, PendingIntent onRefresh,
-          long[] vibration
-  ) {
-    return createBaseBuilder(c, channelId, onClick, onExit, onRefresh)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setVibrate(vibration)
-            .setOnlyAlertOnce(false);
-  }
-
-  private static void createVisibleNotificationChannel(
-          Context c, NotificationManager nm,
-          String id, String name, String desc,
-          long[] vibration) {
-    // NotificationChannels are required for Notifications on O (API 26) and above.
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
-
-    // Initializes NotificationChannel.
-    NotificationChannel nc = new NotificationChannel(id, name, NotificationManager.IMPORTANCE_HIGH);
-    nc.setDescription(desc);
-    nc.setGroup(NOTIFICATION_GROUP_ID);
-
-    nc.setSound(null, null);
-    nc.enableLights(true);
-    nc.enableVibration(true);
-    nc.setShowBadge(true);
-
-    nc.setLightColor(c.getColor(R.color.primary_color));
-    nc.setVibrationPattern(vibration);
-
-    nm.createNotificationChannel(nc);
-  }
-
   private static void createChannelGroup(Context c, NotificationManager nm) {
     // NotificationChannels are required for Notifications on O (API 26) and above.
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
@@ -120,6 +70,29 @@ class BackgroundNotificationBuilder {
     nm.createNotificationChannel(nc);
   }
 
+  private static void createVisibleNotificationChannel(
+          Context c, NotificationManager nm,
+          String id, String name, String desc,
+          long[] vibration) {
+    // NotificationChannels are required for Notifications on O (API 26) and above.
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
+
+    // Initializes NotificationChannel.
+    NotificationChannel nc = new NotificationChannel(id, name, NotificationManager.IMPORTANCE_HIGH);
+    nc.setDescription(desc);
+    nc.setGroup(NOTIFICATION_GROUP_ID);
+
+    nc.setSound(null, null);
+    nc.enableLights(true);
+    nc.enableVibration(true);
+    nc.setShowBadge(true);
+
+    nc.setLightColor(c.getColor(R.color.primary_color));
+    nc.setVibrationPattern(vibration);
+
+    nm.createNotificationChannel(nc);
+  }
+
   private static void createOnEnterNotificationChannel(Context c, NotificationManager nm) {
     createVisibleNotificationChannel(
             c, nm,
@@ -150,12 +123,39 @@ class BackgroundNotificationBuilder {
     );
   }
 
+  private static NotificationCompat.Builder createBaseBuilder(
+          Context c, String channelId, PendingIntent onClick, PendingIntent onExit, PendingIntent onRefresh) {
+    return new NotificationCompat.Builder(c, channelId)
+            .setContentTitle(c.getText(R.string.location_notification_default_title))
+            .setContentText(c.getText(R.string.location_notification_default_text))
+
+            .setContentIntent(onClick)
+            .addAction(0, c.getString(R.string.location_notification_refresh), onRefresh)
+            .addAction(0, c.getString(R.string.location_notification_exit), onExit)
+
+            .setSmallIcon(R.drawable.location_notification_icon)
+            .setColor(ContextCompat.getColor(c, R.color.primary_color))
+            .setColorized(true)
+            .setSound(null);
+  }
+
   NotificationCompat.Builder createPersistentNotification() {
     return createBaseBuilder(c, NOTIFICATION_PERSISTENT_ID, onClick, onExit, onRefresh)
             .setDefaults(0)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setVibrate(null)
             .setOnlyAlertOnce(true);
+  }
+
+  private static NotificationCompat.Builder createVisibleBuilder(
+          Context c, String channelId,
+          PendingIntent onClick, PendingIntent onExit, PendingIntent onRefresh,
+          long[] vibration
+  ) {
+    return createBaseBuilder(c, channelId, onClick, onExit, onRefresh)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setVibrate(vibration)
+            .setOnlyAlertOnce(false);
   }
 
   NotificationCompat.Builder createOnEnterNotification() {

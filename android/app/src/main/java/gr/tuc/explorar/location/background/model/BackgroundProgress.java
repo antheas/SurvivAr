@@ -63,6 +63,25 @@ public class BackgroundProgress {
     return progress.keySet();
   }
 
+  public String stringify() {
+    StringBuilder sb = new StringBuilder();
+
+    for (String id : progress.keySet()) {
+      // Encode id to be able to use separator chars > &
+      String encodedId = encodeId(id);
+      String durationHex = Double.toHexString(get(id));
+
+      sb.append(encodedId);
+      sb.append('>');
+      sb.append(durationHex);
+      sb.append('&');
+    }
+    // Remove last separator
+    if (sb.length() > 0) sb.setLength(sb.length() - 1);
+
+    return sb.toString();
+  }
+
   private static Map<String, Double> parseString(String data) {
     String[] stringPoints = data.split("&");
 
@@ -88,25 +107,6 @@ public class BackgroundProgress {
     }
 
     return initialMap;
-  }
-
-  public String stringify() {
-    StringBuilder sb = new StringBuilder();
-
-    for (String id : progress.keySet()) {
-      // Encode id to be able to use separator chars > &
-      String encodedId = encodeId(id);
-      String durationHex = Double.toHexString(get(id));
-
-      sb.append(encodedId);
-      sb.append('>');
-      sb.append(durationHex);
-      sb.append('&');
-    }
-    // Remove last separator
-    if (sb.length() > 0) sb.setLength(sb.length() - 1);
-
-    return sb.toString();
   }
 
   private static String encodeId(String id) {

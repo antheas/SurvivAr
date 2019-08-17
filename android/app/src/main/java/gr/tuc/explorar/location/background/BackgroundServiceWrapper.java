@@ -76,12 +76,7 @@ public class BackgroundServiceWrapper {
     }
   }
 
-  public static boolean stopBackgroundService(Context context) {
-    Intent i = new Intent(context, BackgroundLocationService.class);
-    return context.stopService(i);
-  }
-
-  public static ReadableArray retrieveProgress(Context c) {
+  private static ReadableArray retrieveProgress(Context c) {
     SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c.getApplicationContext());
     String data = sp.getString(PROGRESS_DATA_KEY, null);
     if (data == null) return Arguments.createArray();
@@ -92,7 +87,7 @@ public class BackgroundServiceWrapper {
     return retrieveProgress(new BackgroundProgress(data));
   }
 
-  public static ReadableArray retrieveProgress(BackgroundProgress progress) {
+  private static ReadableArray retrieveProgress(BackgroundProgress progress) {
     WritableArray array = Arguments.createArray();
     for (String id : progress.getIds()) {
       WritableMap map = Arguments.createMap();

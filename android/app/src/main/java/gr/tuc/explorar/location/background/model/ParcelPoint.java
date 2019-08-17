@@ -7,7 +7,7 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
-import gr.tuc.explorar.location.background.utils.Haversine;
+import gr.tuc.explorar.location.background.utils.CoordinateUtils;
 
 public class ParcelPoint implements Parcelable {
 
@@ -56,7 +56,7 @@ public class ParcelPoint implements Parcelable {
   }
 
   public double distanceFrom(double lat, double lon) {
-    return Haversine.distance(this.lat, this.lon, lat, lon);
+    return CoordinateUtils.distance(this.lat, this.lon, lat, lon);
   }
 
   protected ParcelPoint(Parcel in) {

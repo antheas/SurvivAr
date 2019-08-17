@@ -1,25 +1,24 @@
 package gr.tuc.explorar.location.background.utils;
 
-/**
- * Jason Winn
- * http://jasonwinn.org
- * Created July 10, 2013
- * <p>
- * Description: Small class that provides approximate distance between
- * two points using the Haversine formula.
- * <p>
- * Call in a static context:
- * Haversine.distance(47.6788206, -122.3271205,
- * 47.6788206, -122.5271205)
- * --> 14.973190481586224 [km]
- * <p>
- * https://github.com/jasonwinn/haversine/blob/master/Haversine.java
- * FIXME: License not available.
- */
-
-public class Haversine {
+public class CoordinateUtils {
   private static final int EARTH_RADIUS = 6371; // Approx Earth radius in KM
 
+  /**
+   * Jason Winn
+   * http://jasonwinn.org
+   * Created July 10, 2013
+   * <p>
+   * Description: Small class that provides approximate distance between
+   * two points using the Haversine formula.
+   * <p>
+   * Call in a static context:
+   * Haversine.distance(47.6788206, -122.3271205,
+   * 47.6788206, -122.5271205)
+   * --> 14.973190481586224 [km]
+   * <p>
+   * https://github.com/jasonwinn/haversine/blob/master/Haversine.java
+   * FIXME: License not available (for distance function only).
+   */
   public static double distance(double startLat, double startLong,
                                 double endLat, double endLong) {
 

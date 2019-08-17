@@ -32,11 +32,11 @@ public class BackgroundLocationService extends Service implements BackgroundLoca
   private BackgroundNotificationManager notifications;
   private BackgroundLocationManager manager;
 
-  // If the binder of the service is called to retrieve the progress this will be set to true
-  // that way when the service is destroyed, writing to shared preferences will be skipped.
-  private boolean progressSaved;
   // We need to know if the service was started when we bind to it to avoid retrieving invalid data.
   private boolean serviceStarted;
+  // If the binder of the service is called to retrieve the progress this will be set to true.
+  // That way when the service is destroyed, writing to shared preferences will be skipped.
+  private boolean progressSaved;
 
   @Override
   public void onCreate() {
@@ -51,14 +51,11 @@ public class BackgroundLocationService extends Service implements BackgroundLoca
 
     // Intent and action should never be null
     if (intent == null || intent.getAction() == null) {
-      stopSelf();
-      // In case function returns
-      return returnFlag;
+      throw new RuntimeException("Intent is null!");
     }
 
-    String action = intent.getAction();
-
     // Handle actions
+    String action = intent.getAction();
     switch (action) {
       case ACTION_REFRESH:
         refreshData();
@@ -85,7 +82,7 @@ public class BackgroundLocationService extends Service implements BackgroundLoca
     SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
     String previousProgress = sp.getString(PROGRESS_DATA_KEY, null);
     // Clear previous progress
-    sp.edit().remove(PROGRESS_DATA_KEY).apply();
+    if (previousProgress != null) sp.edit().remove(PROGRESS_DATA_KEY).apply();
 
     manager = new BackgroundLocationManager(this, this, points, previousProgress);
     manager.startPosition();
