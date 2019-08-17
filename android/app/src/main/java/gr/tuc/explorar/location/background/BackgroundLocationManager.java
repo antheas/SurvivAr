@@ -25,6 +25,7 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
   private BackgroundProgress progress;
 
   // Progress
+  private List<ParcelPoint> completedPoints;
   private List<ParcelPoint> previousPoints;
   private PositionManager.PositionState currentPosition;
   private long previousTimestamp;
@@ -40,6 +41,7 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
     this.points = points;
     progress = new BackgroundProgress(points, previousProgress);
 
+    completedPoints = new ArrayList<>();
     previousPoints = Collections.emptyList();
     currentPosition = PositionManager.PositionState.NUL;
     currentEvent = ParcelPoint.DEFAULT;
@@ -129,11 +131,11 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
     return false;
   }
 
-  private boolean hasCompletedPoint(List<ParcelPoint> currentPoints) {
+  private ParcelPoint hasCompletedPoint(List<ParcelPoint> currentPoints) {
     for (ParcelPoint p : currentPoints) {
-      if (pointCompleted(p)) return true;
+      if (pointCompleted(p)) return p;
     }
-    return false;
+    return null;
   }
 
   private boolean hasExitedPoint(List<ParcelPoint> previous, List<ParcelPoint> current) {
@@ -175,9 +177,16 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
       progress.add(p, addedTime);
     }
 
+    // Find completed point if it exists
+    ParcelPoint completedPoint = hasCompletedPoint(currentPoints);
+    boolean hasCompletedPoint = completedPoint != null;
+    if (hasCompletedPoint) {
+      completedPoints.add(completedPoint);
+    }
+
     // Event priority is: completed, entered, exited
     currentEvent = ParcelPoint.DEFAULT;
-    if (hasCompletedPoint(currentPoints))
+    if (hasCompletedPoint)
       currentEvent = ParcelPoint.ON_COMPLETE;
     else if (hasEnteredPoint(previousPoints, currentPoints))
       currentEvent = ParcelPoint.ON_ENTER;

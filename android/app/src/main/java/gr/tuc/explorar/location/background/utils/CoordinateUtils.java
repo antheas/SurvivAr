@@ -46,7 +46,7 @@ public class CoordinateUtils {
     double dLon = (endLon - startLon);
     double x = Math.cos(endLat) * Math.sin(dLon);
     double y = Math.cos(startLat) * Math.sin(endLat) - Math.sin(startLat) * Math.cos(endLat) * Math.cos(dLon);
-    double bearing = Math.toDegrees((Math.atan2(y, x)));
+    double bearing = Math.toDegrees((Math.atan2(x, y)));
     return 360 - (360 + bearing) % 360;
   }
 }

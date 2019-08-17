@@ -3,7 +3,11 @@ package gr.tuc.explorar.location.background.notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.os.Build;
 import android.text.Spanned;
+import android.widget.ProgressBar;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -136,6 +140,7 @@ public class BackgroundNotificationManager {
                   (int) Math.floor(firstPoint.progress),
                   false
           );
+          fixProgressBarColor(base);
         } else {
           base.setSubText(formatString(R.string.location_notification_in_point_subtext));
         }
@@ -173,7 +178,8 @@ public class BackgroundNotificationManager {
     }
 
     // Setup completed points
-    for (ParcelPoint p : completedPoints) {
+    for (int i = completedPoints.size() - 1; i >= 0; i--) {
+      ParcelPoint p = completedPoints.get(i);
       usesStyle = true;
       style.addLine(formatString(
               R.string.location_notification_completed_point,
@@ -189,6 +195,16 @@ public class BackgroundNotificationManager {
 
   private Spanned formatString(int id, Object... varargs) {
     return HtmlCompat.fromHtml(c.getString(id, varargs), HtmlCompat.FROM_HTML_MODE_LEGACY);
+  }
+
+  /**
+   * Progress bar's default color is exactly the same red as our notification, so fix it.
+   */
+  private static void fixProgressBarColor(NotificationCompat.Builder base) {
+    // Notifications are only colorized after android O.
+    // if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
+
+    // TODO: Fix progress bar color
   }
 
   private static String azimuthToBearing(double azimuth) {

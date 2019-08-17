@@ -19,7 +19,7 @@ const AppContainer = createAppContainer(
 
 export default class SplashController extends React.Component {
   public componentDidMount(): void {
-    // TODO: Implement Splash Screen for android.
+    // TODO: Implement Splash Screen for iOS.
     if (Platform.OS !== "android") return;
     SplashScreen.hide();
   }
