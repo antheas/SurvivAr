@@ -20,7 +20,6 @@ import { selectExtendedPoints } from "../../store/selectors";
 import { State } from "../../store/types";
 import { Glue, Spacer } from "../../utils/Components";
 import * as Theme from "../../utils/Theme";
-import { string } from "prop-types";
 
 const HEADER_WIDTH = 45;
 const ITEM_WIDTH = 220;
@@ -139,12 +138,14 @@ export interface IPointCardListProps {
   points: ExtendedPoint[];
   gotoPointId: string | null;
   onPoint: (id: string) => void;
+  resetGotoPoint: () => void;
 }
 
 export const PointCardList: FunctionComponent<IPointCardListProps> = ({
   points,
   gotoPointId,
-  onPoint
+  onPoint,
+  resetGotoPoint
 }) => {
   const sorted = points.sort((a, b) => a.distance - b.distance);
 
@@ -220,6 +221,8 @@ export const PointCardList: FunctionComponent<IPointCardListProps> = ({
         <ListHeader title={title} />
       )}
       onViewableItemsChanged={onViewableItemsChanged}
+      // Stop errors
+      onScrollToIndexFailed={resetGotoPoint}
       viewabilityConfig={{ itemVisiblePercentThreshold: 100 }}
       horizontal={true}
       sections={sections}

@@ -110,6 +110,7 @@ class MainScreen extends Component<IMainProps, IMainState> {
           ) : (
             <PointCardList
               gotoPointId={this.state.gotoPointId}
+              resetGotoPoint={() => this.setState({ gotoPointId: null })}
               onPoint={id => this.setState({ selectedPointId: id })}
             />
           )}
