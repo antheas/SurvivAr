@@ -66,6 +66,8 @@ interface IMapState {
   zoomLevel: ZoomLevel;
   userTracked: boolean;
   headingTracked: boolean;
+  mapReady: boolean;
+  initialZoom: boolean;
 }
 
 class Map extends React.Component<IMapProps, IMapState> {
@@ -73,7 +75,9 @@ class Map extends React.Component<IMapProps, IMapState> {
     coordinate: new AnimatedRegion(GREECE_COORDS),
     zoomLevel: ZoomLevel.AREA_POINTS,
     userTracked: true,
-    headingTracked: false
+    headingTracked: false,
+    mapReady: false,
+    initialZoom: false
   };
   private map?: MapView;
   private userMarker?: MarkerAnimated;
@@ -103,6 +107,7 @@ class Map extends React.Component<IMapProps, IMapState> {
         this.cameraManager.enable();
       } else {
         this.cameraManager.disable();
+        // this.setState({ mapReady: false });
       }
     });
   }
@@ -131,7 +136,15 @@ class Map extends React.Component<IMapProps, IMapState> {
     }
 
     // Handle Map
-    this.cameraManager.update();
+    if (this.state.mapReady && !this.state.initialZoom) {
+      // Update once for initial zoom
+      this.cameraManager.performInitialZoom();
+      this.setState({ initialZoom: true, mapReady: false });
+    } else if (this.state.mapReady) {
+      // After the animation is ready mapReady will be set to true
+      // and animations will continue
+      this.cameraManager.update();
+    }
   }
 
   public render() {
@@ -148,20 +161,23 @@ class Map extends React.Component<IMapProps, IMapState> {
           initialRegion={GREECE_COORDS}
           onPanDrag={this.mapMoved}
           moveOnMarkerPress={false}
+          onRegionChangeComplete={this.setMapReady}
         >
           {/* Area Points */}
           {this.props.areas.map(a => (
             <AreaMarker key={a.id} {...a} />
           ))}
-          {/* Points */}
-          {this.props.points.map(p => (
-            <PointMarker
-              key={p.id}
-              point={p}
-              selected={p.id === this.props.selectedPointId}
-              onPress={() => this.markerPressed(p.id)}
-            />
-          ))}
+          {/* Points (after map is ready) */}
+          {this.state.mapReady &&
+            this.state.initialZoom &&
+            this.props.points.map(p => (
+              <PointMarker
+                key={p.id}
+                point={p}
+                selected={p.id === this.props.selectedPointId}
+                onPress={() => this.markerPressed(p.id)}
+              />
+            ))}
           {/* User Marker */}
           {pos.valid && pos.accuracy > 20 ? (
             <Circle
@@ -199,6 +215,10 @@ class Map extends React.Component<IMapProps, IMapState> {
       </View>
     );
   }
+
+  private setMapReady = () => {
+    this.setState({ mapReady: true });
+  };
 
   private mapMoved = () => {
     if (!this.state.userTracked) return;

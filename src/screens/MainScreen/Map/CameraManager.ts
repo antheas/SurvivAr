@@ -1,5 +1,5 @@
 import { Dimensions, Platform } from "react-native";
-import MapView, { Camera, MarkerAnimated } from "react-native-maps";
+import MapView, { Camera } from "react-native-maps";
 import {
   DEFAULT_HEADING,
   Heading
@@ -11,6 +11,7 @@ import coordinateDeltas from "../../../utils/coordinateDeltas";
 import { convertCoords, isPointClose } from "./Utils";
 
 export const ANIMATION_DELAY = 900;
+export const INITIAL_ZOOM_DELAY = 1600;
 const HEADING_DELAY = 300;
 
 export const DEFAULT_ZOOM = {
@@ -93,6 +94,11 @@ export default class CameraManager {
     }
   }
 
+  public performInitialZoom() {
+    this.updateCallbackState();
+    this.animateWithoutHeading(true);
+  }
+
   public onHeadingChanged = (h: Heading) => {
     this.heading = h;
     this.animateWithHeading(true);
@@ -133,7 +139,7 @@ export default class CameraManager {
     return includedPoints;
   }
 
-  private animateWithoutHeading() {
+  private animateWithoutHeading(initial?: boolean) {
     const map = this.r().map;
     if (!map) return;
     if (!this.r().userTracked) return;
@@ -157,7 +163,7 @@ export default class CameraManager {
     }
 
     // Animate
-    map.animateToRegion(region, ANIMATION_DELAY);
+    map.animateToRegion(region, initial ? INITIAL_ZOOM_DELAY : ANIMATION_DELAY);
   }
 
   private animateWithHeading(headingChanged: boolean) {
