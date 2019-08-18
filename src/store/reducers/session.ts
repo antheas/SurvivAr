@@ -1,62 +1,89 @@
+import { combineReducers } from "redux";
 import {
+  BackgroundProgressAction,
   BackgroundTrackingAction,
   CurrentPointAction,
   PointMetadataAction,
   SET_BACKGROUND_TRACKING,
+  STASH_BACKGROUND_PROGRESS,
   StateAction,
   UPDATE_CURRENT_WAIT_POINT_CACHE,
   UPDATE_POINT_METADATA,
   UPDATE_STATE,
-  BackgroundProgressAction,
-  STASH_BACKGROUND_PROGRESS
+  WaitProgressUpdate,
+  CompletedPointsAction,
+  ADD_COMPLETED_POINTS
 } from "../actions";
-import { SessionState, StateType } from "../types";
+import { PointMetadata, StateType } from "../types";
 
-export default function session(
-  state: SessionState = {
-    state: StateType.STARTUP,
-    backgroundTrackingEnabled: false,
-    pointMetadata: {
-      distances: {}
-    },
-    currentPointCache: {
-      ids: [],
-      updated: 0
-    },
-    completedIds: [],
-    backgroundProgress: []
-  },
-  action:
-    | StateAction
-    | PointMetadataAction
-    | CurrentPointAction
-    | BackgroundTrackingAction
-    | BackgroundProgressAction
-): SessionState {
+function stateReducer(
+  state: StateType = StateType.STARTUP,
+  action: StateAction
+) {
   if (action.type === UPDATE_STATE) {
-    const newState: SessionState = { ...state };
-    newState.state = action.state;
-    return newState;
-  } else if (action.type === SET_BACKGROUND_TRACKING) {
-    const newState: SessionState = { ...state };
-    newState.backgroundTrackingEnabled = action.enabled;
-    return newState;
-  } else if (action.type === UPDATE_POINT_METADATA) {
-    const newState: SessionState = { ...state };
-    newState.pointMetadata = action.metadata;
-    return newState;
-  } else if (action.type === UPDATE_CURRENT_WAIT_POINT_CACHE) {
-    const newState: SessionState = { ...state };
-    newState.currentPointCache = {
+    return action.state;
+  }
+  return state;
+}
+
+function backgroundTrackingEnabled(
+  state: boolean = false,
+  action: BackgroundTrackingAction
+) {
+  if (action.type === SET_BACKGROUND_TRACKING) {
+    return action.enabled;
+  }
+  return state;
+}
+
+function pointMetadata(
+  state: PointMetadata = { distances: {} },
+  action: PointMetadataAction
+) {
+  if (action.type === UPDATE_POINT_METADATA) {
+    return action.metadata;
+  }
+  return state;
+}
+
+function currentPointCache(
+  state: {
+    ids: string[];
+    updated: number;
+  } = { ids: [], updated: 0 },
+  action: CurrentPointAction
+) {
+  if (action.type === UPDATE_CURRENT_WAIT_POINT_CACHE) {
+    return {
       ids: action.currentIds,
       updated: action.updated
     };
-    return newState;
-  } else if (action.type === STASH_BACKGROUND_PROGRESS) {
-    const newState: SessionState = { ...state };
-    newState.backgroundProgress = action.updates;
-    return newState;
-  } else {
-    return state;
   }
+  return state;
 }
+
+function completedIds(state: string[] = [], action: CompletedPointsAction) {
+  if (action.type === ADD_COMPLETED_POINTS) {
+    return [...state, ...action.ids];
+  }
+  return state;
+}
+
+function backgroundProgress(
+  state: WaitProgressUpdate[] = [],
+  action: BackgroundProgressAction
+) {
+  if (action.type === STASH_BACKGROUND_PROGRESS) {
+    return action.updates;
+  }
+  return state;
+}
+
+export default combineReducers({
+  state: stateReducer,
+  backgroundTrackingEnabled,
+  pointMetadata,
+  currentPointCache,
+  completedIds,
+  backgroundProgress
+});

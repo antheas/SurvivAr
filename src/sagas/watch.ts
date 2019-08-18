@@ -81,8 +81,6 @@ function* processBackgroundProgress() {
 
   yield put(stashBackgroundProgress([]));
 
-  if (!updates.length) return;
-
   const points: ExtendedPoint[] = yield select(
     selectExtendedPoints,
     updates.map(u => u.id)
@@ -105,8 +103,8 @@ function* processBackgroundProgress() {
     // Get ids (cast is because linter thins point can be undefined)
     .map(u => (u.point as ExtendedPoint).id);
 
-  yield put(addCompletedPoints(newlyCompleted));
   yield put(updateWaitPointProgress(updates));
+  if (newlyCompleted.length) yield put(addCompletedPoints(newlyCompleted));
 }
 
 function* calculateEventsAndCompletions(

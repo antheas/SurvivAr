@@ -57,6 +57,12 @@ if (process.env.NODE_ENV !== "production") {
 const store = createStore(persistedReducer, applyMiddleware(...middleware));
 const persistor = persistStore(store);
 
+// If we are running a dev build expose store to global state
+if (process.env.NODE_ENV !== "production") {
+  // @ts-ignore
+  window.__store = store;
+}
+
 // Start root saga
 sagaMiddleware.run(rootSaga, store.dispatch);
 

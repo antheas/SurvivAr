@@ -43,3 +43,12 @@ export function selectExtendedCollectPoint(state: State, id: string) {
   const progress = selectCollectPointProgress(state, p.id);
   return new ExtendedCollectPoint(p, distance, progress);
 }
+
+export function selectCompletedPoints(state: State): ExtendedPoint[] {
+  const {
+    session: { completedIds }
+  } = state;
+  if (!completedIds.length) return [];
+
+  return selectExtendedPoints(state, completedIds);
+}

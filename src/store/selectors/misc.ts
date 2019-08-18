@@ -15,3 +15,7 @@ export function selectStashedBackgroundProgress({
 }: State) {
   return backgroundProgress;
 }
+
+export function selectHasCompletedPoints({ session: { completedIds } }: State) {
+  return completedIds.length > 0;
+}

@@ -6,7 +6,7 @@ import {
   StyleSheet,
   View
 } from "react-native";
-import { NavigationParams } from "react-navigation";
+import { NavigationParams, NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { checkLocationPermission } from "../../location/Permissions";
@@ -15,12 +15,15 @@ import {
   retryFetch,
   setForegroundFetch
 } from "../../store/actions";
-import { selectAppState } from "../../store/selectors";
+import {
+  selectAppState,
+  selectHasCompletedPoints
+} from "../../store/selectors";
 import { State, StateType } from "../../store/types";
 import * as Theme from "../../utils/Theme";
 import Loader from "./Loader";
 import Map from "./Map";
-import PointCardList, { PointSelection } from "./PointCardList";
+import PointCardList from "./PointCardList";
 
 const styles = StyleSheet.create({
   container: {
@@ -48,6 +51,7 @@ const styles = StyleSheet.create({
 
 interface MainStateProps {
   state: StateType;
+  hasCompletedPoints: boolean;
 }
 
 interface MainDispatchProps {
@@ -57,7 +61,7 @@ interface MainDispatchProps {
 }
 
 export interface IMainProps extends MainStateProps, MainDispatchProps {
-  navigation: NavigationParams;
+  navigation: NavigationScreenProp<any>;
 }
 
 export interface IMainState {
@@ -82,6 +86,10 @@ class MainScreen extends Component<IMainProps, IMainState> {
         this.stateListenerCallback("active");
       }
     });
+  }
+
+  public componentDidUpdate() {
+    if (this.props.hasCompletedPoints) this.props.navigation.push("Completed");
   }
 
   public componentWillUnmount() {
@@ -129,7 +137,8 @@ class MainScreen extends Component<IMainProps, IMainState> {
  */
 const mapStateToProps = (state: State): MainStateProps => {
   return {
-    state: selectAppState(state)
+    state: selectAppState(state),
+    hasCompletedPoints: selectHasCompletedPoints(state)
   };
 };
 
