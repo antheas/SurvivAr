@@ -1,5 +1,10 @@
-import React, { ReactElement } from "react";
-import { SectionList, StyleSheet, Text, View } from "react-native";
+import React, {
+  ReactElement,
+  FunctionComponent,
+  useRef,
+  useEffect
+} from "react";
+import { SectionList, StyleSheet, Text, View, ViewToken } from "react-native";
 import { connect } from "react-redux";
 import { ExtendedCollectPoint } from "../../store/model/ExtendedCollectPoint";
 import { ExtendedPoint } from "../../store/model/ExtendedPoint";
@@ -9,9 +14,14 @@ import { State } from "../../store/types";
 import { Glue, Spacer } from "../../utils/Components";
 import * as Theme from "../../utils/Theme";
 
+const HEADER_WIDTH = 45;
+const ITEM_WIDTH = 220;
+
 const styles = StyleSheet.create({
   card: {
-    ...Theme.component.container.card
+    ...Theme.component.container.card,
+    // TODO: Find better width
+    width: ITEM_WIDTH
   },
   cardName: {
     ...Theme.text.color.dark,
@@ -47,10 +57,13 @@ const styles = StyleSheet.create({
   },
   header: {
     height: "100%",
+    width: HEADER_WIDTH,
     justifyContent: "center",
     alignItems: "center"
   },
   headerText: {
+    width: 170,
+    textAlign: "center",
     transform: [{ rotate: "270deg" }],
     color: Theme.colors.primaryText,
     ...Theme.text.size.medium
@@ -71,7 +84,9 @@ function chooseDistanceColor(p: ExtendedPoint) {
 const PointCard = ({ item: p }: { item: ExtendedPoint }): ReactElement => {
   return (
     <View style={styles.card}>
-      <Text style={styles.cardName}>{p.name}</Text>
+      <Text style={styles.cardName}>
+        {p.name.length > 30 ? p.name.substring(0, 30) : p.name + "..."}
+      </Text>
       <Text style={styles.cardDesc}>{p.desc}</Text>
       <Spacer tiny />
       <View style={styles.cardProgress}>
@@ -110,11 +125,23 @@ const ListHeader = ({
   </View>
 );
 
-export const PointCardList = ({
-  points
-}: {
+// We only animate on marker pressed to avoid acting on our own update
+export interface PointSelection {
+  markerPressed: boolean;
+  selectedId: string;
+}
+
+export interface IPointCardListProps {
   points: ExtendedPoint[];
-}): ReactElement => {
+  selectedPoint: PointSelection;
+  selectPoint: (id: string) => void;
+}
+
+export const PointCardList: FunctionComponent<IPointCardListProps> = ({
+  points,
+  selectedPoint,
+  selectPoint
+}) => {
   const sorted = points.sort((a, b) => a.distance - b.distance);
 
   const active = sorted.filter((p): boolean => !p.completed && p.userWithin);
@@ -126,11 +153,61 @@ export const PointCardList = ({
   if (pending.length) sections.push({ title: "Pending", data: pending });
   if (completed.length) sections.push({ title: "Completed", data: completed });
 
+  // When we scroll update visible point
+  const onViewableItemsChanged = ({
+    viewableItems
+  }: {
+    viewableItems: ViewToken[];
+  }) => {
+    const selectedItem = viewableItems.find(v => v.isViewable);
+    // Key is the id
+    if (selectedItem && selectedItem.key !== selectedPoint.selectedId)
+      selectPoint(selectedItem.key);
+  };
+
+  // Scroll to point
+  const ref = useRef(null) as React.MutableRefObject<null | typeof SectionList>;
+  useEffect(() => {
+    if (!selectedPoint.markerPressed) return;
+    const view = ref.current;
+    if (!view || !view.scrollToLocation) return;
+
+    const id = selectedPoint.selectedId;
+    const iActive = active.findIndex(p => p.id === id);
+    const iPending = pending.findIndex(p => p.id === id);
+    const iCompleted = completed.findIndex(p => p.id === id);
+
+    let sectionIndex;
+    let itemIndex;
+    if (iActive !== -1) {
+      sectionIndex = 0;
+      itemIndex = iActive;
+    } else if (iPending !== -1) {
+      sectionIndex = +(active.length > 0);
+      itemIndex = iPending;
+    } else if (iCompleted !== -1) {
+      sectionIndex = +(active.length > 0) + +(pending.length > 0);
+      itemIndex = iCompleted;
+    } else return;
+    itemIndex++;
+
+    view.scrollToLocation({
+      animated: true,
+      sectionIndex,
+      itemIndex,
+      viewOffset: HEADER_WIDTH,
+      viewPosition: 0.5
+    });
+  }, [selectedPoint]);
+
   return (
     <SectionList
+      ref={ref}
       style={styles.list}
       renderItem={PointCard}
       renderSectionHeader={ListHeader}
+      onViewableItemsChanged={onViewableItemsChanged}
+      viewabilityConfig={{ itemVisiblePercentThreshold: 100 }}
       horizontal={true}
       sections={sections}
     />

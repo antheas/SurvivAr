@@ -202,7 +202,8 @@ export const map = {
       marker: {
         anchor: { x: 0.5, y: 0.5 }
       }
-    }
+    },
+    selectedSize: 32
   },
   button: {
     icon: {

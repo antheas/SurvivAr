@@ -1,11 +1,21 @@
-import React, { Fragment } from "react";
+import React, { Fragment, FunctionComponent } from "react";
 import { Circle, Marker } from "react-native-maps";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { ExtendedPoint } from "../../../store/model/ExtendedPoint";
 import * as Theme from "../../../utils/Theme";
 import { convertCoords, isPointClose } from "./Utils";
 
-const PointMarker = (point: ExtendedPoint) => {
+export interface IPointMarkerProps {
+  point: ExtendedPoint;
+  selected: boolean;
+  onPress: () => void;
+}
+
+const PointMarker: FunctionComponent<IPointMarkerProps> = ({
+  point,
+  selected,
+  onPress
+}) => {
   let theme;
   let circle;
   if (point.completed) {
@@ -20,6 +30,13 @@ const PointMarker = (point: ExtendedPoint) => {
     theme = Theme.map.point.default;
   }
 
+  if (selected) {
+    // Avoid mutating global constants
+    theme = { ...theme };
+    theme.icon = { ...theme.icon };
+    theme.icon.size = Theme.map.point.selectedSize;
+  }
+
   const coords = convertCoords(point.loc);
 
   return (
@@ -27,7 +44,12 @@ const PointMarker = (point: ExtendedPoint) => {
       {circle ? (
         <Circle center={coords} radius={point.radius} {...circle} />
       ) : null}
-      <Marker coordinate={coords} tracksViewChanges={false} {...theme.marker}>
+      <Marker
+        coordinate={coords}
+        tracksViewChanges={false}
+        {...theme.marker}
+        onPress={onPress}
+      >
         <Icon name={point.icon} {...theme.icon} />
       </Marker>
     </Fragment>

@@ -56,7 +56,10 @@ interface IMapDispatchProps {
   onSyncToggled: (enable: boolean) => void;
 }
 
-interface IMapProps extends IMapStateProps, IMapDispatchProps {}
+interface IMapProps extends IMapStateProps, IMapDispatchProps {
+  selectedPointId: string;
+  selectPoint: (id: string) => void;
+}
 
 interface IMapState {
   coordinate: AnimatedRegion;
@@ -99,7 +102,7 @@ class Map extends React.Component<IMapProps, IMapState> {
       if (s === "active") {
         this.cameraManager.enable();
       } else {
-        this.cameraManager.enable();
+        this.cameraManager.disable();
       }
     });
   }
@@ -144,11 +147,21 @@ class Map extends React.Component<IMapProps, IMapState> {
           customMapStyle={Theme.mapStyle}
           initialRegion={GREECE_COORDS}
           onPanDrag={this.mapMoved}
+          moveOnMarkerPress={false}
         >
           {/* Area Points */}
-          {this.props.areas.map(AreaMarker)}
+          {this.props.areas.map(a => (
+            <AreaMarker key={a.id} {...a} />
+          ))}
           {/* Points */}
-          {this.props.points.map(PointMarker)}
+          {this.props.points.map(p => (
+            <PointMarker
+              key={p.id}
+              point={p}
+              selected={p.id === this.props.selectedPointId}
+              onPress={() => this.markerPressed(p.id)}
+            />
+          ))}
           {/* User Marker */}
           {pos.valid && pos.accuracy > 20 ? (
             <Circle
@@ -192,6 +205,11 @@ class Map extends React.Component<IMapProps, IMapState> {
     this.setState({ userTracked: false });
     this.cameraManager.update();
   };
+
+  private markerPressed = (id: string) => {
+    this.props.selectPoint(id);
+  };
+
   private getZoomState = () => {
     if (!this.state.userTracked) return ZoomState.NOT_CENTERED;
 

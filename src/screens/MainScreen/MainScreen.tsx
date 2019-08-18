@@ -20,7 +20,7 @@ import { State, StateType } from "../../store/types";
 import * as Theme from "../../utils/Theme";
 import Loader from "./Loader";
 import Map from "./Map";
-import PointCardList from "./PointCardList";
+import PointCardList, { PointSelection } from "./PointCardList";
 
 const styles = StyleSheet.create({
   container: {
@@ -56,11 +56,22 @@ interface MainDispatchProps {
   retry: () => void;
 }
 
-export interface MainProps extends MainStateProps, MainDispatchProps {
+export interface IMainProps extends MainStateProps, MainDispatchProps {
   navigation: NavigationParams;
 }
 
-class MainScreen extends Component<MainProps> {
+export interface IMainState {
+  selectedPoint: PointSelection;
+}
+
+class MainScreen extends Component<IMainProps, IMainState> {
+  public state = {
+    selectedPoint: {
+      selectedId: "",
+      markerPressed: false
+    }
+  };
+
   public componentDidMount(): void {
     checkLocationPermission().then((res): void => {
       if (!res) {
@@ -89,17 +100,27 @@ class MainScreen extends Component<MainProps> {
           backgroundColor={"transparent"}
         />
         <View style={styles.map}>
-          <Map />
+          <Map
+            selectedPointId={this.state.selectedPoint.selectedId}
+            selectPoint={i => this.selectPoint(i, true)}
+          />
         </View>
         <View style={loaderActive ? styles.loader : styles.cards}>
           {loaderActive ? (
             <Loader state={this.props.state} retry={this.props.retry} />
           ) : (
-            <PointCardList />
+            <PointCardList
+              selectedPoint={this.state.selectedPoint}
+              selectPoint={i => this.selectPoint(i, false)}
+            />
           )}
         </View>
       </View>
     );
+  }
+
+  private selectPoint(id: string, markerPressed: boolean) {
+    this.setState({ selectedPoint: { selectedId: id, markerPressed } });
   }
 
   private stateListenerCallback = (state: AppStateStatus) => {

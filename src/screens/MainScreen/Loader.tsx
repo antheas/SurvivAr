@@ -1,10 +1,8 @@
-import React, { ReactElement, Fragment } from "react";
+import React, { Fragment, ReactElement } from "react";
 import {
   ActivityIndicator,
-  Button,
   StyleSheet,
   Text,
-  View,
   TouchableOpacity
 } from "react-native";
 import { StateType } from "../../store/types";
