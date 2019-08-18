@@ -1,11 +1,11 @@
 import { call, put, select } from "redux-saga/effects";
 import LocationManagerInterface from "../location/position/LocationInterface";
-import { updateWaitPointProgress, WaitProgressUpdate } from "../store/actions";
+import { stashBackgroundProgress, WaitProgressUpdate } from "../store/actions";
+import { ExtendedPoint } from "../store/model/ExtendedPoint";
 import {
   selectBackgroundTrackingState,
   selectExtendedPoints
 } from "../store/selectors";
-import { ExtendedPoint } from "../store/model/ExtendedPoint";
 
 export function* handleBackgroundEvents(manager: LocationManagerInterface) {
   const updates: WaitProgressUpdate[] = yield call([
@@ -13,7 +13,7 @@ export function* handleBackgroundEvents(manager: LocationManagerInterface) {
     "stopAndRetrieveProgress"
   ]);
 
-  if (updates.length) yield put(updateWaitPointProgress(updates));
+  if (updates.length) yield put(stashBackgroundProgress(updates));
 }
 
 export function* startBackgroundService(manager: LocationManagerInterface) {

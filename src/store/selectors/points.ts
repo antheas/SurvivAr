@@ -19,6 +19,11 @@ export function selectCurrentArea({
     : undefined;
 }
 
+export function selectCurrentPoints(state: State) {
+  const area = selectCurrentArea(state);
+  return area ? area.children : [];
+}
+
 export function selectDistances({
   session: {
     pointMetadata: { distances }

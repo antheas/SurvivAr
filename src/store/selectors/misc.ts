@@ -9,3 +9,9 @@ export function selectBackgroundTrackingState({
 }: State) {
   return backgroundTrackingEnabled;
 }
+
+export function selectStashedBackgroundProgress({
+  session: { backgroundProgress }
+}: State) {
+  return backgroundProgress;
+}

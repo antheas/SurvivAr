@@ -3,11 +3,7 @@ package gr.tuc.explorar.location.background.notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.os.Build;
 import android.text.Spanned;
-import android.widget.ProgressBar;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;

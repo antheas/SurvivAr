@@ -1,8 +1,12 @@
 import { PointMetadata, StateType } from "../types";
+import { WaitProgressUpdate } from "./progress";
 
 export const UPDATE_STATE = "UPDATE_STATE";
 export const UPDATE_POINT_METADATA = "UPDATE_POINT_METADATA";
 export const SET_BACKGROUND_TRACKING = "SET_BACKGROUND_TRACKING";
+export const ADD_COMPLETED_POINTS = "ADD_COMPLETED_POINTS";
+export const SET_CURRENT_EVENT = "SET_CURRENT_EVENT";
+export const STASH_BACKGROUND_PROGRESS = "STASH_BACKGROUND_PROGRESS";
 
 export interface StateAction {
   type: typeof UPDATE_STATE;
@@ -46,5 +50,35 @@ export function setBackgroundTracking(
     type: SET_BACKGROUND_TRACKING,
 
     enabled
+  };
+}
+
+export interface CompletedPointsAction {
+  type: typeof ADD_COMPLETED_POINTS;
+
+  ids: string[];
+}
+
+export function addCompletedPoints(ids: string[]): CompletedPointsAction {
+  return {
+    type: ADD_COMPLETED_POINTS,
+
+    ids
+  };
+}
+
+export interface BackgroundProgressAction {
+  type: typeof STASH_BACKGROUND_PROGRESS;
+
+  updates: WaitProgressUpdate[];
+}
+
+export function stashBackgroundProgress(
+  updates: WaitProgressUpdate[]
+): BackgroundProgressAction {
+  return {
+    type: STASH_BACKGROUND_PROGRESS,
+
+    updates
   };
 }

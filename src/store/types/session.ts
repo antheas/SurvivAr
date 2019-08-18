@@ -1,3 +1,5 @@
+import { WaitProgressUpdate } from "../actions";
+
 export enum StateType {
   STARTUP,
   WAITING_FOR_FINE_LOCATION,
@@ -21,4 +23,7 @@ export interface SessionState {
     ids: string[];
     updated: number;
   };
+  completedIds: string[];
+  // We need to wait for the main process to start to process it.
+  backgroundProgress: WaitProgressUpdate[];
 }
