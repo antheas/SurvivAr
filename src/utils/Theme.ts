@@ -203,7 +203,7 @@ export const map = {
         anchor: { x: 0.5, y: 0.5 }
       }
     },
-    selectedSize: 32
+    selectedSize: 28
   },
   button: {
     icon: {

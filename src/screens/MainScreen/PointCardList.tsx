@@ -1,10 +1,17 @@
 import React, {
-  ReactElement,
   FunctionComponent,
-  useRef,
-  useEffect
+  ReactElement,
+  useEffect,
+  useRef
 } from "react";
-import { SectionList, StyleSheet, Text, View, ViewToken } from "react-native";
+import {
+  SectionList,
+  SectionListStatic,
+  StyleSheet,
+  Text,
+  View,
+  ViewToken
+} from "react-native";
 import { connect } from "react-redux";
 import { ExtendedCollectPoint } from "../../store/model/ExtendedCollectPoint";
 import { ExtendedPoint } from "../../store/model/ExtendedPoint";
@@ -13,6 +20,7 @@ import { selectExtendedPoints } from "../../store/selectors";
 import { State } from "../../store/types";
 import { Glue, Spacer } from "../../utils/Components";
 import * as Theme from "../../utils/Theme";
+import { string } from "prop-types";
 
 const HEADER_WIDTH = 45;
 const ITEM_WIDTH = 220;
@@ -115,11 +123,7 @@ const PointCard = ({ item: p }: { item: ExtendedPoint }): ReactElement => {
   );
 };
 
-const ListHeader = ({
-  section: { title }
-}: {
-  section: { title: string };
-}): ReactElement => (
+const ListHeader = ({ title }: { title: string }): ReactElement => (
   <View style={styles.header}>
     <Text style={styles.headerText}>{title}</Text>
   </View>
@@ -133,14 +137,14 @@ export interface PointSelection {
 
 export interface IPointCardListProps {
   points: ExtendedPoint[];
-  selectedPoint: PointSelection;
-  selectPoint: (id: string) => void;
+  gotoPointId: string | null;
+  onPoint: (id: string) => void;
 }
 
 export const PointCardList: FunctionComponent<IPointCardListProps> = ({
   points,
-  selectedPoint,
-  selectPoint
+  gotoPointId,
+  onPoint
 }) => {
   const sorted = points.sort((a, b) => a.distance - b.distance);
 
@@ -160,19 +164,26 @@ export const PointCardList: FunctionComponent<IPointCardListProps> = ({
     viewableItems: ViewToken[];
   }) => {
     const selectedItem = viewableItems.find(v => v.isViewable);
-    // Key is the id
-    if (selectedItem && selectedItem.key !== selectedPoint.selectedId)
-      selectPoint(selectedItem.key);
+    if (!selectedItem || !selectedItem.item) return;
+    // Check if it is the section title
+    // If it is select the first point
+    if (selectedItem.item.data && selectedItem.item.data.length) {
+      onPoint(selectedItem.item.data[0].id);
+      return;
+    }
+
+    // Otherwise we have an object, its key is the id.
+    else if (selectedItem.key) onPoint(selectedItem.key);
   };
 
   // Scroll to point
-  const ref = useRef(null) as React.MutableRefObject<null | typeof SectionList>;
+  const listRef = useRef(null);
   useEffect(() => {
-    if (!selectedPoint.markerPressed) return;
-    const view = ref.current;
+    if (!gotoPointId) return;
+    const view = listRef.current as SectionListStatic<any> | null;
     if (!view || !view.scrollToLocation) return;
 
-    const id = selectedPoint.selectedId;
+    const id = gotoPointId;
     const iActive = active.findIndex(p => p.id === id);
     const iPending = pending.findIndex(p => p.id === id);
     const iCompleted = completed.findIndex(p => p.id === id);
@@ -198,14 +209,16 @@ export const PointCardList: FunctionComponent<IPointCardListProps> = ({
       viewOffset: HEADER_WIDTH,
       viewPosition: 0.5
     });
-  }, [selectedPoint]);
+  }, [gotoPointId]);
 
   return (
     <SectionList
-      ref={ref}
+      ref={listRef}
       style={styles.list}
       renderItem={PointCard}
-      renderSectionHeader={ListHeader}
+      renderSectionHeader={({ section: { title } }) => (
+        <ListHeader title={title} />
+      )}
       onViewableItemsChanged={onViewableItemsChanged}
       viewabilityConfig={{ itemVisiblePercentThreshold: 100 }}
       horizontal={true}

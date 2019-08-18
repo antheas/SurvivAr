@@ -57,8 +57,8 @@ interface IMapDispatchProps {
 }
 
 interface IMapProps extends IMapStateProps, IMapDispatchProps {
-  selectedPointId: string;
-  selectPoint: (id: string) => void;
+  selectedPointId: string | null;
+  onMarkerPressed: (id: string) => void;
 }
 
 interface IMapState {
@@ -207,7 +207,7 @@ class Map extends React.Component<IMapProps, IMapState> {
   };
 
   private markerPressed = (id: string) => {
-    this.props.selectPoint(id);
+    this.props.onMarkerPressed(id);
   };
 
   private getZoomState = () => {

@@ -61,15 +61,14 @@ export interface IMainProps extends MainStateProps, MainDispatchProps {
 }
 
 export interface IMainState {
-  selectedPoint: PointSelection;
+  gotoPointId: string | null;
+  selectedPointId: string | null;
 }
 
 class MainScreen extends Component<IMainProps, IMainState> {
   public state = {
-    selectedPoint: {
-      selectedId: "",
-      markerPressed: false
-    }
+    gotoPointId: null,
+    selectedPointId: null
   };
 
   public componentDidMount(): void {
@@ -101,8 +100,8 @@ class MainScreen extends Component<IMainProps, IMainState> {
         />
         <View style={styles.map}>
           <Map
-            selectedPointId={this.state.selectedPoint.selectedId}
-            selectPoint={i => this.selectPoint(i, true)}
+            selectedPointId={this.state.selectedPointId}
+            onMarkerPressed={id => this.setState({ gotoPointId: id })}
           />
         </View>
         <View style={loaderActive ? styles.loader : styles.cards}>
@@ -110,17 +109,13 @@ class MainScreen extends Component<IMainProps, IMainState> {
             <Loader state={this.props.state} retry={this.props.retry} />
           ) : (
             <PointCardList
-              selectedPoint={this.state.selectedPoint}
-              selectPoint={i => this.selectPoint(i, false)}
+              gotoPointId={this.state.gotoPointId}
+              onPoint={id => this.setState({ selectedPointId: id })}
             />
           )}
         </View>
       </View>
     );
-  }
-
-  private selectPoint(id: string, markerPressed: boolean) {
-    this.setState({ selectedPoint: { selectedId: id, markerPressed } });
   }
 
   private stateListenerCallback = (state: AppStateStatus) => {
