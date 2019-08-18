@@ -37,7 +37,7 @@ public class PositionManager {
   // Foreground thread gets killed so we need to spawn a thread.
   public PositionManager(Context c, boolean spawnThread, boolean inBackground) {
     client = new FusedLocationProviderClient(c);
-    currentSpeed = FAST;
+    currentSpeed = FASTEST;
     updatesSinceLastSpeedChange = 0;
     this.context = c;
     this.spawnThread = spawnThread;

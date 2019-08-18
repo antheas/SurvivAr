@@ -144,13 +144,23 @@ function* calculateEventsAndCompletions(
     return;
   }
 
-  const onExit = pastPointIds.find(
+  const exitedPoints = pastPointIds.filter(
     i1 => currentPointIds.findIndex(i2 => i1 === i2) === -1
   );
 
-  if (onExit) {
-    handlePointEvent(EventType.ON_EXIT);
-    return;
+  if (exitedPoints.length) {
+    // If, and only if, there are exited points check to make sure it's
+    // not because we finished it.
+    const extended: ExtendedPoint[] = yield select(
+      selectExtendedPoints,
+      exitedPoints
+    );
+    const onExit = extended.findIndex(p => !p.completed) !== -1;
+
+    if (onExit) {
+      handlePointEvent(EventType.ON_EXIT);
+      return;
+    }
   }
 }
 
@@ -212,6 +222,9 @@ function* watchLocationUpdates() {
   yield put(updateState(StateType.TRACKING));
 
   let pos: PositionState = yield select(selectPosition);
+
+  // Flush wait point cache in case we woke up with previous state.
+  yield put(updateCurrentWaitPointCache([], 0));
 
   while (1) {
     yield* updateMetadata(pos);
