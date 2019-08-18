@@ -77,6 +77,7 @@ function* processBackgroundProgress() {
   const updates: WaitProgressUpdate[] = yield select(
     selectStashedBackgroundProgress
   );
+  if (!updates.length) return;
 
   yield put(stashBackgroundProgress([]));
 
