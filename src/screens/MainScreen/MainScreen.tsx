@@ -30,14 +30,17 @@ const styles = StyleSheet.create({
     alignContent: "stretch"
   },
   map: {
+    flexShrink: 0,
     flex: 10,
     width: "100%"
   },
   loader: {
-    flex: 2,
+    flexShrink: 0,
+    flex: 3,
     width: "100%"
   },
   cards: {
+    flexShrink: 0,
     flex: 3,
     width: "100%"
   }

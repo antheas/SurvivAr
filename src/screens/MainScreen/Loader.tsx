@@ -1,10 +1,11 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, Fragment } from "react";
 import {
   ActivityIndicator,
   Button,
   StyleSheet,
   Text,
-  View
+  View,
+  TouchableOpacity
 } from "react-native";
 import { StateType } from "../../store/types";
 import { Spacer } from "../../utils/Components";
@@ -19,7 +20,7 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   text: {
-    ...Theme.text.size.normal,
+    ...Theme.text.size.large,
     ...Theme.text.color.primary
   }
 });
@@ -42,27 +43,24 @@ export const Loader = ({
     case StateType.RETRIEVING_DATA:
       loadString = "Retrieving Markers...";
       break;
+    case StateType.LOADING_ERROR:
+      loadString = "Updating failed... Retry";
+      break;
     default:
       loadString = "state: " + state;
   }
 
-  if (state !== StateType.LOADING_ERROR) {
-    return (
-      <View style={styles.status}>
-        <ActivityIndicator size="large" color={Theme.colors.primaryText} />
-        <Spacer medium horz />
-        <Text style={styles.text}>{loadString}</Text>
-      </View>
-    );
-  } else {
-    return (
-      <View style={styles.status}>
-        <Text style={styles.text}>Updating failed...</Text>
-        <Spacer large horz />
-        <Button title="Retry" color={Theme.colors.accentDark} onPress={retry} />
-      </View>
-    );
-  }
+  return (
+    <TouchableOpacity style={styles.status} onPress={retry}>
+      {state !== StateType.LOADING_ERROR && (
+        <Fragment>
+          <ActivityIndicator size="large" color={Theme.colors.primaryText} />
+          <Spacer medium horz />
+        </Fragment>
+      )}
+      <Text style={styles.text}>{loadString}</Text>
+    </TouchableOpacity>
+  );
 };
 
 export default Loader;
