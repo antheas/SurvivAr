@@ -40,7 +40,8 @@ export const colors = {
   disabled: "#f5f5f5",
   disabledDark: "#c2c2c2",
 
-  white: "#ffffff"
+  white: "#ffffff",
+  darkGrey: "#323232"
 };
 
 export const text = {
@@ -82,6 +83,9 @@ export const text = {
     },
     dark: {
       color: colors.textDark
+    },
+    success: {
+      color: colors.success
     }
   })
 };

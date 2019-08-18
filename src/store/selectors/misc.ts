@@ -16,6 +16,11 @@ export function selectStashedBackgroundProgress({
   return backgroundProgress;
 }
 
-export function selectHasCompletedPoints({ session: { completedIds } }: State) {
-  return completedIds.length > 0;
+export function selectHasCompletedPoints({
+  session: {
+    completedIds,
+    pointMetadata: { currentAreaId }
+  }
+}: State) {
+  return completedIds.length > 0 && currentAreaId;
 }

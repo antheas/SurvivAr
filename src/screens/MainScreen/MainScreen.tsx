@@ -6,7 +6,7 @@ import {
   StyleSheet,
   View
 } from "react-native";
-import { NavigationParams, NavigationScreenProp } from "react-navigation";
+import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { checkLocationPermission } from "../../location/Permissions";
@@ -67,12 +67,14 @@ export interface IMainProps extends MainStateProps, MainDispatchProps {
 export interface IMainState {
   gotoPointId: string | null;
   selectedPointId: string | null;
+  hasOpenedModal: boolean;
 }
 
 class MainScreen extends Component<IMainProps, IMainState> {
   public state = {
     gotoPointId: null,
-    selectedPointId: null
+    selectedPointId: null,
+    hasOpenedModal: false
   };
 
   public componentDidMount(): void {
@@ -89,7 +91,12 @@ class MainScreen extends Component<IMainProps, IMainState> {
   }
 
   public componentDidUpdate() {
-    if (this.props.hasCompletedPoints) this.props.navigation.push("Completed");
+    if (this.props.hasCompletedPoints && !this.state.hasOpenedModal) {
+      this.props.navigation.push("Completed");
+      this.setState({ hasOpenedModal: true });
+    }
+    if (!this.props.hasCompletedPoints && this.state.hasOpenedModal)
+      this.setState({ hasOpenedModal: false });
   }
 
   public componentWillUnmount() {

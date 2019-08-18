@@ -88,7 +88,7 @@ function chooseDistanceColor(p: ExtendedPoint) {
   return p.userWithin ? styles.distanceInRange : styles.distanceNotInRange;
 }
 
-const PointCard = ({ item: p }: { item: ExtendedPoint }): ReactElement => {
+const PointCard = ({ p }: { p: ExtendedPoint }): ReactElement => {
   return (
     <View style={styles.card}>
       <Text style={styles.cardName}>
@@ -216,7 +216,7 @@ export const PointCardList: FunctionComponent<IPointCardListProps> = ({
     <SectionList
       ref={listRef}
       style={styles.list}
-      renderItem={PointCard}
+      renderItem={i => <PointCard p={i.item} key={i.item.id} />}
       renderSectionHeader={({ section: { title } }) => (
         <ListHeader title={title} />
       )}
