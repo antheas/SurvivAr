@@ -12,7 +12,8 @@ import {
   UPDATE_STATE,
   WaitProgressUpdate,
   CompletedPointsAction,
-  ADD_COMPLETED_POINTS
+  ADD_COMPLETED_POINTS,
+  CLEAR_COMPLETED
 } from "../actions";
 import { PointMetadata, StateType } from "../types";
 
@@ -65,6 +66,8 @@ function currentPointCache(
 function completedIds(state: string[] = [], action: CompletedPointsAction) {
   if (action.type === ADD_COMPLETED_POINTS) {
     return [...state, ...action.ids];
+  } else if (action.type === CLEAR_COMPLETED) {
+    return [];
   }
   return state;
 }

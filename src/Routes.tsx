@@ -1,5 +1,5 @@
 import React from "react";
-import { Platform } from "react-native";
+import { Platform, Animated, Easing } from "react-native";
 import SplashScreen from "react-native-splash-screen";
 import {
   createAppContainer,

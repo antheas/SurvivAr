@@ -6,6 +6,7 @@ export const UPDATE_POINT_METADATA = "UPDATE_POINT_METADATA";
 export const SET_BACKGROUND_TRACKING = "SET_BACKGROUND_TRACKING";
 export const ADD_COMPLETED_POINTS = "ADD_COMPLETED_POINTS";
 export const SET_CURRENT_EVENT = "SET_CURRENT_EVENT";
+export const CLEAR_COMPLETED = "CLEAR_COMPLETED";
 export const STASH_BACKGROUND_PROGRESS = "STASH_BACKGROUND_PROGRESS";
 
 export interface StateAction {
@@ -64,6 +65,16 @@ export function addCompletedPoints(ids: string[]): CompletedPointsAction {
     type: ADD_COMPLETED_POINTS,
 
     ids
+  };
+}
+
+export interface ClearCompletedPointsAction {
+  type: typeof CLEAR_COMPLETED;
+}
+
+export function clearCompletedPoints(): ClearCompletedPointsAction {
+  return {
+    type: CLEAR_COMPLETED
   };
 }
 

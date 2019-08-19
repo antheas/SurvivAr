@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -51,7 +51,8 @@ const s = StyleSheet.create({
     width: "100%",
     textAlign: "center",
     ...Theme.text.color.dark,
-    ...Theme.text.size.header
+    ...Theme.text.size.header,
+    marginBottom: 3
   },
   text: {
     width: "100%",
@@ -139,6 +140,15 @@ const CompletedModal: FunctionComponent<ICompleteModalProps> = ({
     clearPoints();
     navigation.goBack();
   };
+
+  // Also clear with back button press
+  useEffect(() => {
+    const listener = navigation.addListener("willBlur", clearPoints);
+    return () => listener && listener.remove();
+  }, []);
+
+  // Prevent choppy animation when closing
+  if (!completedPoints.length) return null;
 
   return (
     <View style={s.container}>
