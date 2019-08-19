@@ -4,7 +4,8 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
+  Dimensions
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { NavigationScreenProp } from "react-navigation";
@@ -25,17 +26,17 @@ const s = StyleSheet.create({
     justifyContent: "flex-end"
   },
   spacer: {
-    flex: 15,
-    flexGrow: 10
+    flex: 0,
+    flexGrow: 1.9
   },
   modal: {
     ...Theme.component.container.accented,
-    flex: 5,
     width: "100%",
     flexDirection: "column",
-    justifyContent: "flex-end",
+    justifyContent: "flex-start",
     alignItems: "flex-start",
     paddingTop: 15,
+    paddingBottom: 15,
     paddingHorizontal: 17,
     borderTopStartRadius: 15,
     borderTopEndRadius: 15,
@@ -43,9 +44,6 @@ const s = StyleSheet.create({
     borderStartWidth: 2,
     borderTopWidth: 2,
     borderEndWidth: 2
-  },
-  textContainer: {
-    flex: 1
   },
   header: {
     width: "100%",
@@ -57,12 +55,17 @@ const s = StyleSheet.create({
   text: {
     width: "100%",
     ...Theme.text.color.normal,
-    ...Theme.text.size.small
+    ...Theme.text.size.small,
+    marginBottom: 12
   },
   list: {
     width: "100%",
-    flex: 5,
-    flexGrow: 2
+    flex: 0
+  },
+  single: {
+    width: "100%",
+    flex: 1,
+    justifyContent: "center"
   },
 
   pointContainer: {
@@ -84,8 +87,7 @@ const s = StyleSheet.create({
   buttonBackground: {
     backgroundColor: Theme.colors.primaryDark,
     width: "100%",
-    flex: 3,
-    flexShrink: 0
+    height: Dimensions.get("window").height / 6
   },
   buttonForeground: {
     ...Theme.component.container.background,
@@ -154,19 +156,23 @@ const CompletedModal: FunctionComponent<ICompleteModalProps> = ({
     <View style={s.container}>
       <View style={s.spacer} />
       <View style={s.modal}>
-        <View style={s.textContainer}>
-          <View>
-            <Text style={s.header}>Completed Points</Text>
-          </View>
-          <Text style={s.text}>
-            Congratulations, you have completed the following:{" "}
-          </Text>
+        <View>
+          <Text style={s.header}>Completed Points</Text>
         </View>
-        <FlatList
-          style={s.list}
-          data={completedPoints}
-          renderItem={i => <CompletedPoint p={i.item} key={i.item.id} />}
-        />
+        <Text style={s.text}>
+          Congratulations! You have completed the following:
+        </Text>
+        {completedPoints.length === 1 ? (
+          <View style={s.single}>
+            <CompletedPoint p={completedPoints[0]} />
+          </View>
+        ) : (
+          <FlatList
+            style={s.list}
+            data={completedPoints}
+            renderItem={i => <CompletedPoint p={i.item} key={i.item.id} />}
+          />
+        )}
       </View>
       <View style={s.buttonBackground}>
         <TouchableOpacity style={s.buttonForeground} onPress={exit}>
