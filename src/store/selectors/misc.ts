@@ -10,12 +10,6 @@ export function selectBackgroundTrackingState({
   return backgroundTrackingEnabled;
 }
 
-export function selectStashedBackgroundProgress({
-  session: { backgroundProgress }
-}: State) {
-  return backgroundProgress;
-}
-
 export function selectHasCompletedPoints({
   session: {
     completedIds,

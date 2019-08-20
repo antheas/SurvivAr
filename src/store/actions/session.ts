@@ -7,7 +7,6 @@ export const SET_BACKGROUND_TRACKING = "SET_BACKGROUND_TRACKING";
 export const ADD_COMPLETED_POINTS = "ADD_COMPLETED_POINTS";
 export const SET_CURRENT_EVENT = "SET_CURRENT_EVENT";
 export const CLEAR_COMPLETED = "CLEAR_COMPLETED";
-export const STASH_BACKGROUND_PROGRESS = "STASH_BACKGROUND_PROGRESS";
 
 export interface StateAction {
   type: typeof UPDATE_STATE;
@@ -75,21 +74,5 @@ export interface ClearCompletedPointsAction {
 export function clearCompletedPoints(): ClearCompletedPointsAction {
   return {
     type: CLEAR_COMPLETED
-  };
-}
-
-export interface BackgroundProgressAction {
-  type: typeof STASH_BACKGROUND_PROGRESS;
-
-  updates: WaitProgressUpdate[];
-}
-
-export function stashBackgroundProgress(
-  updates: WaitProgressUpdate[]
-): BackgroundProgressAction {
-  return {
-    type: STASH_BACKGROUND_PROGRESS,
-
-    updates
   };
 }

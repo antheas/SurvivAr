@@ -1,11 +1,9 @@
 import { combineReducers } from "redux";
 import {
-  BackgroundProgressAction,
   BackgroundTrackingAction,
   CurrentPointAction,
   PointMetadataAction,
   SET_BACKGROUND_TRACKING,
-  STASH_BACKGROUND_PROGRESS,
   StateAction,
   UPDATE_CURRENT_WAIT_POINT_CACHE,
   UPDATE_POINT_METADATA,
@@ -72,21 +70,10 @@ function completedIds(state: string[] = [], action: CompletedPointsAction) {
   return state;
 }
 
-function backgroundProgress(
-  state: WaitProgressUpdate[] = [],
-  action: BackgroundProgressAction
-) {
-  if (action.type === STASH_BACKGROUND_PROGRESS) {
-    return action.updates;
-  }
-  return state;
-}
-
 export default combineReducers({
   state: stateReducer,
   backgroundTrackingEnabled,
   pointMetadata,
   currentPointCache,
-  completedIds,
-  backgroundProgress
+  completedIds
 });

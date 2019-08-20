@@ -74,41 +74,6 @@ function* updateMetadata(pos: PositionState) {
   );
 }
 
-function* processBackgroundProgress() {
-  // This will only run once, when the app wakes from the background
-  const updates: WaitProgressUpdate[] = yield select(
-    selectStashedBackgroundProgress
-  );
-  if (!updates.length) return;
-
-  yield put(stashBackgroundProgress([]));
-
-  const points: ExtendedPoint[] = yield select(
-    selectExtendedPoints,
-    updates.map(u => u.id)
-  );
-
-  const newlyCompleted = updates
-    // Pair update with point
-    .map(u => ({
-      point: points.find(p => p.id === u.id),
-      progress: u.progress
-    }))
-    // The point should exist, not be completed, be a wait point and have a new time that completes it.
-    .filter(
-      c =>
-        c.point &&
-        !c.point.completed &&
-        c.point instanceof ExtendedWaitPoint &&
-        c.progress.elapsedTime >= c.point.duration
-    )
-    // Get ids (cast is because linter thins point can be undefined)
-    .map(u => (u.point as ExtendedPoint).id);
-
-  yield put(updateWaitPointProgress(updates));
-  if (newlyCompleted.length) yield put(addCompletedPoints(newlyCompleted));
-}
-
 function* calculateEventsAndCompletions(
   pastPointIds: string[],
   currentPointIds: string[],
@@ -229,7 +194,6 @@ function* watchLocationUpdates() {
 
   while (1) {
     yield* updateMetadata(pos);
-    yield* processBackgroundProgress();
     yield* updateWaitProgress(pos);
 
     ({ position: pos } = yield take(UPDATE_POSITION));

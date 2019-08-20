@@ -24,6 +24,4 @@ export interface SessionState {
     updated: number;
   };
   completedIds: string[];
-  // We need to wait for the main process to start to process it.
-  backgroundProgress: WaitProgressUpdate[];
 }

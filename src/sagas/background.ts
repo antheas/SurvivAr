@@ -1,11 +1,17 @@
 import { call, put, select } from "redux-saga/effects";
 import LocationManagerInterface from "../location/position/LocationInterface";
-import { stashBackgroundProgress, WaitProgressUpdate } from "../store/actions";
+import {
+  addCompletedPoints,
+  updateWaitPointProgress,
+  WaitProgressUpdate
+} from "../store/actions";
 import { ExtendedPoint } from "../store/model/ExtendedPoint";
 import {
   selectBackgroundTrackingState,
-  selectExtendedPoints
+  selectExtendedPoints,
+  selectPoints
 } from "../store/selectors";
+import { Point, isWaitPoint } from "../store/types";
 
 export function* handleBackgroundEvents(manager: LocationManagerInterface) {
   const updates: WaitProgressUpdate[] = yield call([
@@ -13,7 +19,22 @@ export function* handleBackgroundEvents(manager: LocationManagerInterface) {
     "stopAndRetrieveProgress"
   ]);
 
-  if (updates.length) yield put(stashBackgroundProgress(updates));
+  if (!updates.length) return;
+  yield put(updateWaitPointProgress(updates));
+
+  const points: Record<string, Point> = yield select(selectPoints);
+
+  const newlyCompleted = updates
+    // Find wait points whose elapsedTime now exceeds duration
+    .filter(u => {
+      const p = points[u.id];
+      if (!p || !isWaitPoint(p)) return false;
+      return u.progress.elapsedTime >= p.duration;
+    })
+    .map(u => u.id);
+
+  if (!newlyCompleted.length) return;
+  yield put(addCompletedPoints(newlyCompleted));
 }
 
 export function* startBackgroundService(manager: LocationManagerInterface) {
