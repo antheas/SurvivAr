@@ -20,9 +20,9 @@ class BackgroundNotificationBuilder {
   private static final String NOTIFICATION_ON_EXIT_ID = "location_notification_on_exit";
   private static final String NOTIFICATION_ON_COMPLETE_ID = "location_notification_on_complete";
 
-  private static final long[] VIBRATION_ON_ENTER = {0, 200};
-  private static final long[] VIBRATION_ON_EXIT = {0, 400};
-  private static final long[] VIBRATION_ON_COMPLETE = {0, 200, 150, 250};
+  private static final long[] VIBRATION_ON_ENTER = {0, 400};
+  private static final long[] VIBRATION_ON_EXIT = {0, 600};
+  private static final long[] VIBRATION_ON_COMPLETE = {0, 400, 250, 400};
 
   private Context c;
   private PendingIntent onClick;
