@@ -18,9 +18,10 @@ import {
   selectCurrentWaitPoints,
   selectExtendedPoints,
   selectMultipleWaitPointProgress,
-  selectPoints,
+  selectPointState,
   selectPosition,
-  selectStashedBackgroundProgress
+  selectStashedBackgroundProgress,
+  selectPoints
 } from "../store/selectors";
 import {
   isWaitPoint,
@@ -35,7 +36,7 @@ import { EventType, handlePointEvent } from "./events";
 
 function* updateMetadata(pos: PositionState) {
   // Find current area
-  const pointState: PointState = yield select(selectPoints);
+  const pointState: PointState = yield select(selectPointState);
   const currentArea = pointState.areas
     .sort(
       (a, b) => getDistance(pos.coords, a.loc) - getDistance(pos.coords, b.loc)
@@ -52,9 +53,10 @@ function* updateMetadata(pos: PositionState) {
     return;
   }
 
-  const points = currentArea.children;
+  const points: Record<string, Point> = yield select(selectPoints);
+  const currentPoints = currentArea.children.map(id => points[id]);
 
-  const distanceArray = points.map(p => ({
+  const distanceArray = currentPoints.map(p => ({
     id: p.id,
     distance: getDistance(pos.coords, p.loc)
   }));

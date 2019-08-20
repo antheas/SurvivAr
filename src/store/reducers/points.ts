@@ -9,7 +9,8 @@ export default function points(
     updated: 0,
     location: NULL_LOCATION,
     bounds: 0,
-    areas: []
+    areas: [],
+    points: {}
   },
   action: PointsAction
 ): PointState {

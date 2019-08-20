@@ -86,15 +86,18 @@ export default async function fetchPoints(
   let loc;
   let bounds;
   let areas;
+  let points;
 
   if (currentData && currentData.valid) {
     loc = currentData.location;
     bounds = currentData.bounds;
     areas = [...currentData.areas];
+    points = { ...currentData.points };
   } else {
     loc = location;
     bounds = BOUNDS;
     areas = [] as AreaPoint[];
+    points = {};
   }
 
   const newState = {
@@ -102,7 +105,8 @@ export default async function fetchPoints(
     updated: Date.now(),
     location: loc,
     bounds,
-    areas
+    areas,
+    points
   };
 
   let pointJson;
@@ -117,7 +121,7 @@ export default async function fetchPoints(
   }
   if (!pointJson) throw Error("Connection Error: " + error);
 
-  const newAreaPoints = pointJson.map(p => processWaitPoint(p, "pharmacy"));
+  const newPoints = pointJson.map(p => processWaitPoint(p, "pharmacy"));
   const newArea: AreaPoint = {
     id: Date.now().toString(),
 
@@ -128,9 +132,10 @@ export default async function fetchPoints(
     radius: AREA_BOUNDS,
 
     icon: "",
-    children: newAreaPoints
+    children: newPoints.map(p => p.id)
   };
   newState.areas.push(newArea);
+  newPoints.forEach(p => (newState.points[p.id] = p));
 
   return newState;
 }

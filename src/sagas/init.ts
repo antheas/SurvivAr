@@ -1,19 +1,19 @@
 import { call, put, select, take } from "redux-saga/effects";
 import {
-  updateState,
-  UPDATE_POSITION,
   PositionAction,
+  RETRY_FETCH,
   updatePoints,
-  RETRY_FETCH
+  updateState,
+  UPDATE_POSITION
 } from "../store/actions";
+import { selectPointState, selectPosition } from "../store/selectors";
 import {
-  StateType,
   FINE_LOCATION_THRESHOLD,
+  PointState,
   POINT_DATA_STALE_AFTER_DAYS,
   PositionState,
-  PointState
+  StateType
 } from "../store/types";
-import { selectPosition, selectPoints } from "../store/selectors";
 import { withinThreshold } from "./distance";
 import fetchPoints from "./pointApi";
 
@@ -35,7 +35,7 @@ function* refreshRootNode() {
   yield put(updateState(StateType.RETRIEVING_DATA));
 
   const position: PositionState = yield select(selectPosition);
-  const points: PointState = yield select(selectPoints);
+  const points: PointState = yield select(selectPointState);
   const coords = position.coords;
 
   // Check if valid / not stale

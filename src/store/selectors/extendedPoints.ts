@@ -2,18 +2,21 @@ import { ExtendedCollectPoint } from "../model/ExtendedCollectPoint";
 import { ExtendedPoint } from "../model/ExtendedPoint";
 import { ExtendedWaitPoint } from "../model/ExtendedWaitPoint";
 import { isCollectPoint, isWaitPoint, State } from "../types";
-import { selectCurrentArea, selectDistance } from "./points";
+import {
+  selectCurrentArea,
+  selectCurrentPoints,
+  selectDistance,
+  selectPointsById
+} from "./points";
 import {
   selectCollectPointProgress,
   selectWaitPointProgress
 } from "./progress";
 
 export function selectExtendedPoints(state: State, ids?: string[]) {
-  const currentArea = selectCurrentArea(state);
-  if (!currentArea) return [];
-
-  let points = currentArea.children;
-  if (ids) points = points.filter(p => ids.indexOf(p.id) !== -1);
+  const points = ids
+    ? selectPointsById(state, ids)
+    : selectCurrentPoints(state);
 
   return points.map(p => {
     const distance = selectDistance(state, p.id);
@@ -34,7 +37,7 @@ export function selectExtendedCollectPoint(state: State, id: string) {
   const currentArea = selectCurrentArea(state);
   if (!currentArea) return [];
 
-  const p = currentArea.children.find(c => c.id === id);
+  const p = selectCurrentPoints(state).find(c => c.id === id);
 
   if (!p || !isCollectPoint(p))
     throw new Error(`Point with id: ${id} is not a collect point`);

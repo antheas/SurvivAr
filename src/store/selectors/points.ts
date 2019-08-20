@@ -1,7 +1,15 @@
 import { State } from "../types";
 
-export function selectPoints({ points }: State) {
+export function selectPointState({ points }: State) {
   return points;
+}
+
+export function selectPoints({ points: { points } }: State) {
+  return points;
+}
+
+export function selectPointsById({ points: { points } }: State, ids: string[]) {
+  return ids.map(id => points[id]).filter(p => p);
 }
 
 export function selectAreas({ points: { areas } }: State) {
@@ -21,7 +29,9 @@ export function selectCurrentArea({
 
 export function selectCurrentPoints(state: State) {
   const area = selectCurrentArea(state);
-  return area ? area.children : [];
+  const points = selectPoints(state);
+
+  return area ? area.children.map(id => points[id]).filter(p => p) : [];
 }
 
 export function selectDistances({

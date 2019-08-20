@@ -1,5 +1,5 @@
 import { isWaitPoint, State } from "../types";
-import { selectCurrentArea, selectDistance } from "./points";
+import { selectCurrentPoints, selectDistance } from "./points";
 
 export function selectCachedCurrentWaitPoints({
   session: { currentPointCache }
@@ -8,12 +8,11 @@ export function selectCachedCurrentWaitPoints({
 }
 
 export function selectCurrentWaitPoints(state: State) {
-  const currentArea = selectCurrentArea(state);
-  if (!currentArea) return [];
+  const points = selectCurrentPoints(state);
 
   // Return ids from wait points which have not been completed
   // and the user is within their radius
-  return currentArea.children
+  return points
     .filter(isWaitPoint)
     .filter(p => selectWaitPointProgress(state, p.id).elapsedTime < p.duration)
     .filter(p => {

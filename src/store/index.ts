@@ -12,7 +12,8 @@ import {
   UPDATE_POINT_METADATA,
   UPDATE_POINTS,
   UPDATE_WAIT_PROGRESS,
-  UPDATE_COLLECT_PROGRESS
+  UPDATE_COLLECT_PROGRESS,
+  UPDATE_STATE
 } from "./actions";
 
 // Redux persist
@@ -47,7 +48,11 @@ if (process.env.NODE_ENV !== "production") {
       ACTION_BLACKLIST.indexOf(action.type) === -1,
     collapsed: (getState, action) =>
       NON_COLLAPSED_ACTIONS.indexOf(action.type) === -1,
-    actionTransformer: action => action.type,
+    actionTransformer: action => {
+      if (action.type === UPDATE_STATE)
+        return action.type + ": " + action.state;
+      return action.type;
+    },
     stateTransformer: state => ""
   });
 
@@ -61,6 +66,8 @@ const persistor = persistStore(store);
 if (process.env.NODE_ENV !== "production") {
   // @ts-ignore
   window.__store = store;
+  // @ts-ignore
+  window.__clear = persistor.purge;
 }
 
 // Start root saga

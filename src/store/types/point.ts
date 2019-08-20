@@ -27,7 +27,7 @@ export interface CollectPoint extends Point {
 }
 
 export interface AreaPoint extends Point {
-  children: Point[];
+  children: string[];
 }
 
 export const POINT_DATA_STALE_AFTER_DAYS = 10;
@@ -39,6 +39,7 @@ export interface PointState {
   bounds: number;
 
   areas: AreaPoint[];
+  points: Record<string, Point>;
 }
 
 // Guards
