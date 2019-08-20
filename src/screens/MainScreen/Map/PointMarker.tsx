@@ -1,4 +1,4 @@
-import React, { Fragment, FunctionComponent } from "react";
+import React, { Fragment, FunctionComponent, memo } from "react";
 import { Circle, Marker } from "react-native-maps";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { ExtendedPoint } from "../../../store/model/ExtendedPoint";
@@ -11,6 +11,8 @@ export interface IPointMarkerProps {
   onPress: () => void;
 }
 
+// Point marker is memoized (for performance), that may cause incorrect updates if
+// state is not immutable. To disable look at export.
 const PointMarker: FunctionComponent<IPointMarkerProps> = ({
   point,
   selected,
@@ -56,4 +58,4 @@ const PointMarker: FunctionComponent<IPointMarkerProps> = ({
   );
 };
 
-export default PointMarker;
+export default memo(PointMarker);

@@ -2,7 +2,8 @@ import React, {
   FunctionComponent,
   ReactElement,
   useEffect,
-  useRef
+  useRef,
+  memo
 } from "react";
 import {
   SectionList,
@@ -128,6 +129,9 @@ const ListHeader = ({ title }: { title: string }): ReactElement => (
   </View>
 );
 
+// Memoize Point Card to speed up updates.
+const MemoPointCard = memo(PointCard);
+
 // We only animate on marker pressed to avoid acting on our own update
 export interface PointSelection {
   markerPressed: boolean;
@@ -216,7 +220,7 @@ export const PointCardList: FunctionComponent<IPointCardListProps> = ({
     <SectionList
       ref={listRef}
       style={styles.list}
-      renderItem={i => <PointCard p={i.item} key={i.item.id} />}
+      renderItem={i => <MemoPointCard p={i.item} key={i.item.id} />}
       renderSectionHeader={({ section: { title } }) => (
         <ListHeader title={title} />
       )}
