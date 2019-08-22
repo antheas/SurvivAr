@@ -32,7 +32,7 @@ const MainScreenWithModalStack = createStackNavigator(
 
 const MainStack = createStackNavigator(
   {
-    Main: {
+    MainScreenWithModal: {
       screen: MainScreenWithModalStack
     },
     CollectPoint: {
@@ -40,7 +40,8 @@ const MainStack = createStackNavigator(
     }
   },
   {
-    initialRouteName: "Main"
+    initialRouteName: "MainScreenWithModal",
+    headerMode: "none"
   }
 );
 

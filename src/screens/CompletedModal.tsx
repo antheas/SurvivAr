@@ -1,11 +1,11 @@
 import React, { FunctionComponent, useEffect } from "react";
 import {
+  Dimensions,
   FlatList,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
-  Dimensions
+  View
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { NavigationScreenProp } from "react-navigation";
@@ -17,6 +17,7 @@ import { selectCompletedPoints } from "../store/selectors";
 import { State } from "../store/types";
 import { Spacer } from "../utils/Components";
 import * as Theme from "../utils/Theme";
+import { ellipsis } from "../utils/Theme";
 
 const s = StyleSheet.create({
   container: {
@@ -128,9 +129,6 @@ interface ICompleteModalProps
     ICompletedModalDispatchProps {
   navigation: NavigationScreenProp<any>;
 }
-
-const ellipsis = (str: string, l: number) =>
-  str.length > l ? str.slice(0, l - 3) + "..." : s;
 
 const CompletedModal: FunctionComponent<ICompleteModalProps> = ({
   completedPoints,

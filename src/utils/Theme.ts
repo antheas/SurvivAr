@@ -17,6 +17,9 @@ export function normalize(size: number): number {
   }
 }
 
+export const ellipsis = (str: string, l: number) =>
+  str.length > l ? str.slice(0, l - 3) + "..." : str;
+
 // Don't forget to update colors.xml in android!
 export const colors = {
   primary: "#b71c1c",

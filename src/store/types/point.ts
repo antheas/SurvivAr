@@ -1,6 +1,9 @@
 export interface Location {
   lat: number;
   lon: number;
+
+  x?: number;
+  y?: number;
 }
 
 export interface Point {
@@ -19,10 +22,14 @@ export interface WaitPoint extends Point {
 }
 
 export interface QrPoint extends Point {
-  qrData: string;
+  qrData: {
+    type: string;
+    data: string;
+  };
 }
 
 export interface CollectPoint extends Point {
+  imageUri: string;
   qrPoints: QrPoint[];
 }
 
