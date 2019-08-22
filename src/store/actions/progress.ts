@@ -65,3 +65,26 @@ export function updateCollectPointProgress(
     update: Array.isArray(update) ? update : [update]
   };
 }
+
+export function completeQrPoint(
+  collectId: string,
+  qrId: string,
+  completed: boolean = true
+): CollectProgressAction {
+  return {
+    type: UPDATE_COLLECT_PROGRESS,
+
+    update: [
+      {
+        id: collectId,
+        progress: {
+          qrPoints: {
+            [qrId]: {
+              completed
+            }
+          }
+        }
+      }
+    ]
+  };
+}

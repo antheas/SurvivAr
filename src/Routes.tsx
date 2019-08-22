@@ -1,16 +1,16 @@
 import React from "react";
-import { Platform, Animated, Easing } from "react-native";
+import { Platform } from "react-native";
 import SplashScreen from "react-native-splash-screen";
 import {
   createAppContainer,
-  createSwitchNavigator,
-  createStackNavigator
+  createStackNavigator,
+  createSwitchNavigator
 } from "react-navigation";
+import CompletedModal from "./screens/CompletedModal";
 import IntroScreen from "./screens/IntroScreen";
 import MainScreen from "./screens/MainScreen";
-import CompletedModal from "./screens/CompletedModal";
 
-const MainStack = createStackNavigator(
+const MainScreenWithModalStack = createStackNavigator(
   {
     Main: {
       screen: MainScreen
@@ -27,6 +27,20 @@ const MainStack = createStackNavigator(
       // makes transparentCard work for android
       opacity: 1.0
     }
+  }
+);
+
+const MainStack = createStackNavigator(
+  {
+    Main: {
+      screen: MainScreenWithModalStack
+    },
+    CollectPoint: {
+      screen: CompletedModal
+    }
+  },
+  {
+    initialRouteName: "Main"
   }
 );
 

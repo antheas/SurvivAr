@@ -1,33 +1,47 @@
-import { ProgressState } from "../types";
+import { combineReducers } from "redux";
 import {
-  CollectProgressAction,
-  WaitProgressAction,
   UPDATE_WAIT_PROGRESS,
+  WaitProgressAction,
+  CollectProgressAction,
   UPDATE_COLLECT_PROGRESS
 } from "../actions";
+import { WaitPointProgress, CollectPointProgress } from "../types";
 
-export default function progress(
-  state: ProgressState = {
-    waitPoints: {},
-    collectPoints: {}
-  },
-  action: WaitProgressAction | CollectProgressAction
-): ProgressState {
+function waitPoints(
+  state: Record<string, WaitPointProgress> = {},
+  action: WaitProgressAction
+): Record<string, WaitPointProgress> {
   if (action.type === UPDATE_WAIT_PROGRESS) {
     const newState = { ...state };
-    newState.waitPoints = { ...state.waitPoints };
     for (const { id, progress: pointProgress } of action.update) {
-      newState.waitPoints[id] = pointProgress;
-    }
-    return newState;
-  } else if (action.type === UPDATE_COLLECT_PROGRESS) {
-    const newState = { ...state };
-    newState.collectPoints = { ...state.collectPoints };
-    for (const { id, progress: pointProgress } of action.update) {
-      newState.collectPoints[id] = pointProgress;
+      newState[id] = pointProgress;
     }
     return newState;
   } else {
     return state;
   }
 }
+
+function collectPoints(
+  state: Record<string, CollectPointProgress> = {},
+  action: CollectProgressAction
+): Record<string, CollectPointProgress> {
+  if (action.type === UPDATE_COLLECT_PROGRESS) {
+    const newState = { ...state };
+    for (const { id, progress: pointProgress } of action.update) {
+      // Combine with old progress
+      newState[id] = {
+        ...newState[id],
+        ...pointProgress
+      };
+    }
+    return newState;
+  } else {
+    return state;
+  }
+}
+
+export default combineReducers({
+  waitPoints,
+  collectPoints
+});

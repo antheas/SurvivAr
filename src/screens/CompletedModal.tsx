@@ -129,8 +129,8 @@ interface ICompleteModalProps
   navigation: NavigationScreenProp<any>;
 }
 
-const ellipsis = (s: string, l: number) =>
-  s.length > l ? s.slice(0, l - 3) + "..." : s;
+const ellipsis = (str: string, l: number) =>
+  str.length > l ? str.slice(0, l - 3) + "..." : s;
 
 const CompletedModal: FunctionComponent<ICompleteModalProps> = ({
   completedPoints,

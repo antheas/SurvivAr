@@ -10,11 +10,6 @@ export function selectBackgroundTrackingState({
   return backgroundTrackingEnabled;
 }
 
-export function selectHasCompletedPoints({
-  session: {
-    completedIds,
-    pointMetadata: { currentAreaId }
-  }
-}: State) {
-  return completedIds.length > 0 && currentAreaId;
+export function selectHasCompletedPoints({ session: { completedIds } }: State) {
+  return completedIds.length > 0;
 }
