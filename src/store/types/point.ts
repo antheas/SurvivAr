@@ -29,7 +29,7 @@ export interface QrPoint extends Point {
 }
 
 export interface CollectPoint extends Point {
-  imageUri: string;
+  image: any;
   qrPoints: QrPoint[];
 }
 
