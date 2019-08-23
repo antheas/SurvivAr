@@ -18,9 +18,10 @@ import { ExtendedCollectPoint } from "../../store/model/ExtendedCollectPoint";
 import { ExtendedQrPoint } from "../../store/model/ExtendedQrPoint";
 import { selectExtendedCollectPoint } from "../../store/selectors";
 import { State } from "../../store/types";
+import { Spacer } from "../../utils/Components";
 import * as Theme from "../../utils/Theme";
 import { ellipsis } from "../../utils/Theme";
-import { Spacer } from "../../utils/Components";
+import getImage from "./LocalImage";
 
 const s = StyleSheet.create({
   container: {
@@ -32,6 +33,16 @@ const s = StyleSheet.create({
   mapContainer: {
     flex: 3,
     width: "100%"
+  },
+  camera: {
+    flex: 1,
+    width: "100%"
+  },
+  map: {
+    flex: 1,
+    width: "100%",
+    margin: 8,
+    marginTop: 15
   },
   headerContainer: {
     flex: 1,
@@ -108,7 +119,6 @@ interface ICollectDispatchProps {
 
 export interface ICollectOwnProps {
   navigation: NavigationScreenProp<any>;
-  pointId: string;
 }
 
 export interface ICollectProps
@@ -159,10 +169,22 @@ const CollectScreen: FunctionComponent<ICollectProps> = ({
       {/* Map or camera container */}
       <View style={s.mapContainer}>
         {cameraOpen ? (
-          <RNCamera onBarCodeRead={({ data, type }) => qrRead(type, data)} />
+          <RNCamera
+            style={s.camera}
+            onBarCodeRead={({ data, type }) => qrRead(type, data)}
+            captureAudio={false}
+          />
         ) : (
           <Fragment>
-            <Image source={{ uri: point.imageUri }} />
+            <Image
+              style={s.map}
+              resizeMode="contain"
+              source={
+                point.image.local
+                  ? getImage(point.image.uri)
+                  : { uri: point.image.uri }
+              }
+            />
           </Fragment>
         )}
       </View>
@@ -180,7 +202,7 @@ const CollectScreen: FunctionComponent<ICollectProps> = ({
       <View style={s.buttonBackground}>
         <TouchableOpacity style={s.buttonForeground} onPress={switchToCamera}>
           <Text style={s.buttonText}>
-            {!cameraOpen ? "Switch to Map" : "Switch to Camera"}
+            {cameraOpen ? "Switch to Map" : "Switch to Camera"}
           </Text>
         </TouchableOpacity>
       </View>
@@ -195,7 +217,7 @@ const mapStateToProps = (
   return {
     point: selectExtendedCollectPoint(
       state,
-      ownProps.pointId
+      ownProps.navigation.getParam("id")
     ) as ExtendedCollectPoint
   };
 };
@@ -206,7 +228,7 @@ const mapDispatchToProps = (
 ): ICollectDispatchProps => {
   return {
     pointCompleted: (id: string) =>
-      dispatch(completeQrPoint(ownProps.pointId, id))
+      dispatch(completeQrPoint(ownProps.navigation.getParam("id"), id))
   };
 };
 

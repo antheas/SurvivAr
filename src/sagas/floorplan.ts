@@ -1,4 +1,4 @@
-import { CollectPoint, Point, QrPoint } from "../../store/types";
+import { CollectPoint, Point, QrPoint } from "../store/types";
 
 type PercentCoordinate = [number, number]; // x, y
 
@@ -17,7 +17,7 @@ const QR_DATA = [
 
 const NAME_ICON = [
   ["Cannabis", "cannabis", "Convenience"],
-  ["Toothbrush", "toothbrush", "Toiletries"],
+  ["Toothbrush", "tooth", "Toiletries"],
   ["Bandage", "bandage", "Medical Supplies"],
   ["Needle", "needle", "Medical Supplies"],
   ["Blood Bag", "blood-bag", "Medical Supplies"],
@@ -25,7 +25,7 @@ const NAME_ICON = [
   ["IV Drugs", "iv-bag", "Medical Supplies"],
   ["Med. Equipment", "stethoscope", "Medical Supplies"],
   ["Heavy Drugs", "prescription", "Medical Supplies"],
-  ["Med Kit", "hospital-box", "Medical Supplies"]
+  ["Med Kit", "hospital", "Medical Supplies"]
 ];
 
 const floorplan_1_coords: PercentCoordinate[] = [
@@ -70,9 +70,7 @@ const generateFloorplan = (p: Point): CollectPoint => {
   const desc = nameIcons.map(a => a[2]);
 
   const choice = r() > 0.5;
-  const image = choice
-    ? require("./floorplan_1.png")
-    : require("./floorplan_2.png");
+  const imageUri = choice ? "floorplan_1" : "floorplan_2";
   const floorPlanBase = choice ? floorplan_2_coords : floorplan_1_coords;
   const floorplan = shuffle(floorPlanBase);
 
@@ -119,7 +117,12 @@ const generateFloorplan = (p: Point): CollectPoint => {
     loc: p.loc,
     radius: p.radius,
 
-    image,
+    image: {
+      local: true,
+      uri: imageUri
+    },
     qrPoints
   };
 };
+
+export default generateFloorplan;

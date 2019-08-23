@@ -4,9 +4,11 @@ import {
   PointState,
   WaitPoint,
   AreaPoint,
-  Point
+  Point,
+  CollectPoint
 } from "../store/types";
 import URLSearchParams from "@ungap/url-search-params";
+import generateFloorplan from "./floorplan";
 
 const BASE_URL =
   "https://maps.googleapis.com/maps/api/place/nearbysearch/json?";
@@ -14,10 +16,12 @@ const AREA_BOUNDS = 2000;
 const API_KEY = Config.REACT_APP_PLACES_KEY;
 const MAX_RETRIES = 5;
 const BOUNDS = 100000;
+const MAX_PER_TYPE = 10;
 
 async function fetchType(
   location: Location,
-  type: string
+  type: string,
+  limit: number
 ): Promise<Array<Record<string, any>>> {
   let queryUrl = new URLSearchParams();
   queryUrl.append("key", API_KEY);
@@ -36,7 +40,7 @@ async function fetchType(
   let nextPage = queryResults.next_page_token;
   let results: Array<Record<string, any>> = [...queryResults.results];
 
-  while (nextPage) {
+  while (nextPage || results.length < limit) {
     queryUrl = new URLSearchParams();
     queryUrl.append("pagetoken", nextPage);
 
@@ -48,7 +52,7 @@ async function fetchType(
     nextPage = queryResults.next_page_token;
   }
 
-  return results;
+  return results.slice(0, limit);
 }
 
 function processPoint(
@@ -76,6 +80,13 @@ function processWaitPoint(point: Record<string, any>, icon: string): WaitPoint {
     ...processPoint(point, 50, icon),
     duration: 30
   };
+}
+
+function processCollectPoint(
+  point: Record<string, any>,
+  icon: string
+): CollectPoint {
+  return generateFloorplan(processPoint(point, 50, icon));
 }
 
 // If current data is provided then the new request will be merged with the old one
@@ -109,19 +120,27 @@ export default async function fetchPoints(
     points
   };
 
-  let pointJson;
+  // Generate Points
+  let waitPointJson;
+  let collectPointJson;
   let error: Error | null = null;
   for (let i = 0; i < MAX_RETRIES; i++) {
     try {
-      pointJson = await fetchType(location, "pharmacy");
+      waitPointJson = await fetchType(location, "hotel", MAX_PER_TYPE);
+      collectPointJson = await fetchType(location, "pharmacy", MAX_PER_TYPE);
       break;
     } catch (e) {
       error = e;
     }
   }
-  if (!pointJson) throw Error("Connection Error: " + error);
+  if (!waitPointJson || !collectPointJson)
+    throw Error("Connection Error: " + error);
+  const waitPoints = waitPointJson.map(p => processWaitPoint(p, "hotel"));
+  const collectPoints = collectPointJson.map(p =>
+    processCollectPoint(p, "pharmacy")
+  );
 
-  const newPoints = pointJson.map(p => processWaitPoint(p, "pharmacy"));
+  const newPoints = [...waitPoints, ...collectPoints];
   const newArea: AreaPoint = {
     id: Date.now().toString(),
 

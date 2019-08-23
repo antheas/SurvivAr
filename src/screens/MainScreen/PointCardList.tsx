@@ -60,8 +60,11 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     justifyContent: "space-between"
   },
+  cardOpen: {
+    ...Theme.text.size.large
+  },
   cardIcon: {
-    ...Theme.text.size.medium
+    ...Theme.text.size.large
   },
   cardDistance: {
     ...Theme.text.size.medium
@@ -134,7 +137,9 @@ const PointCard = ({
       <View style={styles.cardBottom}>
         {!p.completed && p.userWithin && p instanceof ExtendedCollectPoint ? (
           <TouchableOpacity onPress={open}>
-            <Text style={chooseDistanceColor(p)}>OPEN</Text>
+            <Text style={{ ...styles.cardOpen, ...chooseDistanceColor(p) }}>
+              OPEN
+            </Text>
           </TouchableOpacity>
         ) : (
           <Icon

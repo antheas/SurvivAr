@@ -209,7 +209,7 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
     List<ParcelPoint> completedPoints = new ArrayList<>();
 
     for (ParcelPoint p : points) {
-      if (pointCompleted(p)) {
+      if (pointCompleted(p) & p.isWaitPoint) {
         completedPoints.add(p);
         continue;
       }

@@ -9,6 +9,7 @@ import {
 import CompletedModal from "./screens/CompletedModal";
 import IntroScreen from "./screens/IntroScreen";
 import MainScreen from "./screens/MainScreen";
+import CollectScreen from "./screens/CollectScreen";
 
 const MainScreenWithModalStack = createStackNavigator(
   {
@@ -36,7 +37,7 @@ const MainStack = createStackNavigator(
       screen: MainScreenWithModalStack
     },
     CollectPoint: {
-      screen: CompletedModal
+      screen: CollectScreen
     }
   },
   {

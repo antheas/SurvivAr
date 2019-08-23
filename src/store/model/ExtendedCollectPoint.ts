@@ -6,7 +6,10 @@ export class ExtendedCollectPoint extends ExtendedPoint
   implements CollectPoint {
   public qrPoints: ExtendedQrPoint[];
   public completedPoints: number;
-  public imageUri: string;
+  public image: {
+    local: boolean;
+    uri: string;
+  };
 
   public constructor(
     p: CollectPoint,
@@ -14,7 +17,7 @@ export class ExtendedCollectPoint extends ExtendedPoint
     progress: CollectPointProgress
   ) {
     super(p, distance);
-    this.imageUri = p.imageUri;
+    this.image = p.image;
     // setup qr points
     this.qrPoints = p.qrPoints.map(
       qr => new ExtendedQrPoint(qr, progress.qrPoints[qr.id])
