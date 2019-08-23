@@ -127,12 +127,17 @@ class MainScreen extends Component<IMainProps, IMainState> {
               gotoPointId={this.state.gotoPointId}
               resetGotoPoint={() => this.setState({ gotoPointId: null })}
               onPoint={id => this.setState({ selectedPointId: id })}
+              pointOpened={this.pointOpened}
             />
           )}
         </View>
       </View>
     );
   }
+
+  private pointOpened = (id: string) => {
+    this.props.navigation.push("CollectPoint", { id });
+  };
 
   private stateListenerCallback = (state: AppStateStatus) => {
     this.props.setForegroundFetch(state === "active");

@@ -11,7 +11,8 @@ import {
   StyleSheet,
   Text,
   View,
-  ViewToken
+  ViewToken,
+  TouchableOpacity
 } from "react-native";
 import { connect } from "react-redux";
 import { ExtendedCollectPoint } from "../../store/model/ExtendedCollectPoint";
@@ -21,6 +22,7 @@ import { selectExtendedPoints } from "../../store/selectors";
 import { State } from "../../store/types";
 import { Glue, Spacer } from "../../utils/Components";
 import * as Theme from "../../utils/Theme";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const HEADER_WIDTH = 45;
 const ITEM_WIDTH = 220;
@@ -53,9 +55,16 @@ const styles = StyleSheet.create({
   progressActive: {
     color: Theme.colors.warningDark
   },
+  cardBottom: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    justifyContent: "space-between"
+  },
+  cardIcon: {
+    ...Theme.text.size.medium
+  },
   cardDistance: {
-    ...Theme.text.size.medium,
-    alignSelf: "flex-end"
+    ...Theme.text.size.medium
   },
   distanceInRange: {
     color: Theme.colors.success
@@ -86,10 +95,18 @@ function chooseProgressColor(p: ExtendedPoint) {
 }
 
 function chooseDistanceColor(p: ExtendedPoint) {
-  return p.userWithin ? styles.distanceInRange : styles.distanceNotInRange;
+  return p.userWithin || p.completed
+    ? styles.distanceInRange
+    : styles.distanceNotInRange;
 }
 
-const PointCard = ({ p }: { p: ExtendedPoint }): ReactElement => {
+const PointCard = ({
+  p,
+  open
+}: {
+  p: ExtendedPoint;
+  open: () => void;
+}): ReactElement => {
   return (
     <View style={styles.card}>
       <Text style={styles.cardName}>
@@ -114,11 +131,24 @@ const PointCard = ({ p }: { p: ExtendedPoint }): ReactElement => {
         </Text>
       </View>
       <Glue />
-      {!p.completed && (
-        <Text style={{ ...styles.cardDistance, ...chooseDistanceColor(p) }}>
-          {`${p.distance.toFixed(0)}m / ${p.radius}m`}
-        </Text>
-      )}
+      <View style={styles.cardBottom}>
+        {!p.completed && p.userWithin && p instanceof ExtendedCollectPoint ? (
+          <TouchableOpacity onPress={open}>
+            <Text style={chooseDistanceColor(p)}>OPEN</Text>
+          </TouchableOpacity>
+        ) : (
+          <Icon
+            name={p.icon}
+            style={{ ...styles.cardIcon, ...chooseDistanceColor(p) }}
+          />
+        )}
+        <Glue />
+        {!p.completed && (
+          <Text style={{ ...styles.cardDistance, ...chooseDistanceColor(p) }}>
+            {`${p.distance.toFixed(0)}m / ${p.radius}m`}
+          </Text>
+        )}
+      </View>
     </View>
   );
 };
@@ -142,6 +172,7 @@ export interface IPointCardListProps {
   points: ExtendedPoint[];
   gotoPointId: string | null;
   onPoint: (id: string) => void;
+  pointOpened: (id: string) => void;
   resetGotoPoint: () => void;
 }
 
@@ -149,6 +180,7 @@ export const PointCardList: FunctionComponent<IPointCardListProps> = ({
   points,
   gotoPointId,
   onPoint,
+  pointOpened,
   resetGotoPoint
 }) => {
   const sorted = points.sort((a, b) => a.distance - b.distance);
@@ -220,7 +252,13 @@ export const PointCardList: FunctionComponent<IPointCardListProps> = ({
     <SectionList
       ref={listRef}
       style={styles.list}
-      renderItem={i => <MemoPointCard p={i.item} key={i.item.id} />}
+      renderItem={i => (
+        <MemoPointCard
+          p={i.item}
+          key={i.item.id}
+          open={() => pointOpened(i.item.id)}
+        />
+      )}
       renderSectionHeader={({ section: { title } }) => (
         <ListHeader title={title} />
       )}

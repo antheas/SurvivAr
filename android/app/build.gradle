@@ -144,6 +144,9 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+
+        // React native camera without mlkit
+        missingDimensionStrategy 'react-native-camera', 'general'
     }
     splits {
         abi {
