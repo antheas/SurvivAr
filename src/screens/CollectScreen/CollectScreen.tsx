@@ -1,4 +1,4 @@
-import React, { Fragment, FunctionComponent, useState } from "react";
+import React, { Fragment, FunctionComponent, useState, useEffect } from "react";
 import {
   Dimensions,
   FlatList,
@@ -15,7 +15,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
-import { completeQrPoint } from "../../store/actions";
+import { completeQrPoint, addCompletedPoints } from "../../store/actions";
 import { ExtendedCollectPoint } from "../../store/model/ExtendedCollectPoint";
 import { ExtendedQrPoint } from "../../store/model/ExtendedQrPoint";
 import { selectExtendedCollectPoint } from "../../store/selectors";
@@ -175,6 +175,7 @@ interface ICollectStateProps {
 
 interface ICollectDispatchProps {
   pointCompleted: (p: string) => void;
+  markAsCompleted: () => void;
 }
 
 export interface ICollectOwnProps {
@@ -189,7 +190,8 @@ export interface ICollectProps
 const CollectScreen: FunctionComponent<ICollectProps> = ({
   point,
   pointCompleted,
-  navigation
+  navigation,
+  markAsCompleted
 }) => {
   // Check there is a valid point
   if (!point) {
@@ -215,6 +217,14 @@ const CollectScreen: FunctionComponent<ICollectProps> = ({
     if (p) {
       notifyQrScanned(true);
       pointCompleted(p.id);
+
+      // If this is the last point mark point as completed and exit
+      if (
+        point.qrPoints.findIndex(qr => qr.id !== p.id && !qr.completed) === -1
+      ) {
+        markAsCompleted();
+        navigation.goBack();
+      }
     } else {
       notifyQrScanned(false);
     }
@@ -321,9 +331,10 @@ const mapDispatchToProps = (
   dispatch: Dispatch,
   ownProps: ICollectOwnProps
 ): ICollectDispatchProps => {
+  const id = ownProps.navigation.getParam("id");
   return {
-    pointCompleted: (id: string) =>
-      dispatch(completeQrPoint(ownProps.navigation.getParam("id"), id))
+    pointCompleted: (qrId: string) => dispatch(completeQrPoint(id, qrId)),
+    markAsCompleted: () => dispatch(addCompletedPoints([id]))
   };
 };
 
