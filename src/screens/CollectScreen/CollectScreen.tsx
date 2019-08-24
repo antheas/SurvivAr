@@ -34,14 +34,23 @@ const s = StyleSheet.create({
     justifyContent: "flex-end"
   },
   mapContainer: {
-    flex: 3,
-    flexGrow: 5,
     width: "100%"
   },
   camera: {
-    overflow: "hidden"
+    flex: 1,
+    overflow: "hidden",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  scanBar: {
+    width: "60%",
+    height: 5,
+    opacity: 0.7,
+    borderRadius: 20,
+    backgroundColor: Theme.colors.primaryDark
   },
   map: {
+    flex: 1,
     marginTop: 12
   },
   mapIcon: {
@@ -72,7 +81,7 @@ const s = StyleSheet.create({
   },
   listContainer: {
     width: "100%",
-    flex: 4,
+    flex: 1,
     flexShrink: 2
   },
   list: {
@@ -211,10 +220,11 @@ const CollectScreen: FunctionComponent<ICollectProps> = ({
     }
   };
 
+  // Set up image height
   const width = Dimensions.get("window").width;
   const [height, setHeight] = useState((3 / 4.0) * width);
   const updateHeight = (w: number, h: number) => {
-    const newHeight = Math.floor(width * (h / (w * 1.0)));
+    const newHeight = Math.floor(width * (h / (w * 1.0))) + 12; // Add top map margin
     if (newHeight !== height) setHeight(newHeight);
   };
 
@@ -230,25 +240,29 @@ const CollectScreen: FunctionComponent<ICollectProps> = ({
   return (
     <View style={s.container}>
       {/* Map or camera container */}
-      <View style={s.mapContainer}>
+      <View
+        style={{
+          ...s.mapContainer,
+          width,
+          height
+        }}
+      >
         {cameraOpen ? (
           <Fragment>
             <StatusBar barStyle="light-content" />
             <RNCamera
-              style={{
-                ...s.camera,
-                width,
-                height: height + 10 /* add map's top margin */
-              }}
+              style={s.camera}
               onBarCodeRead={({ data, type }) => qrRead(type, data)}
               captureAudio={false}
-            />
+            >
+              <View style={s.scanBar} />
+            </RNCamera>
           </Fragment>
         ) : (
           <Fragment>
             <StatusBar barStyle="dark-content" />
             <ImageBackground
-              style={{ ...s.map, width, height }}
+              style={s.map}
               resizeMode="stretch"
               source={
                 point.image.local

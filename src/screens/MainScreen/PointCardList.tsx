@@ -1,28 +1,28 @@
 import React, {
   FunctionComponent,
+  memo,
   ReactElement,
   useEffect,
-  useRef,
-  memo
+  useRef
 } from "react";
 import {
   SectionList,
   SectionListStatic,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
-  ViewToken,
-  TouchableOpacity
+  ViewToken
 } from "react-native";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { connect } from "react-redux";
 import { ExtendedCollectPoint } from "../../store/model/ExtendedCollectPoint";
 import { ExtendedPoint } from "../../store/model/ExtendedPoint";
 import { ExtendedWaitPoint } from "../../store/model/ExtendedWaitPoint";
 import { selectExtendedPoints } from "../../store/selectors";
 import { State } from "../../store/types";
-import { Glue, Spacer } from "../../utils/Components";
+import { Spacer } from "../../utils/Components";
 import * as Theme from "../../utils/Theme";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const HEADER_WIDTH = 45;
 const ITEM_WIDTH = 220;

@@ -83,7 +83,7 @@ const generateFloorplan = (p: Point): CollectPoint => {
   );
 
   // Generate points
-  const qrPoints = [] as QrPoint[];
+  let qrPoints = [] as QrPoint[];
   for (let i = 0; i < length; i++) {
     qrPoints.push({
       id: `${p.id}-${i}`,
@@ -105,6 +105,7 @@ const generateFloorplan = (p: Point): CollectPoint => {
       }
     });
   }
+  qrPoints = shuffle(qrPoints);
 
   // Construct point
   return {
