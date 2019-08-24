@@ -56,12 +56,18 @@ const styles = StyleSheet.create({
     color: Theme.colors.warningDark
   },
   cardBottom: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "flex-end",
     justifyContent: "space-between"
   },
   cardOpen: {
     ...Theme.text.size.large
+  },
+  openButton: {
+    height: "100%",
+    flex: 1,
+    justifyContent: "flex-end"
   },
   cardIcon: {
     ...Theme.text.size.large
@@ -133,10 +139,9 @@ const PointCard = ({
             : "Not Completed"}
         </Text>
       </View>
-      <Glue />
       <View style={styles.cardBottom}>
         {!p.completed && p.userWithin && p instanceof ExtendedCollectPoint ? (
-          <TouchableOpacity onPress={open}>
+          <TouchableOpacity onPress={open} style={styles.openButton}>
             <Text style={{ ...styles.cardOpen, ...chooseDistanceColor(p) }}>
               OPEN
             </Text>
@@ -147,7 +152,6 @@ const PointCard = ({
             style={{ ...styles.cardIcon, ...chooseDistanceColor(p) }}
           />
         )}
-        <Glue />
         {!p.completed && (
           <Text style={{ ...styles.cardDistance, ...chooseDistanceColor(p) }}>
             {`${p.distance.toFixed(0)}m / ${p.radius}m`}
