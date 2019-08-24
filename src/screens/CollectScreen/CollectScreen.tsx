@@ -1,4 +1,4 @@
-import React, { Fragment, FunctionComponent, useState, useEffect } from "react";
+import React, { Fragment, FunctionComponent, useState } from "react";
 import {
   Dimensions,
   FlatList,
@@ -15,7 +15,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
-import { completeQrPoint, addCompletedPoints } from "../../store/actions";
+import { addCompletedPoints, completeQrPoint } from "../../store/actions";
 import { ExtendedCollectPoint } from "../../store/model/ExtendedCollectPoint";
 import { ExtendedQrPoint } from "../../store/model/ExtendedQrPoint";
 import { selectExtendedCollectPoint } from "../../store/selectors";
@@ -152,7 +152,7 @@ const MapMarker = ({
   width: number;
   height: number;
 }) => {
-  const color = p.completed ? Theme.colors.disabledDark : Theme.colors.primary;
+  const color = p.completed ? Theme.colors.successLight : Theme.colors.primary;
   // Check we have map metadata
   if (!p.loc.x || !p.loc.y) return null;
 

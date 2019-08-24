@@ -36,8 +36,9 @@ export const colors = {
   primaryText: "#ffffff",
   accentText: "#ffffff",
 
+  successLight: "#60c400",
   success: "#56b000",
-  successDark: "",
+  successDark: "#438900",
   warning: "#ffa500",
   warningDark: "#e69500",
   disabled: "#f5f5f5",
