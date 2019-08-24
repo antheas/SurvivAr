@@ -13,7 +13,8 @@ import { checkLocationPermission } from "../../location/Permissions";
 import {
   appLaunchCompleted,
   retryFetch,
-  setForegroundFetch
+  setForegroundFetch,
+  appAboutToExit
 } from "../../store/actions";
 import {
   selectAppState,
@@ -56,6 +57,7 @@ interface MainStateProps {
 
 interface MainDispatchProps {
   appLaunchCompleted: () => void;
+  appExiting: () => void;
   setForegroundFetch: (state: boolean) => void;
   retry: () => void;
 }
@@ -101,6 +103,7 @@ class MainScreen extends Component<IMainProps, IMainState> {
 
   public componentWillUnmount() {
     AppState.removeEventListener("change", this.stateListenerCallback);
+    this.props.appExiting();
   }
 
   public render(): ReactElement {
@@ -109,8 +112,14 @@ class MainScreen extends Component<IMainProps, IMainState> {
     return (
       <View style={styles.container}>
         <NavigationEvents
-          onDidFocus={() => this.props.setForegroundFetch(true)}
-          onDidBlur={() => this.props.setForegroundFetch(false)}
+          onDidFocus={() => {
+            this.props.setForegroundFetch(true);
+            AppState.addEventListener("change", this.stateListenerCallback);
+          }}
+          onDidBlur={() => {
+            this.props.setForegroundFetch(false);
+            AppState.removeEventListener("change", this.stateListenerCallback);
+          }}
         />
         <StatusBar
           barStyle="dark-content"
@@ -161,6 +170,7 @@ const mapStateToProps = (state: State): MainStateProps => {
 const mapDispatchToProps = (dispatch: Dispatch): MainDispatchProps => {
   return {
     appLaunchCompleted: () => dispatch(appLaunchCompleted()),
+    appExiting: () => dispatch(appAboutToExit()),
     setForegroundFetch: (state: boolean) => dispatch(setForegroundFetch(state)),
     retry: () => dispatch(retryFetch())
   };

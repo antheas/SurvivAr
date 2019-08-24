@@ -14,7 +14,7 @@ export class LocationManager implements LocationManagerInterface {
   private subPosition?: EmitterSubscription;
 
   public get supportsBackgroundTracking() {
-    return false;
+    return true;
   }
 
   public registerJsCallbacks(callback: PositionCallback) {
