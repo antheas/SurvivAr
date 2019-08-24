@@ -71,12 +71,12 @@ const generateFloorplan = (p: Point): CollectPoint => {
 
   const choice = r() > 0.5;
   const imageUri = choice ? "floorplan_1" : "floorplan_2";
-  const floorPlanBase = choice ? floorplan_2_coords : floorplan_1_coords;
+  const floorPlanBase = choice ? floorplan_1_coords : floorplan_2_coords;
   const floorplan = shuffle(floorPlanBase);
 
   // Generate random length 1+ and prevent out-of-bounds.
   const length = Math.min(
-    //Math.round(10 * r()),
+    Math.round(10 * r()),
     nameIcons.length,
     floorplan.length,
     QR_DATA.length
@@ -94,13 +94,13 @@ const generateFloorplan = (p: Point): CollectPoint => {
 
       loc: {
         ...p.loc,
-        x: floorplan[i][0] / 100,
-        y: floorplan[i][1] / 100
+        x: floorplan[i][0],
+        y: floorplan[i][1]
       },
       radius: 2,
 
       qrData: {
-        type: "QR",
+        type: "QR_CODE",
         data: QR_DATA[i]
       }
     });

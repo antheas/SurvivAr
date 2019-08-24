@@ -6,7 +6,7 @@ import {
   StyleSheet,
   View
 } from "react-native";
-import { NavigationScreenProp } from "react-navigation";
+import { NavigationScreenProp, NavigationEvents } from "react-navigation";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { checkLocationPermission } from "../../location/Permissions";
@@ -108,6 +108,10 @@ class MainScreen extends Component<IMainProps, IMainState> {
 
     return (
       <View style={styles.container}>
+        <NavigationEvents
+          onDidFocus={() => this.props.setForegroundFetch(true)}
+          onDidBlur={() => this.props.setForegroundFetch(false)}
+        />
         <StatusBar
           barStyle="dark-content"
           translucent={true}

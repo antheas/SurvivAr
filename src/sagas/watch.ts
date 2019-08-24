@@ -54,7 +54,9 @@ function* updateMetadata(pos: PositionState) {
   }
 
   const points: Record<string, Point> = yield select(selectPoints);
-  const currentPoints = currentArea.children.map(id => points[id]);
+  const currentPoints = currentArea.children
+    .filter(id => id in points)
+    .map(id => points[id]);
 
   const distanceArray = currentPoints.map(p => ({
     id: p.id,
