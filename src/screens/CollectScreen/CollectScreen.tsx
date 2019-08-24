@@ -25,6 +25,7 @@ import { Spacer } from "../../utils/Components";
 import * as Theme from "../../utils/Theme";
 import { ellipsis } from "../../utils/Theme";
 import getImage from "./LocalImage";
+import { notifyQrScanned } from "./QrNotify";
 
 const s = StyleSheet.create({
   container: {
@@ -190,17 +191,24 @@ const CollectScreen: FunctionComponent<ICollectProps> = ({
 
   // Setup camera hooks
   const [cameraOpen, setCameraOpen] = useState(false);
+  const [lastScanned, setLastScanned] = useState(0);
   const switchToCamera = () => {
     setCameraOpen(!cameraOpen);
   };
   const qrRead = (type: string, data: string) => {
+    // Rate limit
+    if (Date.now() - lastScanned < 2000) return;
+    setLastScanned(Date.now());
+
     const p = point.qrPoints.find(
       qr => !qr.completed && qr.qrData.data === data && qr.qrData.type === type
     );
 
-    // TODO: Handle error
     if (p) {
+      notifyQrScanned(true);
       pointCompleted(p.id);
+    } else {
+      notifyQrScanned(false);
     }
   };
 
