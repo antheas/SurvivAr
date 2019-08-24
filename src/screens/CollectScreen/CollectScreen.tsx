@@ -3,7 +3,8 @@ import React, {
   FunctionComponent,
   useState,
   useRef,
-  MutableRefObject
+  MutableRefObject,
+  useEffect
 } from "react";
 import {
   Dimensions,
@@ -13,7 +14,9 @@ import {
   Text,
   TouchableOpacity,
   View,
-  StatusBar
+  StatusBar,
+  LayoutChangeEvent,
+  ImageBackground
 } from "react-native";
 import { RNCamera } from "react-native-camera";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -48,9 +51,11 @@ const s = StyleSheet.create({
   },
   map: {
     flex: 1,
-    width: "100%",
-    marginHorizontal: 8,
-    marginTop: 15
+    marginTop: 12
+  },
+  mapIcon: {
+    position: "absolute",
+    fontSize: 15
   },
   headerContainer: {
     borderTopWidth: 3,
@@ -118,23 +123,6 @@ const s = StyleSheet.create({
   }
 });
 
-interface ICollectStateProps {
-  point?: ExtendedCollectPoint;
-}
-
-interface ICollectDispatchProps {
-  pointCompleted: (p: string) => void;
-}
-
-export interface ICollectOwnProps {
-  navigation: NavigationScreenProp<any>;
-}
-
-export interface ICollectProps
-  extends ICollectStateProps,
-    ICollectDispatchProps,
-    ICollectOwnProps {}
-
 const QrPoint = ({ p }: { p: ExtendedQrPoint }) => {
   const styleColor = p.completed
     ? Theme.text.color.success
@@ -154,30 +142,126 @@ const QrPoint = ({ p }: { p: ExtendedQrPoint }) => {
   );
 };
 
+const MapMarker = ({
+  p,
+  width,
+  height
+}: {
+  p: ExtendedQrPoint;
+  width: number;
+  height: number;
+}) => {
+  const color = p.completed ? Theme.colors.disabledDark : Theme.colors.primary;
+  // Check we have map metadata
+  if (!p.loc.x || !p.loc.y) return null;
+
+  return (
+    <Icon
+      name={p.icon}
+      style={{
+        ...s.mapIcon,
+        color,
+        top: height * p.loc.y + 12,
+        left: width * p.loc.x
+      }}
+    />
+  );
+};
+
+interface ICollectStateProps {
+  point?: ExtendedCollectPoint;
+}
+
+interface ICollectDispatchProps {
+  pointCompleted: (p: string) => void;
+}
+
+export interface ICollectOwnProps {
+  navigation: NavigationScreenProp<any>;
+}
+
+export interface ICollectProps
+  extends ICollectStateProps,
+    ICollectDispatchProps,
+    ICollectOwnProps {}
+
 const CollectScreen: FunctionComponent<ICollectProps> = ({
   point,
   pointCompleted,
   navigation
 }) => {
-  const [cameraOpen, setCameraOpen] = useState(false);
-
+  // Check there is a valid point
   if (!point) {
     navigation.goBack();
     return null;
   }
 
+  // Setup camera hooks
+  const [cameraOpen, setCameraOpen] = useState(false);
   const switchToCamera = () => {
     setCameraOpen(!cameraOpen);
   };
-
   const qrRead = (type: string, data: string) => {
     const p = point.qrPoints.find(
-      qr => !qr.completed && qr.qrData.type === type && qr.qrData.data === data
+      qr => !qr.completed && qr.qrData.data === data // && qr.qrData.type === type
     );
 
     // TODO: Handle error
-    if (p) pointCompleted(p.id);
+    if (p) {
+      pointCompleted(p.id);
+    }
   };
+
+  // Prepare map pointers
+  const [[width, height], setDim] = useState([-1, -1]);
+  const [[mapWidth, mapHeight], setMapDim] = useState([-1, -1]);
+  const [[imgWidth, imgHeight], setImgDim] = useState([-1, -1]);
+
+  useEffect(() => {
+    if (
+      mapWidth === -1 ||
+      mapHeight === -1 ||
+      imgWidth === -1 ||
+      imgHeight === -1
+    )
+      return;
+
+    let newHeight = height;
+    let newWidth = width;
+    if ((mapWidth * 1.0) / mapHeight > (imgWidth * 1.0) / imgHeight) {
+      // Excess width
+      newHeight = mapHeight;
+      newWidth = mapHeight * ((imgWidth * 1.0) / imgHeight);
+    } else {
+      // Excess height
+      newWidth = mapWidth;
+      newHeight = mapWidth * ((imgHeight * 1.0) / imgWidth);
+    }
+
+    if (newWidth !== width || newHeight !== height)
+      setDim([newWidth, newHeight]);
+  }, [mapWidth, mapHeight, imgWidth, imgHeight]);
+
+  const updateMapDims = (e: LayoutChangeEvent) => {
+    const { width: w, height: h } = e.nativeEvent.layout;
+    if (mapWidth === w && mapHeight === h) return;
+    setMapDim([w, h]);
+  };
+
+  const updateImgDims = (w: number, h: number) => {
+    if (imgWidth === w && imgHeight === h) return;
+    setImgDim([w, h]);
+  };
+
+  // Setup img size callbacks
+  if (point.image.local) {
+    const { width: w, height: h } = Image.resolveAssetSource(
+      getImage(point.image.uri)
+    );
+    updateImgDims(w, h);
+  } else {
+    Image.getSize(point.image.uri, updateImgDims, () => {});
+  }
 
   return (
     <View style={s.container}>
@@ -195,15 +279,21 @@ const CollectScreen: FunctionComponent<ICollectProps> = ({
         ) : (
           <Fragment>
             <StatusBar barStyle="dark-content" />
-            <Image
+            <ImageBackground
               style={s.map}
               resizeMode="contain"
+              onLayout={updateMapDims}
               source={
                 point.image.local
                   ? getImage(point.image.uri)
                   : { uri: point.image.uri }
               }
-            />
+            >
+              {height !== -1 &&
+                point.qrPoints.map(p => (
+                  <MapMarker p={p} width={width} height={height} key={p.id} />
+                ))}
+            </ImageBackground>
           </Fragment>
         )}
       </View>

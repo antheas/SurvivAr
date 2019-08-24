@@ -31,8 +31,11 @@ function collectPoints(
     for (const { id, progress: pointProgress } of action.update) {
       // Combine with old progress
       newState[id] = {
-        ...newState[id],
-        ...pointProgress
+        ...newState[id]
+      };
+      newState[id].qrPoints = {
+        ...newState[id].qrPoints,
+        ...pointProgress.qrPoints
       };
     }
     return newState;
