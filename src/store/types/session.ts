@@ -1,5 +1,3 @@
-import { WaitProgressUpdate } from "../actions";
-
 export enum StateType {
   STARTUP,
   WAITING_FOR_FINE_LOCATION,

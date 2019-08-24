@@ -1,10 +1,9 @@
-import React, { Fragment, FunctionComponent, useEffect, useState } from "react";
+import React, { Fragment, FunctionComponent, useState } from "react";
 import {
   Dimensions,
   FlatList,
   Image,
   ImageBackground,
-  LayoutChangeEvent,
   StatusBar,
   StyleSheet,
   Text,
