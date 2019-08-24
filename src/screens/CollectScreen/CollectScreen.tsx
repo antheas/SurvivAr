@@ -1,4 +1,10 @@
-import React, { Fragment, FunctionComponent, useState } from "react";
+import React, {
+  Fragment,
+  FunctionComponent,
+  useState,
+  useRef,
+  MutableRefObject
+} from "react";
 import {
   Dimensions,
   FlatList,
@@ -6,7 +12,8 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
+  StatusBar
 } from "react-native";
 import { RNCamera } from "react-native-camera";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -36,21 +43,22 @@ const s = StyleSheet.create({
   },
   camera: {
     flex: 1,
-    width: "100%"
+    width: "100%",
+    overflow: "hidden"
   },
   map: {
     flex: 1,
     width: "100%",
-    margin: 8,
+    marginHorizontal: 8,
     marginTop: 15
   },
   headerContainer: {
-    flex: 1,
-    flexGrow: 1.9
-  },
-  listContainer: {
-    flex: 6,
-    flexGrow: 1.9
+    borderTopWidth: 3,
+    borderTopColor: Theme.colors.accent,
+    paddingTop: 12,
+    borderBottomWidth: 3,
+    borderBottomColor: Theme.colors.accent,
+    paddingBottom: 12
   },
   header: {
     width: "100%",
@@ -61,30 +69,31 @@ const s = StyleSheet.create({
   },
   text: {
     width: "100%",
-    ...Theme.text.color.normal,
-    ...Theme.text.size.small,
-    marginBottom: 12
+    ...Theme.text.color.light,
+    ...Theme.text.size.medium,
+    marginBottom: 12,
+    textAlign: "center"
+  },
+  listContainer: {
+    width: "100%",
+    flex: 4
   },
   list: {
     width: "100%",
-    flex: 0
-  },
-  single: {
-    width: "100%",
-    flex: 1,
-    justifyContent: "center"
+    marginHorizontal: 20,
+    flex: 1
   },
 
   pointContainer: {
-    flexDirection: "row"
+    marginTop: 8,
+    flexDirection: "row",
+    alignItems: "center"
   },
   pointIcon: {
-    color: Theme.colors.success,
-    fontSize: 40
+    fontSize: 30
   },
   pointText: {
-    ...Theme.text.size.medium,
-    ...Theme.text.color.success
+    ...Theme.text.size.medium
   },
   pointSubText: {
     ...Theme.text.size.small,
@@ -127,12 +136,18 @@ export interface ICollectProps
     ICollectOwnProps {}
 
 const QrPoint = ({ p }: { p: ExtendedQrPoint }) => {
+  const styleColor = p.completed
+    ? Theme.text.color.success
+    : Theme.text.color.primaryColored;
+
   return (
     <View style={s.pointContainer}>
-      <Icon name={p.icon} style={s.pointIcon} />
+      <Icon name={p.icon} style={{ ...s.pointIcon, ...styleColor }} />
       <Spacer medium horz />
       <View>
-        <Text style={s.pointText}>{ellipsis(p.name, 25)}</Text>
+        <Text style={{ ...s.pointText, ...styleColor }}>
+          {ellipsis(p.name, 25)}
+        </Text>
         <Text style={s.pointSubText}>{ellipsis(p.desc, 35)}</Text>
       </View>
     </View>
@@ -169,13 +184,17 @@ const CollectScreen: FunctionComponent<ICollectProps> = ({
       {/* Map or camera container */}
       <View style={s.mapContainer}>
         {cameraOpen ? (
-          <RNCamera
-            style={s.camera}
-            onBarCodeRead={({ data, type }) => qrRead(type, data)}
-            captureAudio={false}
-          />
+          <Fragment>
+            <StatusBar barStyle="light-content" />
+            <RNCamera
+              style={s.camera}
+              onBarCodeRead={({ data, type }) => qrRead(type, data)}
+              captureAudio={false}
+            />
+          </Fragment>
         ) : (
           <Fragment>
+            <StatusBar barStyle="dark-content" />
             <Image
               style={s.map}
               resizeMode="contain"
@@ -191,13 +210,18 @@ const CollectScreen: FunctionComponent<ICollectProps> = ({
       {/* Header */}
       <View style={s.headerContainer}>
         <Text style={s.header}>Collect Point</Text>
+        <Text
+          style={s.text}
+        >{`${point.name}, ${point.completedPoints}/${point.totalPoints}`}</Text>
       </View>
       {/* List */}
-      <FlatList
-        style={s.list}
-        data={point.qrPoints}
-        renderItem={i => <QrPoint p={i.item} key={i.item.id} />}
-      />
+      <View style={s.listContainer}>
+        <FlatList
+          style={s.list}
+          data={point.qrPoints}
+          renderItem={i => <QrPoint p={i.item} key={i.item.id} />}
+        />
+      </View>
       {/* Button */}
       <View style={s.buttonBackground}>
         <TouchableOpacity style={s.buttonForeground} onPress={switchToCamera}>

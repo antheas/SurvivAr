@@ -78,6 +78,9 @@ export const text = {
     accent: {
       color: colors.accentText
     },
+    primaryColored: {
+      color: colors.primary
+    },
     normal: {
       color: colors.text
     },

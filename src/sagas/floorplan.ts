@@ -22,10 +22,10 @@ const NAME_ICON = [
   ["Needle", "needle", "Medical Supplies"],
   ["Blood Bag", "blood-bag", "Medical Supplies"],
   ["Pain Reliever", "pill", "Medical Supplies"],
-  ["IV Drugs", "iv-bag", "Medical Supplies"],
+  ["Defibrillator", "heart-pulse", "Medical Supplies"],
   ["Med. Equipment", "stethoscope", "Medical Supplies"],
   ["Heavy Drugs", "prescription", "Medical Supplies"],
-  ["Med Kit", "hospital", "Medical Supplies"]
+  ["Med Kit", "medical-bag", "Medical Supplies"]
 ];
 
 const floorplan_1_coords: PercentCoordinate[] = [
@@ -76,7 +76,7 @@ const generateFloorplan = (p: Point): CollectPoint => {
 
   // Generate random length 1+ and prevent out-of-bounds.
   const length = Math.min(
-    Math.round(10 * r()),
+    //Math.round(10 * r()),
     nameIcons.length,
     floorplan.length,
     QR_DATA.length
