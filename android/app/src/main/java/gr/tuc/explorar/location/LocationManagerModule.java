@@ -78,7 +78,7 @@ public class LocationManagerModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void setClosestPointDistance(double distance) {
-    location.setClosestPointDistance(distance);
+    location.setClosestPointDistance(distance, true);
   }
 
   @ReactMethod

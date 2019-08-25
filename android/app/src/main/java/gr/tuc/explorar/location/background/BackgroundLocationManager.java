@@ -234,7 +234,8 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
     );
 
     // update position manager
-    if (minDistance > 0) position.setClosestPointDistance(minDistance);
+    if (minDistance > 0)
+      position.setClosestPointDistance(minDistance, closestPoint != null && closestPoint.isWaitPoint);
   }
 
   @Override

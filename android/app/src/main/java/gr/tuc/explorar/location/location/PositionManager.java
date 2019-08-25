@@ -90,10 +90,10 @@ public class PositionManager {
   }
 
   @SuppressLint("MissingPermission")
-  public void setClosestPointDistance(double distance) {
+  public void setClosestPointDistance(double distance, boolean isWaitPoint) {
     if (looper == null) return;
 
-    int newSpeed = getUpdatedSpeed(distance);
+    int newSpeed = getUpdatedSpeed(distance, isWaitPoint);
     if (newSpeed == currentSpeed) {
       updatesSinceLastSpeedChange = 0;
       return;
@@ -137,9 +137,11 @@ public class PositionManager {
             true);
   }
 
-  private int getUpdatedSpeed(double distance) {
-    if (distance < 100) {
-      return FASTEST;
+  private int getUpdatedSpeed(double distance, boolean isWaitPoint) {
+    if (distance < 100 && isWaitPoint) {
+      return FASTEST; // There is no displacement value for this speed
+      // so it will wakelock the device, which would be pointless for
+      // a point that can't be completed in the background.
     } else if (distance < 250) {
       return FAST;
     } else if (distance < 1000) {
