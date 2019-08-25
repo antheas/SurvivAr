@@ -1,4 +1,10 @@
-import React, { Fragment, FunctionComponent, memo } from "react";
+import React, {
+  Fragment,
+  FunctionComponent,
+  memo,
+  useEffect,
+  useState
+} from "react";
 import { Circle, Marker } from "react-native-maps";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { ExtendedPoint } from "../../../store/model/ExtendedPoint";
@@ -18,7 +24,7 @@ const PointMarker: FunctionComponent<IPointMarkerProps> = ({
   selected,
   onPress
 }) => {
-  let theme;
+  let theme: { icon: any; marker: any; circle?: any };
   let circle;
   if (point.completed) {
     theme = Theme.map.point.completed;
@@ -41,19 +47,30 @@ const PointMarker: FunctionComponent<IPointMarkerProps> = ({
 
   const coords = convertCoords(point.loc);
 
+  // Retrofit to use ImageSource instead of nested Icon
+  // For performance
+  const [img, setImg] = useState(null);
+  useEffect(() => {
+    const name = point.icon;
+    const size = theme.icon.size;
+    const color = theme.icon.color;
+
+    Icon.getImageSource(name, size, color).then(ig => setImg(ig));
+  }, [theme.icon.size, theme.icon.color, point.icon]);
+
   return (
     <Fragment key={point.id}>
       {circle ? (
         <Circle center={coords} radius={point.radius} {...circle} />
       ) : null}
-      <Marker
-        coordinate={coords}
-        tracksViewChanges={false}
-        {...theme.marker}
-        onPress={onPress}
-      >
-        <Icon name={point.icon} {...theme.icon} />
-      </Marker>
+      {img !== null && (
+        <Marker
+          coordinate={coords}
+          {...theme.marker}
+          onPress={onPress}
+          image={img}
+        />
+      )}
     </Fragment>
   );
 };
