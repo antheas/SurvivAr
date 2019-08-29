@@ -76,12 +76,11 @@ const generateFloorplan = (p: Point): CollectPoint => {
 
   // Generate random length 1+ and prevent out-of-bounds.
   const length = Math.min(
-    Math.round(10 * r()),
+    Math.ceil(10 * r()),
     nameIcons.length,
-    floorplan.length,
+    floorplan.length - 1,
     QR_DATA.length
   );
-
   // Generate points
   let qrPoints = [] as QrPoint[];
   for (let i = 0; i < length; i++) {
@@ -105,6 +104,28 @@ const generateFloorplan = (p: Point): CollectPoint => {
       }
     });
   }
+
+  // Add gum
+  qrPoints.push({
+    id: `${p.id}-gum`,
+    icon: "alpha-g-box",
+
+    name: "Gum",
+    desc: `A packet of tea flavored gum.`,
+
+    loc: {
+      ...p.loc,
+      x: floorplan[length][0],
+      y: floorplan[length][1]
+    },
+    radius: 2,
+
+    qrData: {
+      type: "EAN_13",
+      data: "7622210982124"
+    }
+  });
+
   qrPoints = shuffle(qrPoints);
 
   // Construct point
