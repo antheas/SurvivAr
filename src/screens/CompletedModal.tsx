@@ -26,12 +26,10 @@ const s = StyleSheet.create({
     width: "100%",
     justifyContent: "flex-end"
   },
-  spacer: {
-    flex: 0,
-    flexGrow: 1.9
-  },
   modal: {
     ...Theme.component.container.accented,
+    flex: 0,
+    maxHeight: 250,
     width: "100%",
     flexDirection: "column",
     justifyContent: "flex-start",
@@ -60,13 +58,11 @@ const s = StyleSheet.create({
     marginBottom: 12
   },
   list: {
-    width: "100%",
-    flex: 0
+    width: "100%"
   },
   single: {
-    width: "100%",
-    flex: 1,
-    justifyContent: "center"
+    width: "100%"
+    // justifyContent: "center"
   },
 
   pointContainer: {
@@ -149,7 +145,6 @@ const CompletedModal: FunctionComponent<ICompleteModalProps> = ({
 
   return (
     <View style={s.container}>
-      <View style={s.spacer} />
       <View style={s.modal}>
         <View>
           <Text style={s.header}>Completed Points</Text>
