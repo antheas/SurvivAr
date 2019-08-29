@@ -145,6 +145,9 @@ class Map extends React.Component<IMapProps, IMapState> {
       // and animations will continue
       this.cameraManager.update();
     }
+
+    // FIXME: Attempt to fix heading not working after state change
+    this.cameraManager.enable();
   }
 
   public render() {
