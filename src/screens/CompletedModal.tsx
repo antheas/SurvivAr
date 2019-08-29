@@ -147,9 +147,6 @@ const CompletedModal: FunctionComponent<ICompleteModalProps> = ({
     return () => listener && listener.remove();
   }, []);
 
-  // Prevent choppy animation when closing
-  if (!completedPoints.length) return null;
-
   return (
     <View style={s.container}>
       <View style={s.spacer} />
