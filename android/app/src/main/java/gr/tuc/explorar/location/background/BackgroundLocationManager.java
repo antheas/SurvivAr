@@ -30,6 +30,7 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
   private PositionManager.PositionState currentPosition;
   private long previousTimestamp;
   private int currentEvent;
+  private boolean initialUpdate;
 
   public BackgroundLocationManager(Context c, LocationListener listener, List<ParcelPoint> points, @Nullable String previousProgress) {
     // Setup Listeners
@@ -45,6 +46,7 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
     previousPoints = Collections.emptyList();
     currentPosition = PositionManager.PositionState.NUL;
     currentEvent = ParcelPoint.DEFAULT;
+    initialUpdate = false;
   }
 
   public void startPosition() {
@@ -226,11 +228,16 @@ public class BackgroundLocationManager implements HeadingManager.HeadingCallback
       }
     }
 
+    // Prevent vibrating when service starts and user is already in point
+    // Since the app already vibrated in the foreground
+    int event = initialUpdate && currentEvent == ParcelPoint.ON_ENTER ? ParcelPoint.DEFAULT : currentEvent;
+    initialUpdate = false;
+
     listener.onDataUpdated(
             closestPoint != null ? getMetadata(closestPoint) : null,
             closestWaitPoint != null ? getMetadata(closestWaitPoint) : null,
             completedPoints,
-            currentEvent
+            event
     );
 
     // update position manager
