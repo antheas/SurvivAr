@@ -1,4 +1,4 @@
-<!-- ![Logo](art/export/350ppi/Logo%20On%20Dark.png | width=100) -->
+<!-- ![Logo](art/export/350ppi/Logo%20On%20Dark.png) -->
 <img src="art/logo.png" alt="Logo" width="500"/>
 
 # SurvivAr
@@ -68,6 +68,4 @@ and the location features are crippled otherwise (running as a background and no
 Sadly, that also means that the service has to be started while the app is running, so the user has to initiate it.
 But for the use case of this App it is acceptable.
 
-<img src="art/img/0_loading.jpg" alt="Logo" width="260"/>
-<img src="art/img/1_intro.jpg" alt="Logo" width="260"/>
-<img src="art/img/2_permissions.jpg" alt="Logo" width="260"/>
+<img src="art/img/0_loading.jpg" alt="Logo" width="260"/> <img src="art/img/1_intro.jpg" alt="Logo" width="260"/> <img src="art/img/2_permissions.jpg" alt="Logo" width="260"/>
