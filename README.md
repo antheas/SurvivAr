@@ -68,4 +68,51 @@ and the location features are crippled otherwise (running as a background and no
 Sadly, that also means that the service has to be started while the app is running, so the user has to initiate it.
 But for the use case of this App it is acceptable.
 
-<img src="art/img/0_loading.jpg" alt="Logo" width="260"/> <img src="art/img/1_intro.jpg" alt="Logo" width="260"/> <img src="art/img/2_permissions.jpg" alt="Logo" width="260"/>
+<img src="art/img/0_loading.jpg" alt="Loading Screen" width="260"/> <img src="art/img/1_intro.jpg" alt="Intro Screen" width="260"/> <img src="art/img/2_permissions.jpg" alt="Permissions Screen" width="260"/>
+
+### Main Interface
+The main interface of the app opens up a beautiful full screen Google Maps instance,
+spanning all the way to the top,
+which is skinned to match the theme of the app.
+Below, there is a horizontal scrolling list listing the objectives of the user by distance.
+When the user enters within the specified distance a timer starts.
+
+On the right, there are four buttons that give access to three zoom levels (closest point, closest three points
+and all points), activate the compass to rotate the map depending on the position of the phone, and to activate
+the background service, which is opt in.
+
+(Ignore the joystick and blue circle, it is the GPS Joystick app used for testing = I didn't have to run around)
+
+<img src="art/img/3_main_screen.jpg" alt="Permissions Screen" width="260"/> <img src="art/img/4_closeup_2.jpg" alt="Completed Screen" width="260"/> <img src="art/img/4_closeup.jpg" alt="Close Up Screen" width="260"/>
+
+### Pharmacies (QR Waypoint) Screen
+When the user is within distance of a pharmacy he is presented with an "Open" 
+option.
+When he enters the interface he sees a map of the building, here some schematics from google,
+displaying the items he has to scan (random selection from ./qr directory).
+When he finds an item he can click the bottom of the screen to swap the map with a camera
+instance and scan it.
+The item will become green in the list below and in the map.
+After he finishes he will go back to the main screen, which he can also go to by pressing back
+as well.
+(the form of the back button changes based on the android device, here it is a right swipe).
+
+<img src="art/img/5_pharmacy_open.jpg" alt="Main Screen near pharmacy" width="260"/> <img src="art/img/7_qr_map.jpg" alt="QR Screen with Map" width="260"/> <img src="art/img/6_qr_scan.jpg" alt="QR Screen with Camera" width="260"/>
+
+### Background Service Notifications
+If the user clicks the background service button, he will turn on the background service.
+Then, when he leaves the app it will start and display a custom notification which will track
+his progress and inform him of the direction and distance of the closest point of interest.
+If he believes the service isn't updating fast enough he can force an update by clicking the refresh button and if he wants to close it
+he can click exit.
+
+<img src="art/img/8_noti_1.jpg" alt="Notification" width="260"/> <img src="art/img/8_noti_2.jpg" alt="Notification" width="260"/> <img src="art/img/8_noti_3.jpg" alt="Notification" width="260"/>
+
+When he reenters the app, the progress he did while the app was in the background is displayed.
+
+<img src="art/img/9_completed.jpg" alt="Progress" width="260"/>
+
+# How to run
+I don't remember, but filling the `.env` file with your keys, running
+`npm ci` to install dependencies and then `npx react-native run-android` to
+compile and push to your phone (which has turned on USB debugging and is connected to USB)/emulator should work.
