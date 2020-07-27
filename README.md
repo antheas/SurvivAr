@@ -45,7 +45,7 @@ battery efficient.
 
 Sounds simple, but since the above code acts independently of React (JS doesn't run
 in the background), and it depends on knowing and acting on the Points of Interest of the user, it wasn't as simple as setting a bunch of callbacks on the Google APIs.
-A part of the model had to be ported to native code and the redux Sagas have to parcel and pass the user's points to it when the app closes to the native code.
+A part of the model had to be ported to native code and the redux Sagas have to parcel and pass the user's points to it when the app closes.
 Then, the native code uses its own business logic to decide when the user is close to a point of
 interest and enters it.
 It saves all the progress the user completes in the background (to the second) and when the 
