@@ -116,3 +116,7 @@ When he reenters the app, the progress he did while the app was in the backgroun
 I don't remember, but filling the `.env` file with your keys, running
 `npm ci` to install dependencies and then `npx react-native run-android` to
 compile and push to your phone (which has turned on USB debugging and is connected to USB)/emulator should work.
+
+# License
+I haven't decided about the license yet but feel free to run the app, look at the code, 
+and contact me for more information.
